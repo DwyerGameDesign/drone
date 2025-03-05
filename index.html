@@ -3,91 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Hive: Escape the Drone Life</title>
+    <title>Drone - A Dark Comedy</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="notification"></div>
-    
-    <h1 id="game-title">THE HIVE</h1>
-    <p id="game-subtitle">Escape the Drone Life</p>
-    
     <div class="container">
-        <div class="meters">
-            <div class="meter">
-                <div class="meter-label">
-                    <span>SOUL</span>
-                    <span class="meter-value" id="soul-value">50%</span>
-                </div>
-                <div class="meter-bar">
-                    <div class="meter-fill" id="soul-fill" style="width: 50%"></div>
-                </div>
-            </div>
-            <div class="meter">
-                <div class="meter-label">
-                    <span>MONEY</span>
-                    <span class="meter-value" id="money-value">50%</span>
-                </div>
-                <div class="meter-bar">
-                    <div class="meter-fill" id="money-fill" style="width: 50%"></div>
-                </div>
-            </div>
-            <div class="meter">
-                <div class="meter-label">
-                    <span>ENERGY</span>
-                    <span class="meter-value" id="energy-value">50%</span>
-                </div>
-                <div class="meter-bar">
-                    <div class="meter-fill" id="energy-fill" style="width: 50%"></div>
-                </div>
-            </div>
-            <div class="meter">
-                <div class="meter-label">
-                    <span>STATUS</span>
-                    <span class="meter-value" id="status-value">20%</span>
-                </div>
-                <div class="meter-bar">
-                    <div class="meter-fill" id="status-fill" style="width: 20%"></div>
-                </div>
-            </div>
-        </div>
-        
-        <div id="day-counter">Day 1 - Monday</div>
-        
-        <div class="event-container">
-            <p id="event-text">Welcome to The Hive Corporation! As a new employee, you're expected to be productive, loyal, and most importantly, a team player. Remember our motto: "In the Hive, we thrive!"</p>
-        </div>
-        
-        <ul class="choices" id="choices-container">
-            <!-- Choices will be inserted here by JavaScript -->
-        </ul>
-        
-        <div id="progress-track">
-            <div id="progress-fill"></div>
-        </div>
-        <div id="progress-label">Drone Life: 0% Complete</div>
-        
-        <div class="achievement" id="achievement">
-            <h3>Achievement Unlocked</h3>
-            <p id="achievement-text"></p>
-        </div>
-
-        <div id="album-references">
-            <h3>Current Soundtrack</h3>
-            <p>Song: <span id="album-track">"Drone"</span> - <span id="album-theme">The daily commute that starts it all</span></p>
-        </div>
+        <div class="hexagon"></div>
+        <h1>Drone</h1>
+        <p>Welcome to your new life as a corporate drone. How far will you go to climb the ladder?</p>
+        <button id="clickMe">Begin Your Journey</button>
     </div>
-    
-    <div class="container game-over" id="game-over">
-        <h2 id="game-over-title">Game Over</h2>
-        <p id="game-over-text"></p>
-        <button id="restart-btn">Start New Life</button>
-    </div>
-    
-    <div class="path-indicator" id="path-indicator">
-        Escape Path: <span id="path-name">None</span>
-    </div>
-
-    <script src="game.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

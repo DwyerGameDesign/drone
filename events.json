@@ -1,0 +1,20 @@
+{
+    "events": [
+        {
+            "id": 1,
+            "title": "Sample Event 1",
+            "date": "2024-03-05",
+            "description": "This is a sample event description",
+            "category": "meeting",
+            "location": "Virtual"
+        },
+        {
+            "id": 2,
+            "title": "Sample Event 2",
+            "date": "2024-03-06",
+            "description": "Another sample event",
+            "category": "workshop",
+            "location": "In-person"
+        }
+    ]
+} 

@@ -1,5 +1,12 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Courier New', monospace;
+    line-height: 1.6;
     background-color: #1a1a1a;
     color: #f0f0f0;
     margin: 0;
@@ -28,107 +35,15 @@ h1 {
     text-align: center;
     color: #ffde00;
     margin-bottom: 20px;
-}
-
-#game-title {
-    font-size: 2.5rem;
-    margin-bottom: 0;
     text-shadow: 0 0 10px rgba(255, 222, 0, 0.5);
 }
 
-#game-subtitle {
-    font-size: 1.2rem;
-    text-align: center;
-    margin-top: 5px;
-    margin-bottom: 20px;
-    font-style: italic;
+p {
+    margin-bottom: 2rem;
     color: #b3b3b3;
 }
 
-.meters {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.meter {
-    background-color: #333;
-    border-radius: 4px;
-    padding: 10px;
-    position: relative;
-}
-
-.meter-label {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
-}
-
-.meter-value {
-    font-weight: bold;
-}
-
-.meter-bar {
-    height: 10px;
-    background-color: #444;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.meter-fill {
-    height: 100%;
-    border-radius: 5px;
-    transition: width 0.3s ease-in-out;
-}
-
-#soul-fill {
-    background-color: #9c27b0;
-}
-
-#money-fill {
-    background-color: #4caf50;
-}
-
-#energy-fill {
-    background-color: #f44336;
-}
-
-#status-fill {
-    background-color: #2196f3;
-}
-
-.event-container {
-    margin-bottom: 20px;
-    min-height: 120px;
-}
-
-#day-counter {
-    text-align: center;
-    margin-bottom: 5px;
-    font-size: 0.9rem;
-    color: #b3b3b3;
-}
-
-#event-text {
-    line-height: 1.6;
-    margin-bottom: 20px;
-}
-
-.choices {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.choice-item {
-    margin-bottom: 8px;
-}
-
-.choice-btn {
+button {
     background-color: #333;
     color: #f0f0f0;
     border: 1px solid #ffde00;
@@ -146,61 +61,47 @@ h1 {
     align-items: center;
 }
 
-.choice-btn:hover {
+button:hover {
     background-color: #444;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(255, 222, 0, 0.3);
 }
 
-.choice-btn::before {
-    content: '•';
-    margin-right: 10px;
+/* Event Cards Styling */
+.events-list {
+    margin-top: 2rem;
+    display: grid;
+    gap: 1rem;
+}
+
+.event-card {
+    background-color: #333;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: left;
+    border: 1px solid #444;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-2px);
+    border-color: #ffde00;
+}
+
+.event-card h3 {
     color: #ffde00;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 5px rgba(255, 222, 0, 0.3);
 }
 
-.choice-btn::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0%;
-    height: 3px;
-    background: linear-gradient(to right, #9c27b0, #4caf50, #f44336, #2196f3);
-    transition: width 0.3s ease;
+.event-card p {
+    margin-bottom: 0.5rem;
+    color: #b3b3b3;
+    font-size: 0.9rem;
 }
 
-.choice-btn:hover::after {
-    width: 100%;
-}
-
-.game-over {
-    text-align: center;
-    display: none;
-}
-
-.game-over h2 {
-    color: #ffde00;
-    margin-bottom: 20px;
-}
-
-#restart-btn {
-    background-color: #ffde00;
-    color: #1a1a1a;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1rem;
-    margin-top: 20px;
-    transition: all 0.2s;
-}
-
-#restart-btn:hover {
-    background-color: #fff;
-    transform: scale(1.05);
-}
-
+/* Decorative elements */
 .hexagon {
     position: absolute;
     width: 60px;
@@ -219,6 +120,7 @@ h1 {
     transform: rotate(60deg);
 }
 
+/* Progress bar */
 #progress-track {
     height: 6px;
     background-color: #333;
@@ -237,13 +139,7 @@ h1 {
     transition: width 0.3s ease-in-out;
 }
 
-#progress-label {
-    text-align: center;
-    font-size: 0.9rem;
-    color: #b3b3b3;
-    margin-bottom: 20px;
-}
-
+/* Achievement styling */
 .achievement {
     padding: 10px;
     background-color: rgba(255, 222, 0, 0.1);
@@ -263,6 +159,7 @@ h1 {
     font-size: 0.9rem;
 }
 
+/* Notification styling */
 #notification {
     position: fixed;
     top: 20px;
@@ -282,6 +179,7 @@ h1 {
     transform: translateX(0) !important;
 }
 
+/* Album references styling */
 #album-references {
     margin-top: 20px;
     background-color: rgba(255, 222, 0, 0.1);
@@ -301,6 +199,7 @@ h1 {
     font-weight: bold;
 }
 
+/* Path indicator */
 .path-indicator {
     position: absolute;
     top: 10px;
@@ -320,7 +219,7 @@ h1 {
         padding: 15px;
     }
     
-    #game-title {
+    h1 {
         font-size: 2rem;
     }
 }
