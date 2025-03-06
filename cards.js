@@ -1,5 +1,5 @@
 // Card definitions based on resource adjustments
-const cardDefinitions = [
+window.cardDefinitions = [
     // Cards affecting 1 resource
     { id: 1, title: "Simple Soul Boost", effects: { soul: 1 }, rarity: "common" },
     { id: 2, title: "Simple Soul Drain", effects: { soul: -1 }, rarity: "common" },
@@ -73,7 +73,7 @@ const cardDefinitions = [
 ];
 
 // Thematic descriptions for later development
-const thematicDescriptions = {
+window.thematicDescriptions = {
     45: "Starting to live your dream, excited about doing it your way. You're moving forward undeliberately, jumping onto the train of life.",
     46: "Wasting away with surface connections and people you never meet in person. Time slips away on activities that don't fulfill you.",
     47: "You meet someone unexpectedly. You know something's off, but you proceed anyway. Danger ahead and your soul knows it.",

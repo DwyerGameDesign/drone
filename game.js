@@ -1,5 +1,5 @@
 // Game state and core mechanics
-class DroneManGame {
+window.DroneManGame = class DroneManGame {
     constructor() {
         // Game settings
         this.maxResources = 10;

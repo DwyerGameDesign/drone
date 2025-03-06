@@ -1,4 +1,6 @@
 // DOM elements
+console.log('Starting script initialization...');
+
 const soulBar = document.getElementById('soul-bar');
 const connectionsBar = document.getElementById('connections-bar');
 const energyBar = document.getElementById('energy-bar');
@@ -17,19 +19,33 @@ const gameOverScreen = document.getElementById('game-over-screen');
 const gameOverMessage = document.getElementById('game-over-message');
 const restartButton = document.getElementById('restart-button');
 
+console.log('DOM elements initialized');
+
 // Initialize game instance
-let game = new DroneManGame();
+console.log('Creating game instance...');
+let game;
+try {
+    game = new DroneManGame();
+    console.log('Game instance created successfully');
+} catch (error) {
+    console.error('Error creating game instance:', error);
+}
 
 // Event listeners
+console.log('Setting up event listeners...');
+
 chooseAButton.addEventListener('click', () => {
+    console.log('Path A chosen');
     handlePathChoice('a');
 });
 
 chooseBButton.addEventListener('click', () => {
+    console.log('Path B chosen');
     handlePathChoice('b');
 });
 
 restartButton.addEventListener('click', () => {
+    console.log('Game restart requested');
     game.resetGame();
     updateUI();
     gameOverScreen.style.display = 'none';
@@ -37,6 +53,7 @@ restartButton.addEventListener('click', () => {
 
 // Game functions
 function handlePathChoice(path) {
+    console.log(`Handling path choice: ${path}`);
     game.choosePath(path);
     updateUI();
     
@@ -46,34 +63,41 @@ function handlePathChoice(path) {
 }
 
 function updateUI() {
-    // Update resource bars and values
-    updateResourceUI('soul', soulBar, soulValue);
-    updateResourceUI('connections', connectionsBar, connectionsValue);
-    updateResourceUI('energy', energyBar, energyValue);
-    updateResourceUI('money', moneyBar, moneyValue);
-    
-    // Update turn counter
-    turnCounter.textContent = game.currentTurn;
-    
-    // Update path cards
-    updatePathCards('a', pathACards);
-    updatePathCards('b', pathBCards);
-    
-    // Update game message based on turn
-    if (game.currentTurn === 1) {
-        gameMessage.textContent = "Your journey begins. Choose your first path.";
-    } else if (game.currentTurn <= 5) {
-        gameMessage.textContent = "Still early in your journey. What path will you take?";
-    } else if (game.currentTurn <= 10) {
-        gameMessage.textContent = "Halfway through your journey. Your choices define you.";
-    } else if (game.currentTurn <= 15) {
-        gameMessage.textContent = "Your journey continues. The end is in sight.";
-    } else {
-        gameMessage.textContent = "The final stops of your journey. Choose wisely.";
+    console.log('Updating UI...');
+    try {
+        // Update resource bars and values
+        updateResourceUI('soul', soulBar, soulValue);
+        updateResourceUI('connections', connectionsBar, connectionsValue);
+        updateResourceUI('energy', energyBar, energyValue);
+        updateResourceUI('money', moneyBar, moneyValue);
+        
+        // Update turn counter
+        turnCounter.textContent = game.currentTurn;
+        
+        // Update path cards
+        updatePathCards('a', pathACards);
+        updatePathCards('b', pathBCards);
+        
+        // Update game message based on turn
+        if (game.currentTurn === 1) {
+            gameMessage.textContent = "Your journey begins. Choose your first path.";
+        } else if (game.currentTurn <= 5) {
+            gameMessage.textContent = "Still early in your journey. What path will you take?";
+        } else if (game.currentTurn <= 10) {
+            gameMessage.textContent = "Halfway through your journey. Your choices define you.";
+        } else if (game.currentTurn <= 15) {
+            gameMessage.textContent = "Your journey continues. The end is in sight.";
+        } else {
+            gameMessage.textContent = "The final stops of your journey. Choose wisely.";
+        }
+        console.log('UI update complete');
+    } catch (error) {
+        console.error('Error updating UI:', error);
     }
 }
 
 function updateResourceUI(resource, barElement, valueElement) {
+    console.log(`Updating ${resource} resource...`);
     const percentage = game.getResourcePercentage(resource);
     const value = game.resources[resource];
     
@@ -108,6 +132,7 @@ function updateResourceUI(resource, barElement, valueElement) {
 }
 
 function updatePathCards(path, containerElement) {
+    console.log(`Updating cards for path ${path}...`);
     // Clear existing cards
     containerElement.innerHTML = '';
     
@@ -143,7 +168,7 @@ function createCardElement(card) {
     }
     
     // Add thematic description if it exists
-    if (thematicDescriptions[card.id]) {
+    if (thematicDescriptions && thematicDescriptions[card.id]) {
         const descriptionElement = document.createElement('div');
         descriptionElement.className = 'card-description';
         descriptionElement.textContent = thematicDescriptions[card.id];
@@ -174,11 +199,13 @@ function createCardElement(card) {
 }
 
 function showGameOver() {
+    console.log('Showing game over screen');
     gameOverMessage.textContent = game.gameOverReason;
     gameOverScreen.style.display = 'flex';
 }
 
 // Initialize UI on page load
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded - Initializing game...');
     updateUI();
 });
