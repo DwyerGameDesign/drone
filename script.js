@@ -1,51 +1,35 @@
 // DOM elements
-console.log('Starting script initialization...');
-
 const soulBar = document.getElementById('soul-bar');
 const connectionsBar = document.getElementById('connections-bar');
-const energyBar = document.getElementById('energy-bar');
-const moneyBar = document.getElementById('money-bar');
 const soulValue = document.getElementById('soul-value');
 const connectionsValue = document.getElementById('connections-value');
-const energyValue = document.getElementById('energy-value');
 const moneyValue = document.getElementById('money-value');
 const turnCounter = document.getElementById('turn-counter');
 const gameMessage = document.getElementById('game-message');
 const pathACards = document.getElementById('path-a-cards');
 const pathBCards = document.getElementById('path-b-cards');
+const pathACost = document.getElementById('path-a-cost');
+const pathBCost = document.getElementById('path-b-cost');
 const chooseAButton = document.getElementById('choose-a');
 const chooseBButton = document.getElementById('choose-b');
 const gameOverScreen = document.getElementById('game-over-screen');
 const gameOverMessage = document.getElementById('game-over-message');
 const restartButton = document.getElementById('restart-button');
-
-console.log('DOM elements initialized');
+const cannotAffordMessage = document.getElementById('cannot-afford-message');
 
 // Initialize game instance
-console.log('Creating game instance...');
-let game;
-try {
-    game = new DroneManGame();
-    console.log('Game instance created successfully');
-} catch (error) {
-    console.error('Error creating game instance:', error);
-}
+let game = new DroneManGame();
 
 // Event listeners
-console.log('Setting up event listeners...');
-
 chooseAButton.addEventListener('click', () => {
-    console.log('Path A chosen');
     handlePathChoice('a');
 });
 
 chooseBButton.addEventListener('click', () => {
-    console.log('Path B chosen');
     handlePathChoice('b');
 });
 
 restartButton.addEventListener('click', () => {
-    console.log('Game restart requested');
     game.resetGame();
     updateUI();
     gameOverScreen.style.display = 'none';
@@ -53,51 +37,68 @@ restartButton.addEventListener('click', () => {
 
 // Game functions
 function handlePathChoice(path) {
-    console.log(`Handling path choice: ${path}`);
-    game.choosePath(path);
-    updateUI();
+    // Check if player can afford this path
+    if (!game.canAffordPath(path)) {
+        showCannotAffordMessage();
+        return;
+    }
     
-    if (game.gameOver) {
-        showGameOver();
+    const success = game.choosePath(path);
+    
+    if (success) {
+        updateUI();
+        
+        if (game.gameOver) {
+            showGameOver();
+        }
     }
 }
 
+function showCannotAffordMessage() {
+    cannotAffordMessage.classList.add('show');
+    
+    setTimeout(() => {
+        cannotAffordMessage.classList.remove('show');
+    }, 2000);
+}
+
 function updateUI() {
-    console.log('Updating UI...');
-    try {
-        // Update resource bars and values
-        updateResourceUI('soul', soulBar, soulValue);
-        updateResourceUI('connections', connectionsBar, connectionsValue);
-        updateResourceUI('energy', energyBar, energyValue);
-        updateResourceUI('money', moneyBar, moneyValue);
-        
-        // Update turn counter
-        turnCounter.textContent = game.currentTurn;
-        
-        // Update path cards
-        updatePathCards('a', pathACards);
-        updatePathCards('b', pathBCards);
-        
-        // Update game message based on turn
-        if (game.currentTurn === 1) {
-            gameMessage.textContent = "Your journey begins. Choose your first path.";
-        } else if (game.currentTurn <= 5) {
-            gameMessage.textContent = "Still early in your journey. What path will you take?";
-        } else if (game.currentTurn <= 10) {
-            gameMessage.textContent = "Halfway through your journey. Your choices define you.";
-        } else if (game.currentTurn <= 15) {
-            gameMessage.textContent = "Your journey continues. The end is in sight.";
-        } else {
-            gameMessage.textContent = "The final stops of your journey. Choose wisely.";
-        }
-        console.log('UI update complete');
-    } catch (error) {
-        console.error('Error updating UI:', error);
+    // Update resource bars and values
+    updateResourceUI('soul', soulBar, soulValue);
+    updateResourceUI('connections', connectionsBar, connectionsValue);
+    
+    // Update money (handled differently)
+    moneyValue.textContent = game.resources.money;
+    
+    // Update turn counter
+    turnCounter.textContent = game.currentTurn;
+    
+    // Update path cards
+    updatePathCards('a', pathACards);
+    updatePathCards('b', pathBCards);
+    
+    // Update path costs
+    updatePathCost('a', pathACost);
+    updatePathCost('b', pathBCost);
+    
+    // Update button states based on affordability
+    updateButtonStates();
+    
+    // Update game message based on turn
+    if (game.currentTurn === 1) {
+        gameMessage.textContent = "Your journey begins. Choose your first path.";
+    } else if (game.currentTurn <= 5) {
+        gameMessage.textContent = "Still early in your journey. What path will you take?";
+    } else if (game.currentTurn <= 10) {
+        gameMessage.textContent = "Halfway through your journey. Your choices define you.";
+    } else if (game.currentTurn <= 15) {
+        gameMessage.textContent = "Your journey continues. The end is in sight.";
+    } else {
+        gameMessage.textContent = "The final stops of your journey. Choose wisely.";
     }
 }
 
 function updateResourceUI(resource, barElement, valueElement) {
-    console.log(`Updating ${resource} resource...`);
     const percentage = game.getResourcePercentage(resource);
     const value = game.resources[resource];
     
@@ -118,12 +119,6 @@ function updateResourceUI(resource, barElement, valueElement) {
             case 'connections':
                 barElement.style.backgroundColor = '#3498db';
                 break;
-            case 'energy':
-                barElement.style.backgroundColor = '#2ecc71';
-                break;
-            case 'money':
-                barElement.style.backgroundColor = '#f1c40f';
-                break;
         }
     }
     
@@ -131,8 +126,42 @@ function updateResourceUI(resource, barElement, valueElement) {
     valueElement.textContent = value;
 }
 
+function updateButtonStates() {
+    // Enable/disable path buttons based on affordability
+    chooseAButton.disabled = !game.canAffordPath('a');
+    chooseBButton.disabled = !game.canAffordPath('b');
+    
+    // Add/remove "disabled" class for styling
+    if (chooseAButton.disabled) {
+        chooseAButton.classList.add('disabled');
+    } else {
+        chooseAButton.classList.remove('disabled');
+    }
+    
+    if (chooseBButton.disabled) {
+        chooseBButton.classList.add('disabled');
+    } else {
+        chooseBButton.classList.remove('disabled');
+    }
+}
+
+function updatePathCost(path, costElement) {
+    const pathCost = game.calculatePathCost(game.currentPaths[path]);
+    
+    // Format cost
+    if (pathCost === 0) {
+        costElement.textContent = "Free";
+        costElement.classList.remove('expensive');
+    } else if (pathCost < 0) {
+        costElement.textContent = `Earn $${Math.abs(pathCost)}`;
+        costElement.classList.remove('expensive');
+    } else {
+        costElement.textContent = `Cost: $${pathCost}`;
+        costElement.classList.toggle('expensive', pathCost > game.resources.money);
+    }
+}
+
 function updatePathCards(path, containerElement) {
-    console.log(`Updating cards for path ${path}...`);
     // Clear existing cards
     containerElement.innerHTML = '';
     
@@ -150,6 +179,23 @@ function createCardElement(card) {
     const cardElement = document.createElement('div');
     cardElement.className = 'card';
     
+    // Add cost indicator
+    const costBadge = document.createElement('div');
+    costBadge.className = 'card-cost-badge';
+    
+    if ((card.cost || 0) === 0) {
+        costBadge.textContent = 'FREE';
+        costBadge.classList.add('free');
+    } else if ((card.cost || 0) < 0) {
+        costBadge.textContent = `EARN $${Math.abs(card.cost)}`;
+        costBadge.classList.add('earn');
+    } else {
+        costBadge.textContent = `$${card.cost}`;
+        costBadge.classList.add('cost');
+    }
+    
+    cardElement.appendChild(costBadge);
+    
     // Add title
     const titleElement = document.createElement('div');
     titleElement.className = 'card-title';
@@ -161,19 +207,14 @@ function createCardElement(card) {
         const albumTrackElement = document.createElement('div');
         albumTrackElement.className = 'card-album-track';
         albumTrackElement.textContent = `Track: ${card.albumTrack}`;
-        albumTrackElement.style.fontStyle = 'italic';
-        albumTrackElement.style.fontSize = '0.8rem';
-        albumTrackElement.style.marginBottom = '8px';
         cardElement.appendChild(albumTrackElement);
     }
     
     // Add thematic description if it exists
-    if (thematicDescriptions && thematicDescriptions[card.id]) {
+    if (thematicDescriptions[card.id]) {
         const descriptionElement = document.createElement('div');
         descriptionElement.className = 'card-description';
         descriptionElement.textContent = thematicDescriptions[card.id];
-        descriptionElement.style.marginBottom = '10px';
-        descriptionElement.style.fontSize = '0.9rem';
         cardElement.appendChild(descriptionElement);
     }
     
@@ -181,13 +222,14 @@ function createCardElement(card) {
     const effectsElement = document.createElement('div');
     effectsElement.className = 'card-effects';
     
-    for (const [resource, change] of Object.entries(card.effects)) {
+    // Add resource effects
+    for (const [resource, change] of Object.entries(card.effects || {})) {
         if (change === 0) continue; // Skip zero changes
         
         const effectElement = document.createElement('span');
         effectElement.className = `effect ${change > 0 ? 'positive' : 'negative'}`;
         
-        // Format display: "+1 Soul" or "-1 Energy"
+        // Format display: "+1 Soul" or "-1 Connections"
         const resourceName = resource.charAt(0).toUpperCase() + resource.slice(1);
         effectElement.textContent = `${change > 0 ? '+' : ''}${change} ${resourceName}`;
         
@@ -199,13 +241,11 @@ function createCardElement(card) {
 }
 
 function showGameOver() {
-    console.log('Showing game over screen');
     gameOverMessage.textContent = game.gameOverReason;
     gameOverScreen.style.display = 'flex';
 }
 
 // Initialize UI on page load
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM Content Loaded - Initializing game...');
     updateUI();
 });
