@@ -28,6 +28,20 @@
                 </div>
                 <div class="resource-value" id="connections-value">5</div>
             </div>
+            <div class="resource">
+                <div class="resource-label">Energy</div>
+                <div class="resource-bar">
+                    <div id="energy-bar" class="bar-fill"></div>
+                </div>
+                <div class="resource-value" id="energy-value">5</div>
+            </div>
+            <div class="resource">
+                <div class="resource-label">Money</div>
+                <div class="resource-bar">
+                    <div id="money-bar" class="bar-fill"></div>
+                </div>
+                <div class="resource-value" id="money-value">5</div>
+            </div>
         </div>
         
         <div class="wallet-container">
@@ -67,8 +81,9 @@
         You don't have enough money for this path!
     </div>
     
-    <script src="cards.js"></script>
-    <script src="game.js"></script>
-    <script src="scripts.js"></script>
+    <!-- Load dependencies in correct order with defer -->
+    <script src="cards.js" defer></script>
+    <script src="game.js" defer></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
