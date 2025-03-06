@@ -3,16 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drone - A Dark Comedy</title>
+    <title>Drone Man: The Journey</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <div class="hexagon"></div>
-        <h1>Drone</h1>
-        <p>Welcome to your new life as a corporate drone. How far will you go to climb the ladder?</p>
-        <button id="clickMe">Begin Your Journey</button>
+    <div class="game-container">
+        <div class="header">
+            <h1>Drone Man: The Journey</h1>
+            <div class="turn-info">Stop: <span id="turn-counter">1</span></div>
+        </div>
+        
+        <div class="resources-container">
+            <div class="resource">
+                <div class="resource-label">Soul</div>
+                <div class="resource-bar">
+                    <div id="soul-bar" class="bar-fill"></div>
+                </div>
+                <div class="resource-value" id="soul-value">5</div>
+            </div>
+            <div class="resource">
+                <div class="resource-label">Connections</div>
+                <div class="resource-bar">
+                    <div id="connections-bar" class="bar-fill"></div>
+                </div>
+                <div class="resource-value" id="connections-value">5</div>
+            </div>
+            <div class="resource">
+                <div class="resource-label">Energy</div>
+                <div class="resource-bar">
+                    <div id="energy-bar" class="bar-fill"></div>
+                </div>
+                <div class="resource-value" id="energy-value">5</div>
+            </div>
+            <div class="resource">
+                <div class="resource-label">Money</div>
+                <div class="resource-bar">
+                    <div id="money-bar" class="bar-fill"></div>
+                </div>
+                <div class="resource-value" id="money-value">5</div>
+            </div>
+        </div>
+        
+        <div class="game-message" id="game-message">
+            Choose your path at this stop
+        </div>
+        
+        <div class="paths-container">
+            <div class="path" id="path-a">
+                <h2>Path A</h2>
+                <div class="cards-container" id="path-a-cards"></div>
+                <button class="choose-button" id="choose-a">Choose Path A</button>
+            </div>
+            <div class="path" id="path-b">
+                <h2>Path B</h2>
+                <div class="cards-container" id="path-b-cards"></div>
+                <button class="choose-button" id="choose-b">Choose Path B</button>
+            </div>
+        </div>
+        
+        <div class="game-over-screen" id="game-over-screen">
+            <h2>Journey's End</h2>
+            <p id="game-over-message"></p>
+            <button id="restart-button">Start New Journey</button>
+        </div>
     </div>
-    <script src="script.js"></script>
+    
+    <script src="cards.js"></script>
+    <script src="game.js"></script>
+    <script src="scripts.js"></script>
 </body>
 </html>

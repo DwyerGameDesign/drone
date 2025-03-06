@@ -1,0 +1,298 @@
+{
+    "cards": [
+      {
+        "id": 1,
+        "title": "Soul +1",
+        "effects": { "soul": 1 },
+        "rarity": "common",
+        "description": "A small boost to your spiritual wellbeing.",
+        "thematicOptions": [
+          "Quiet moment of reflection",
+          "Listen to favorite album",
+          "Read inspiring book"
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Soul -1",
+        "effects": { "soul": -1 },
+        "rarity": "common",
+        "description": "A small drain on your spirit.",
+        "thematicOptions": [
+          "Meaningless small talk",
+          "Soul-crushing meeting",
+          "Doomscrolling social media"
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Connections +1",
+        "effects": { "connections": 1 },
+        "rarity": "common",
+        "description": "You strengthen your social bonds.",
+        "thematicOptions": [
+          "Call an old friend",
+          "Attend community event",
+          "Join social gathering"
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Connections -1",
+        "effects": { "connections": -1 },
+        "rarity": "common",
+        "description": "Your social connections weaken.",
+        "thematicOptions": [
+          "Skip friend's invitation",
+          "Ignore messages",
+          "Withdraw from social event"
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Energy +1",
+        "effects": { "energy": 1 },
+        "rarity": "common",
+        "description": "You feel more energized.",
+        "thematicOptions": [
+          "Good night's sleep",
+          "Morning exercise",
+          "Healthy meal"
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Energy -1",
+        "effects": { "energy": -1 },
+        "rarity": "common",
+        "description": "Your energy levels decrease.",
+        "thematicOptions": [
+          "Late night work",
+          "Skip exercise",
+          "Fast food binge"
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Money +1",
+        "effects": { "money": 1 },
+        "rarity": "common",
+        "description": "Your financial situation improves slightly.",
+        "thematicOptions": [
+          "Small bonus at work",
+          "Side gig payment",
+          "Tax refund"
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Money -1",
+        "effects": { "money": -1 },
+        "rarity": "common",
+        "description": "Your finances take a small hit.",
+        "thematicOptions": [
+          "Unexpected bill",
+          "Impulse purchase",
+          "Dinner out"
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Soul +2",
+        "effects": { "soul": 2 },
+        "rarity": "uncommon",
+        "description": "A significant boost to your spiritual wellbeing.",
+        "thematicOptions": [
+          "Creative breakthrough",
+          "Spiritual retreat",
+          "Meaningful connection with nature"
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Soul -2",
+        "effects": { "soul": -2 },
+        "rarity": "uncommon",
+        "description": "Your spirit takes a significant hit.",
+        "thematicOptions": [
+          "Existential crisis",
+          "Creative block",
+          "Failed personal project"
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Soul +1, Energy -1",
+        "effects": { "soul": 1, "energy": -1 },
+        "rarity": "common",
+        "description": "You nurture your soul at the cost of physical energy.",
+        "thematicOptions": [
+          "Late night songwriting",
+          "Art project marathon",
+          "Deep philosophical conversation"
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Soul +1, Money -1",
+        "effects": { "soul": 1, "money": -1 },
+        "rarity": "common",
+        "description": "You invest in your spiritual wellbeing.",
+        "thematicOptions": [
+          "Buy a guitar",
+          "Concert tickets",
+          "Art supplies"
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Connections +1, Energy -1",
+        "effects": { "connections": 1, "energy": -1 },
+        "rarity": "common",
+        "description": "You strengthen relationships but tire yourself out.",
+        "thematicOptions": [
+          "Host a party",
+          "Long night out with friends",
+          "Family gathering"
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Connections +1, Money -1",
+        "effects": { "connections": 1, "money": -1 },
+        "rarity": "common",
+        "description": "You invest in your relationships.",
+        "thematicOptions": [
+          "Treat friends to dinner",
+          "Buy concert tickets for two",
+          "Gift for a loved one"
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Energy +1, Money -1",
+        "effects": { "energy": 1, "money": -1 },
+        "rarity": "common",
+        "description": "You invest in your physical wellbeing.",
+        "thematicOptions": [
+          "Gym membership",
+          "Healthy groceries",
+          "New running shoes"
+        ]
+      },
+      {
+        "id": 16,
+        "title": "Money +1, Energy -1",
+        "effects": { "money": 1, "energy": -1 },
+        "rarity": "common",
+        "description": "You push yourself for financial gain.",
+        "thematicOptions": [
+          "Overtime work",
+          "Side hustle",
+          "Late night work project"
+        ]
+      },
+      {
+        "id": 17,
+        "title": "Money +1, Soul -1",
+        "effects": { "money": 1, "soul": -1 },
+        "rarity": "common",
+        "description": "You compromise your values for money.",
+        "thematicOptions": [
+          "Corporate compromise",
+          "Work on meaningless project",
+          "Take on soulless gig"
+        ]
+      },
+      {
+        "id": 18,
+        "title": "Connections -1, Soul +1",
+        "effects": { "connections": -1, "soul": 1 },
+        "rarity": "common",
+        "description": "You take time for yourself away from others.",
+        "thematicOptions": [
+          "Solo retreat",
+          "Decline invitations for quiet time",
+          "Personal meditation day"
+        ]
+      },
+      {
+        "id": 45,
+        "title": "Write Along The Way",
+        "effects": { "soul": 2, "energy": -1 },
+        "rarity": "uncommon",
+        "albumTrack": true,
+        "description": "You embrace the spontaneity of life without a plan.",
+        "thematicOptions": [
+          "Improvise a speech",
+          "Start writing without an outline",
+          "Take an unplanned road trip"
+        ]
+      },
+      {
+        "id": 46,
+        "title": "Last Life",
+        "effects": { "connections": -2, "energy": -1 },
+        "rarity": "uncommon",
+        "albumTrack": true,
+        "description": "You lose yourself in virtual escapism.",
+        "thematicOptions": [
+          "Gaming marathon",
+          "Virtual reality binge",
+          "Online addiction"
+        ]
+      },
+      {
+        "id": 47,
+        "title": "Strange Passenger",
+        "effects": { "connections": 1, "soul": -1 },
+        "rarity": "uncommon",
+        "albumTrack": true,
+        "description": "You meet someone who changes your path unexpectedly.",
+        "thematicOptions": [
+          "Unexpected romance",
+          "Charismatic but troubling new friend",
+          "Mentor with questionable methods"
+        ]
+      },
+      {
+        "id": 53,
+        "title": "Sick of Home",
+        "effects": { "soul": 1, "connections": -1, "energy": 1 },
+        "rarity": "rare",
+        "albumTrack": true,
+        "description": "You realize you need to break free from your current environment.",
+        "thematicOptions": [
+          "Plan a major move",
+          "Renovate living space",
+          "Break from familiar surroundings"
+        ]
+      },
+      {
+        "id": 54,
+        "title": "Contact High",
+        "effects": { "soul": 2, "connections": 1, "energy": -1, "money": -1 },
+        "rarity": "very rare",
+        "albumTrack": true,
+        "description": "You experience the intoxicating feeling of true freedom.",
+        "thematicOptions": [
+          "Major life decision",
+          "Drastic career change",
+          "Breaking free from constraints"
+        ]
+      },
+      {
+        "id": 55,
+        "title": "The Feel",
+        "effects": { "soul": 3, "energy": -1, "money": -1 },
+        "rarity": "rare",
+        "albumTrack": true,
+        "description": "You find peace in uncertainty and acceptance.",
+        "thematicOptions": [
+          "Embracing the unknown",
+          "Finding stillness in chaos",
+          "Accepting life's imperfections"
+        ]
+      }
+    ]
+  }
