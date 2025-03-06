@@ -9,11 +9,8 @@ console.log('Checking card data:', {
 
 const soulBar = document.getElementById('soul-bar');
 const connectionsBar = document.getElementById('connections-bar');
-const energyBar = document.getElementById('energy-bar');
-const moneyBar = document.getElementById('money-bar');
 const soulValue = document.getElementById('soul-value');
 const connectionsValue = document.getElementById('connections-value');
-const energyValue = document.getElementById('energy-value');
 const moneyValue = document.getElementById('money-value');
 const turnCounter = document.getElementById('turn-counter');
 const gameMessage = document.getElementById('game-message');
@@ -94,8 +91,9 @@ function updateUI() {
         // Update resource bars and values
         updateResourceUI('soul', soulBar, soulValue);
         updateResourceUI('connections', connectionsBar, connectionsValue);
-        updateResourceUI('energy', energyBar, energyValue);
-        updateResourceUI('money', moneyBar, moneyValue);
+        
+        // Update money display
+        moneyValue.textContent = game.resources.money;
         
         // Update turn counter
         turnCounter.textContent = game.currentTurn;
@@ -130,6 +128,7 @@ function updateUI() {
 }
 
 function updateResourceUI(resource, barElement, valueElement) {
+    console.log(`Updating ${resource} resource...`);
     const percentage = game.getResourcePercentage(resource);
     const value = game.resources[resource];
     
@@ -273,7 +272,7 @@ function createCardElement(card) {
     
     // Add resource effects
     for (const [resource, change] of Object.entries(card.effects || {})) {
-        if (change === 0) continue; // Skip zero changes
+        if (change === 0 || resource === 'money') continue; // Skip zero changes and money (handled by cost)
         
         const effectElement = document.createElement('span');
         effectElement.className = `effect ${change > 0 ? 'positive' : 'negative'}`;

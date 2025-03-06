@@ -1,5 +1,5 @@
 // Card definitions for the simplified two-resource system
-const cardDefinitions = [
+window.cardDefinitions = [
     // Money-earning cards (negative or neutral resource effects)
     { id: 1, title: "Overtime Work", effects: { soul: -1 }, cost: -2, rarity: "common" },
     { id: 2, title: "Side Gig", effects: { soul: -1 }, cost: -1, rarity: "common" },
@@ -55,7 +55,7 @@ const cardDefinitions = [
 ];
 
 // Thematic descriptions for later development
-const thematicDescriptions = {
+window.thematicDescriptions = {
     31: "Starting to live your dream, excited about doing it your way. You're moving forward undeliberately, jumping onto the train of life.",
     32: "Wasting away with surface connections and people you never meet in person. Time slips away on activities that don't fulfill you.",
     33: "You meet someone unexpectedly. You know something's off, but you proceed anyway. Danger ahead and your soul knows it.",
