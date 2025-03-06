@@ -1,248 +1,170 @@
-// DOM elements
+// Initialize game state
+let game;
+let currentTurn = 1;
+const MAX_TURNS = 10;
+
+// DOM Elements
+const turnCounter = document.getElementById('turn-counter');
 const soulBar = document.getElementById('soul-bar');
 const connectionsBar = document.getElementById('connections-bar');
 const soulValue = document.getElementById('soul-value');
 const connectionsValue = document.getElementById('connections-value');
 const moneyValue = document.getElementById('money-value');
-const turnCounter = document.getElementById('turn-counter');
 const gameMessage = document.getElementById('game-message');
+const pathA = document.getElementById('path-a');
+const pathB = document.getElementById('path-b');
 const pathACard = document.getElementById('path-a-card');
 const pathBCard = document.getElementById('path-b-card');
-const chooseAButton = document.getElementById('choose-a');
-const chooseBButton = document.getElementById('choose-b');
 const gameOverScreen = document.getElementById('game-over-screen');
 const gameOverMessage = document.getElementById('game-over-message');
 const restartButton = document.getElementById('restart-button');
 const cannotAffordMessage = document.getElementById('cannot-afford-message');
 
-// Initialize game instance
-let game = new DroneManGame();
-
-// Event listeners
-chooseAButton.addEventListener('click', () => {
-    handlePathChoice('a');
-});
-
-chooseBButton.addEventListener('click', () => {
-    handlePathChoice('b');
-});
-
-restartButton.addEventListener('click', () => {
-    game.resetGame();
+// Initialize the game
+function initGame() {
+    console.log('Initializing game...');
+    game = new DroneManGame();
     updateUI();
-    gameOverScreen.style.display = 'none';
-});
-
-// Game functions
-function handlePathChoice(path) {
-    // Check if player can afford this path
-    if (!game.canAffordPath(path)) {
-        showCannotAffordMessage();
-        return;
-    }
-    
-    const success = game.choosePath(path);
-    
-    if (success) {
-        updateUI();
-        
-        if (game.gameOver) {
-            showGameOver();
-        }
-    }
+    generateNewPaths();
 }
 
-function showCannotAffordMessage() {
-    cannotAffordMessage.classList.add('show');
-    
-    setTimeout(() => {
-        cannotAffordMessage.classList.remove('show');
-    }, 2000);
-}
-
+// Update UI elements
 function updateUI() {
+    console.log('Updating UI...');
+    turnCounter.textContent = currentTurn;
+    
     // Update resource bars and values
     updateResourceUI('soul', soulBar, soulValue);
     updateResourceUI('connections', connectionsBar, connectionsValue);
     
-    // Update money (handled differently)
+    // Update money
     moneyValue.textContent = game.resources.money;
-    
-    // Update turn counter
-    turnCounter.textContent = game.currentTurn;
     
     // Update path cards
     updatePathCard('a', pathACard);
     updatePathCard('b', pathBCard);
     
-    // Update button states based on affordability
-    updateButtonStates();
+    // Update card states based on affordability
+    updateCardStates();
     
     // Update game message based on turn
-    if (game.currentTurn === 1) {
-        gameMessage.textContent = "Your journey begins. Choose your first path.";
-    } else if (game.currentTurn <= 5) {
-        gameMessage.textContent = "Still early in your journey. What path will you take?";
-    } else if (game.currentTurn <= 10) {
-        gameMessage.textContent = "Halfway through your journey. Your choices define you.";
-    } else if (game.currentTurn <= 15) {
-        gameMessage.textContent = "Your journey continues. The end is in sight.";
-    } else {
-        gameMessage.textContent = "The final stops of your journey. Choose wisely.";
-    }
+    updateGameMessage();
 }
 
-function updateResourceUI(resource, barElement, valueElement) {
-    const percentage = game.getResourcePercentage(resource);
-    const value = game.resources[resource];
+// Generate new path choices
+function generateNewPaths() {
+    console.log('Generating new paths...');
+    const [cardA, cardB] = game.generatePathChoices();
     
-    // Update bar width
-    barElement.style.width = `${percentage}%`;
-    
-    // Update color based on value
-    if (percentage <= 20) {
-        barElement.style.backgroundColor = '#e74c3c'; // Danger
-    } else if (percentage <= 50) {
-        barElement.style.backgroundColor = '#f39c12'; // Warning
-    } else {
-        // Set back to original color
-        switch (resource) {
-            case 'soul':
-                barElement.style.backgroundColor = '#9b59b6'; 
-                break;
-            case 'connections':
-                barElement.style.backgroundColor = '#3498db';
-                break;
-        }
+    if (!cardA || !cardB) {
+        console.error('Failed to generate cards:', { cardA, cardB });
+        return;
     }
     
-    // Update value text
-    valueElement.textContent = value;
+    updatePathCard('a', pathACard);
+    updatePathCard('b', pathBCard);
+    
+    // Update card states based on affordability
+    updateCardAffordability(pathA, cardA.cost);
+    updateCardAffordability(pathB, cardB.cost);
 }
 
-function updateButtonStates() {
-    // Enable/disable path buttons based on affordability
-    chooseAButton.disabled = !game.canAffordPath('a');
-    chooseBButton.disabled = !game.canAffordPath('b');
-    
-    // Add/remove "disabled" class for styling
-    if (chooseAButton.disabled) {
-        chooseAButton.classList.add('disabled');
-    } else {
-        chooseAButton.classList.remove('disabled');
-    }
-    
-    if (chooseBButton.disabled) {
-        chooseBButton.classList.add('disabled');
-    } else {
-        chooseBButton.classList.remove('disabled');
-    }
-}
-
+// Update a path card's content
 function updatePathCard(path, containerElement) {
-    // Clear existing content
-    containerElement.innerHTML = '';
+    const card = game.currentPaths[path][0]; // Get first card for the path
+    if (!card) return;
     
-    // Get cards for this path
-    const cards = game.currentPaths[path];
-    if (cards.length === 0) return;
-    
-    // Use the first card (mobile design shows one card per path)
-    const card = cards[0];
-    
-    // Create card elements
-    const cardElement = createCardElement(card);
-    containerElement.appendChild(cardElement);
+    containerElement.innerHTML = `
+        <div class="card-title">${card.title}</div>
+        <div class="cost-badge ${card.cost < 0 ? 'earn' : ''}">${card.cost < 0 ? `EARN $${-card.cost}` : `$${card.cost}`}</div>
+        <div class="album-track">♫ Track: ${card.albumTrack}</div>
+        <div class="card-description">${thematicDescriptions[card.id] || generateDescription(card)}</div>
+        <div class="card-illustration">[ ${card.title} Illustration ]</div>
+    `;
 }
 
-function createCardElement(card) {
-    const fragment = document.createDocumentFragment();
-    
-    // Card title
-    const titleElement = document.createElement('div');
-    titleElement.className = 'card-title';
-    titleElement.textContent = card.title;
-    fragment.appendChild(titleElement);
-    
-    // Cost badge
-    const costBadge = document.createElement('div');
-    
-    if ((card.cost || 0) === 0) {
-        costBadge.textContent = 'FREE';
-        costBadge.className = 'cost-badge free';
-    } else if ((card.cost || 0) < 0) {
-        costBadge.textContent = `EARN $${Math.abs(card.cost)}`;
-        costBadge.className = 'cost-badge earn';
+// Update card affordability
+function updateCardAffordability(cardElement, cost) {
+    if (cost > game.resources.money) {
+        cardElement.classList.add('disabled');
     } else {
-        costBadge.textContent = `$${card.cost}`;
-        costBadge.className = 'cost-badge';
+        cardElement.classList.remove('disabled');
     }
-    
-    fragment.appendChild(costBadge);
-    
-    // Album track reference if exists
-    if (card.albumTrack) {
-        const albumTrackElement = document.createElement('div');
-        albumTrackElement.className = 'album-track';
-        albumTrackElement.textContent = `♪ Track: ${card.albumTrack}`;
-        fragment.appendChild(albumTrackElement);
-    }
-    
-    // Description
-    const descriptionElement = document.createElement('div');
-    descriptionElement.className = 'card-description';
-    
-    // Use thematic description if available, otherwise generate based on effects
-    if (thematicDescriptions && thematicDescriptions[card.id]) {
-        descriptionElement.textContent = thematicDescriptions[card.id];
-    } else {
-        // Generate description based on card effects
-        let description = '';
-        if (card.effects) {
-            const effects = [];
-            if (card.effects.soul > 0) {
-                effects.push("enrich your soul");
-            } else if (card.effects.soul < 0) {
-                effects.push("drain your spirit");
-            }
-            
-            if (card.effects.connections > 0) {
-                effects.push("strengthen your connections");
-            } else if (card.effects.connections < 0) {
-                effects.push("weaken your relationships");
-            }
-            
-            if (effects.length > 0) {
-                description = `This will ${effects.join(" and ")}.`;
-            }
-        }
-        
-        if (card.cost > 0) {
-            description += ` It costs money but could be worth the investment.`;
-        } else if (card.cost < 0) {
-            description += ` You'll earn money but at what cost to yourself?`;
-        }
-        
-        descriptionElement.textContent = description || "Make your choice.";
-    }
-    
-    fragment.appendChild(descriptionElement);
-    
-    // Illustration placeholder
-    const illustrationElement = document.createElement('div');
-    illustrationElement.className = 'card-illustration';
-    illustrationElement.textContent = `[ ${card.title} Illustration ]`;
-    fragment.appendChild(illustrationElement);
-    
-    return fragment;
 }
 
-function showGameOver() {
-    gameOverMessage.textContent = game.gameOverReason;
+// Show cannot afford message
+function showCannotAffordMessage() {
+    cannotAffordMessage.classList.add('show');
+    setTimeout(() => {
+        cannotAffordMessage.classList.remove('show');
+    }, 2000);
+}
+
+// Handle path selection
+function handlePathSelect(card, isPathA) {
+    console.log('Path selected:', isPathA ? 'A' : 'B');
+    
+    // Check if card is affordable
+    if (card.cost > game.resources.money) {
+        showCannotAffordMessage();
+        return;
+    }
+    
+    // Apply card effects
+    game.resources.money -= card.cost;
+    game.resources.soul = Math.max(0, Math.min(10, game.resources.soul + card.effects.soul));
+    game.resources.connections = Math.max(0, Math.min(10, game.resources.connections + card.effects.connections));
+    
+    currentTurn++;
+    
+    // Check game over conditions
+    if (currentTurn > MAX_TURNS || game.resources.soul <= 0 || game.resources.connections <= 0) {
+        endGame();
+    } else {
+        updateUI();
+        generateNewPaths();
+    }
+}
+
+// End the game
+function endGame() {
+    let message = '';
+    
+    if (game.resources.soul <= 0) {
+        message = "Your soul has been crushed by the corporate machine. Game Over.";
+    } else if (game.resources.connections <= 0) {
+        message = "You've become completely isolated. Game Over.";
+    } else {
+        message = `Journey complete! Final stats:\nSoul: ${game.resources.soul}/10\nConnections: ${game.resources.connections}/10\nMoney: $${game.resources.money}`;
+    }
+    
+    gameOverMessage.textContent = message;
     gameOverScreen.style.display = 'flex';
 }
 
-// Initialize UI on page load
-document.addEventListener('DOMContentLoaded', () => {
-    updateUI();
+// Event Listeners
+pathA.addEventListener('click', () => {
+    if (!pathA.classList.contains('disabled')) {
+        handlePathSelect(game.currentPaths[0][0], true);
+    } else {
+        showCannotAffordMessage();
+    }
 });
+
+pathB.addEventListener('click', () => {
+    if (!pathB.classList.contains('disabled')) {
+        handlePathSelect(game.currentPaths[1][0], false);
+    } else {
+        showCannotAffordMessage();
+    }
+});
+
+restartButton.addEventListener('click', () => {
+    currentTurn = 1;
+    game.resetGame();
+    gameOverScreen.style.display = 'none';
+    initGame();
+});
+
+// Start the game
+initGame();
