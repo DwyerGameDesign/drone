@@ -406,6 +406,7 @@ h1 {
 
 /* Passive Effects Styling - collapsible */
 .passive-effects-container {
+    display: none; /* Hide the passive effects section */
     margin-bottom: 10px;
 }
 
