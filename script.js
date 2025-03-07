@@ -70,8 +70,10 @@ function updatePathCard(cardElement, card) {
     console.log('Updating path card:', card);
     
     cardElement.innerHTML = `
-        <div class="card-title">${card.title}</div>
-        <div class="card-description">${card.description}</div>
+        <div class="card-content">
+            <div class="card-title">${card.title}</div>
+            <div class="card-description">${card.description}</div>
+        </div>
     `;
 }
 

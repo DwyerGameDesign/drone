@@ -185,14 +185,13 @@ h1 {
 .paths-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 12px;
     margin-bottom: 20px;
-    flex-grow: 1;
 }
 
 .path {
     background-color: #17182b;
-    border-radius: 10px;
+    border-radius: 8px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -200,6 +199,7 @@ h1 {
     transition: transform 0.2s ease, opacity 0.2s ease;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    min-height: 120px;
 }
 
 .path:active {
@@ -213,35 +213,36 @@ h1 {
 }
 
 .path#path-a {
-    border: 3px solid #9b59b6;
+    border: 2px solid #9b59b6;
 }
 
 .path#path-b {
-    border: 3px solid #ff5252;
+    border: 2px solid #ff5252;
 }
 
 .card-content {
-    background-color: #1f2039;
-    padding: 15px;
+    padding: 12px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    gap: 8px;
 }
 
 /* Card Content Styling */
 .card-title {
     font-size: 1rem;
     font-weight: bold;
-    text-align: center;
-    margin-bottom: 10px;
     color: #fff;
+    text-align: left;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .card-description {
     color: #ccc;
     font-size: 0.85rem;
     line-height: 1.4;
-    text-align: center;
+    flex-grow: 1;
 }
 
 /* Game Over Screen */
