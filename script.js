@@ -42,6 +42,12 @@ async function initGame() {
         pathB: game.currentPaths?.b
     });
     
+    // Make sure paths are properly initialized before updating UI
+    if (!game.currentPaths.a.length || !game.currentPaths.b.length) {
+        console.log('Generating initial paths...');
+        game.generatePaths();
+    }
+    
     updateUI();
 }
 
@@ -65,14 +71,27 @@ function updateUI() {
     soulBar.style.backgroundColor = game.resources.soul <= 3 ? '#e74c3c' : '#9b59b6';
     connectionsBar.style.backgroundColor = game.resources.connections <= 3 ? '#e74c3c' : '#3498db';
     
-    // Update path cards
-    console.log('Current paths:', game.currentPaths);
-    updatePathCard(pathACard, game.currentPaths.a[0]);
-    updatePathCard(pathBCard, game.currentPaths.b[0]);
-    
-    // Update card states based on affordability
-    updateCardAffordability(pathA, game.currentPaths.a[0]?.cost || 0);
-    updateCardAffordability(pathB, game.currentPaths.b[0]?.cost || 0);
+    // Update path cards - ensure paths exist before updating
+    if (game.currentPaths && game.currentPaths.a.length > 0 && game.currentPaths.b.length > 0) {
+        console.log('Current paths:', game.currentPaths);
+        updatePathCard(pathACard, game.currentPaths.a[0]);
+        updatePathCard(pathBCard, game.currentPaths.b[0]);
+        
+        // Update card states based on affordability
+        updateCardAffordability(pathA, game.currentPaths.a[0]?.cost || 0);
+        updateCardAffordability(pathB, game.currentPaths.b[0]?.cost || 0);
+    } else {
+        console.error('Paths not properly initialized');
+        // Set placeholder content
+        updatePathCard(pathACard, {
+            title: "Loading...",
+            description: "Please wait while cards load..."
+        });
+        updatePathCard(pathBCard, {
+            title: "Loading...",
+            description: "Please wait while cards load..."
+        });
+    }
 
     // Update passive effects
     updatePassiveEffects();
@@ -93,7 +112,7 @@ function updatePathCard(cardElement, card) {
     
     console.log('Updating path card:', card);
     
-    let costDisplay = card.cost > 0 ? `-$${card.cost}` : `+$${Math.abs(card.cost)}`;
+    let costDisplay = card.cost > 0 ? `-$${card.cost}` : card.cost < 0 ? `+$${Math.abs(card.cost)}` : "$0";
     
     cardElement.innerHTML = `
         <div class="card-content">
@@ -107,7 +126,7 @@ function updatePathCard(cardElement, card) {
 function updatePassiveEffects() {
     passiveEffectsList.innerHTML = '';
     
-    if (!game.passiveEffects || game.passiveEffects.length === 0) {
+    if (!game.activePassiveEffects || game.activePassiveEffects.length === 0) {
         passiveEffectsList.innerHTML = `
             <div class="passive-effect">
                 No passive effects active
@@ -116,11 +135,20 @@ function updatePassiveEffects() {
         return;
     }
     
-    for (const effect of game.passiveEffects) {
-        const effectElement = document.createElement('div');
-        effectElement.className = `passive-effect ${effect.type}`;
-        effectElement.textContent = `${effect.name}: ${effect.description}`;
-        passiveEffectsList.appendChild(effectElement);
+    // Iterate through activePassiveEffects, not passiveEffects
+    for (const effectData of game.activePassiveEffects) {
+        // Get the effect ID
+        const effectId = typeof effectData === 'string' ? effectData : effectData.id;
+        
+        // Look up the full effect details from passiveEffects
+        const effect = game.passiveEffects[effectId];
+        
+        if (effect) {
+            const effectElement = document.createElement('div');
+            effectElement.className = `passive-effect ${effect.type}`;
+            effectElement.textContent = `${effect.name}: ${effect.description}`;
+            passiveEffectsList.appendChild(effectElement);
+        }
     }
 }
 

@@ -31,6 +31,11 @@ class DroneManGame {
         try {
             console.log('Loading game data...');
             const response = await fetch('cards.json');
+            
+            if (!response.ok) {
+                throw new Error(`Failed to load cards.json: ${response.status} ${response.statusText}`);
+            }
+            
             const data = await response.json();
             
             console.log('Game data loaded:', data);
@@ -44,7 +49,49 @@ class DroneManGame {
             console.log('Game initialized with paths:', this.currentPaths);
         } catch (error) {
             console.error('Error loading game data:', error);
+            // Provide some fallback data so the game can still function
+            this.provideFallbackData();
         }
+    }
+    
+    provideFallbackData() {
+        console.log('Providing fallback data');
+        // Basic fallback data in case the JSON fails to load
+        this.cardDefinitions = [
+            {
+                id: "fallback_card_1",
+                title: "Take a Chance",
+                cost: 2,
+                effects: { soul: 1, connections: 0 },
+                description: "Step out of your comfort zone.",
+                type: "soul-focused"
+            },
+            {
+                id: "fallback_card_2",
+                title: "Work Overtime",
+                cost: -2,
+                effects: { soul: -1, connections: -1 },
+                description: "Earn money at the cost of your well-being.",
+                type: "money-earning"
+            }
+        ];
+        
+        this.passiveEffects = {
+            "fallback_effect": {
+                id: "fallback_effect",
+                name: "Trying Again",
+                description: "Facing difficulties with resilience",
+                type: "soul-positive",
+                effect: { soul: 1 }
+            }
+        };
+        
+        this.thematicDescriptions = {
+            "fallback_card_1": "Step out of your comfort zone.",
+            "fallback_card_2": "Earn money at the cost of your well-being."
+        };
+        
+        this.resetGame();
     }
     
     resetGame() {
@@ -74,6 +121,12 @@ class DroneManGame {
     
     generatePaths() {
         console.log('Generating paths...');
+        
+        if (!this.cardDefinitions || this.cardDefinitions.length === 0) {
+            console.error('Cannot generate paths: card definitions empty or not loaded');
+            return;
+        }
+        
         // Generate path A (tends toward resource-positive, money-negative)
         const pathACard = this.getRandomCard(true);
         this.currentPaths.a = pathACard ? [pathACard] : [];
@@ -86,8 +139,8 @@ class DroneManGame {
     }
     
     getRandomCard(isPathA) {
-        if (!this.cardDefinitions) {
-            console.error('Cannot get random card: card definitions not loaded');
+        if (!this.cardDefinitions || this.cardDefinitions.length === 0) {
+            console.error('Cannot get random card: card definitions empty or not loaded');
             return null;
         }
 
@@ -106,7 +159,8 @@ class DroneManGame {
 
         if (availableCards.length === 0) {
             console.error('No available cards found for path:', isPathA ? 'A' : 'B');
-            return null;
+            // Fallback: just use any card
+            return this.cardDefinitions[Math.floor(Math.random() * this.cardDefinitions.length)];
         }
 
         // Select random card
