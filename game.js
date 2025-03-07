@@ -20,6 +20,7 @@ class DroneManGame {
         this.activePassiveEffects = [];
         this.narratives = [];
         this.passiveEffects = {};
+        this.powerMeterTypes = {};
         this.currentNarrative = null;
         this.currentChoices = [];
         this.decisionHistory = [];
@@ -41,6 +42,7 @@ class DroneManGame {
             
             this.narratives = data.narratives || [];
             this.passiveEffects = data.passiveEffects || {};
+            this.powerMeterTypes = data.powerMeterTypes || {};
             
             // Return the loaded data to signal it's ready
             return { success: true, data };
@@ -84,22 +86,66 @@ class DroneManGame {
             return { success: false, reason: 'Cannot afford this choice' };
         }
         
-        // Save the decision to history
+        // Check if this choice requires a power meter
+        if (choice.powerMeter) {
+            return { 
+                success: true, 
+                requiresPowerMeter: true,
+                powerMeterType: choice.powerMeter,
+                choiceIndex: choiceIndex
+            };
+        }
+        
+        // Process the choice directly if no power meter is required
+        return this.processChoiceResult(choiceIndex);
+    }
+    
+    // Process the result of a choice (with or without power meter)
+    processChoiceResult(choiceIndex, powerMeterResult = null) {
+        // Get current narrative and choice
+        const narrative = this.getCurrentNarrative();
+        const choice = narrative.choices[choiceIndex];
+        
+        // Create a copy of the effects
+        const effects = { ...choice.effects };
+        
+        // Apply power meter modifiers if applicable
+        if (powerMeterResult) {
+            // Get the appropriate power meter configuration
+            const meterType = choice.powerMeter;
+            const meterConfig = this.powerMeterTypes[meterType];
+            
+            if (meterConfig && meterConfig.results[powerMeterResult]) {
+                const modifier = meterConfig.results[powerMeterResult].modifier;
+                
+                // Apply modifier to all non-zero effects
+                for (const [resource, value] of Object.entries(effects)) {
+                    if (value !== 0) {
+                        // For positive effects, add the modifier
+                        // For negative effects, subtract the modifier (making them more negative)
+                        effects[resource] = value > 0 ? value + modifier : value - modifier;
+                    }
+                }
+            }
+        }
+        
+        // Save the decision to history with modified effects
         const decision = {
             round: this.currentRound,
             stop: this.currentStop,
             title: narrative.title,
             choice: choiceIndex,
             text: choice.text,
-            effects: choice.effects
+            effects: effects,
+            powerMeterResult: powerMeterResult
         };
         
         this.decisionHistory.push(decision);
         
         // Apply effects of the choice
-        this.resources.soul = Math.max(0, Math.min(this.maxResources, this.resources.soul + (choice.effects.soul || 0)));
-        this.resources.connections = Math.max(0, Math.min(this.maxResources, this.resources.connections + (choice.effects.connections || 0)));
-        this.resources.money = Math.max(0, this.resources.money + (choice.effects.money || 0));
+        this.resources.soul = Math.max(0, Math.min(this.maxResources, this.resources.soul + (effects.soul || 0)));
+        this.resources.connections = Math.max(0, Math.min(this.maxResources, this.resources.connections + (effects.connections || 0)));
+        this.resources.money = Math.max(0, this.resources.money + (effects.money || 0));
         
         // Check for passive effect unlock
         if (choice.unlockPassive && !this.hasPassiveEffect(choice.unlockPassive)) {
@@ -176,6 +222,11 @@ class DroneManGame {
             nextNarrative,
             resources: { ...this.resources }
         };
+    }
+    
+    // Get the power meter configuration for a specific type
+    getPowerMeterConfig(type) {
+        return this.powerMeterTypes[type] || null;
     }
     
     // Start the next round

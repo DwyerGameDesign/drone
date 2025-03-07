@@ -7,11 +7,13 @@
         "choices": [
           {
             "text": "Think about the life you once dreamed of",
-            "effects": { "soul": 1, "connections": 0, "money": 0 }
+            "effects": { "soul": 1, "connections": 0, "money": 0 },
+            "powerMeter": null
           },
           {
             "text": "Review your upcoming work presentation",
-            "effects": { "soul": -1, "connections": 0, "money": 1 }
+            "effects": { "soul": -1, "connections": 0, "money": 1 },
+            "powerMeter": null
           }
         ]
       },
@@ -23,11 +25,13 @@
           {
             "text": "Cancel lunch, finish the report",
             "effects": { "soul": -1, "connections": -1, "money": 2 },
-            "unlockPassive": "for_me"
+            "unlockPassive": "for_me",
+            "powerMeter": null
           },
           {
             "text": "Keep the lunch date, rush the report later",
-            "effects": { "soul": 1, "connections": 2, "money": -1 }
+            "effects": { "soul": 1, "connections": 2, "money": -1 },
+            "powerMeter": "standard"
           }
         ]
       },
@@ -39,11 +43,13 @@
           {
             "text": "Start writing again, even if just for yourself",
             "effects": { "soul": 2, "connections": 0, "money": 0 },
-            "unlockPassive": "write_along"
+            "unlockPassive": "write_along",
+            "powerMeter": "standard"
           },
           {
             "text": "Close the journal, there's no time for fantasies",
-            "effects": { "soul": -1, "connections": 0, "money": 0 }
+            "effects": { "soul": -1, "connections": 0, "money": 0 },
+            "powerMeter": null
           }
         ]
       },
@@ -54,12 +60,14 @@
         "choices": [
           {
             "text": "Log off and text your friends about weekend plans",
-            "effects": { "soul": 1, "connections": 2, "money": -1 }
+            "effects": { "soul": 1, "connections": 2, "money": -1 },
+            "powerMeter": null
           },
           {
             "text": "Start a new game, you're on a roll tonight",
             "effects": { "soul": -1, "connections": -1, "money": 0 },
-            "unlockPassive": "last_life"
+            "unlockPassive": "last_life",
+            "powerMeter": "noOvershot"
           }
         ]
       },
@@ -70,12 +78,14 @@
         "choices": [
           {
             "text": "Strike up a conversation about the book",
-            "effects": { "soul": 1, "connections": 2, "money": 0 }
+            "effects": { "soul": 1, "connections": 2, "money": 0 },
+            "powerMeter": "critical"
           },
           {
             "text": "Look away, relationships are too complicated",
             "effects": { "soul": -2, "connections": -1, "money": 0 },
-            "unlockPassive": "strange_passenger"
+            "unlockPassive": "strange_passenger",
+            "powerMeter": null
           }
         ]
       },
@@ -86,11 +96,13 @@
         "choices": [
           {
             "text": "Visit the dealership, get what you deserve",
-            "effects": { "soul": -1, "connections": 0, "money": -4 }
+            "effects": { "soul": -1, "connections": 0, "money": -4 },
+            "powerMeter": "standard"
           },
           {
             "text": "Your current car is fine, save your money",
-            "effects": { "soul": 1, "connections": 0, "money": 1 }
+            "effects": { "soul": 1, "connections": 0, "money": 1 },
+            "powerMeter": null
           }
         ]
       },
@@ -101,11 +113,13 @@
         "choices": [
           {
             "text": "Take prescribed medication, make lifestyle changes",
-            "effects": { "soul": 2, "connections": 0, "money": -1 }
+            "effects": { "soul": 2, "connections": 0, "money": -1 },
+            "powerMeter": null
           },
           {
             "text": "You thrive under pressure, it's fine",
-            "effects": { "soul": -2, "connections": 0, "money": 1 }
+            "effects": { "soul": -2, "connections": 0, "money": 1 },
+            "powerMeter": "noOvershot"
           }
         ]
       },
@@ -116,11 +130,13 @@
         "choices": [
           {
             "text": "Enjoy the moment, stay disconnected",
-            "effects": { "soul": 2, "connections": 0, "money": 0 }
+            "effects": { "soul": 2, "connections": 0, "money": 0 },
+            "powerMeter": null
           },
           {
             "text": "Check your phone, you've been irresponsible",
-            "effects": { "soul": -1, "connections": 0, "money": 1 }
+            "effects": { "soul": -1, "connections": 0, "money": 1 },
+            "powerMeter": "standard"
           }
         ]
       },
@@ -131,11 +147,13 @@
         "choices": [
           {
             "text": "Start a bucket list of experiences, not achievements",
-            "effects": { "soul": 2, "connections": 1, "money": -1 }
+            "effects": { "soul": 2, "connections": 1, "money": -1 },
+            "powerMeter": "critical"
           },
           {
             "text": "Double down on your career, legacy matters",
-            "effects": { "soul": -1, "connections": -1, "money": 2 }
+            "effects": { "soul": -1, "connections": -1, "money": 2 },
+            "powerMeter": null
           }
         ]
       },
@@ -146,11 +164,13 @@
         "choices": [
           {
             "text": "Set strict work boundaries, reclaim your space",
-            "effects": { "soul": 2, "connections": 0, "money": -1 }
+            "effects": { "soul": 2, "connections": 0, "money": -1 },
+            "powerMeter": "noOvershot"
           },
           {
             "text": "Work longer hours, show your dedication",
-            "effects": { "soul": -2, "connections": -1, "money": 2 }
+            "effects": { "soul": -2, "connections": -1, "money": 2 },
+            "powerMeter": null
           }
         ]
       },
@@ -161,11 +181,13 @@
         "choices": [
           {
             "text": "Get up and write down your thoughts",
-            "effects": { "soul": 2, "connections": 0, "money": 0 }
+            "effects": { "soul": 2, "connections": 0, "money": 0 },
+            "powerMeter": "standard"
           },
           {
             "text": "Check work emails to distract yourself",
-            "effects": { "soul": -1, "connections": 0, "money": 1 }
+            "effects": { "soul": -1, "connections": 0, "money": 1 },
+            "powerMeter": null
           }
         ]
       },
@@ -176,11 +198,13 @@
         "choices": [
           {
             "text": "It's time for a major change in your life",
-            "effects": { "soul": 2, "connections": 1, "money": -2 }
+            "effects": { "soul": 2, "connections": 1, "money": -2 },
+            "powerMeter": "critical"
           },
           {
             "text": "Redecorate, a fresh coat of paint will help",
-            "effects": { "soul": 0, "connections": 0, "money": -1 }
+            "effects": { "soul": 0, "connections": 0, "money": -1 },
+            "powerMeter": null
           }
         ]
       },
@@ -191,11 +215,13 @@
         "choices": [
           {
             "text": "Board a train to somewhere new",
-            "effects": { "soul": 2, "connections": -1, "money": -1 }
+            "effects": { "soul": 2, "connections": -1, "money": -1 },
+            "powerMeter": "standard"
           },
           {
             "text": "Call a friend to meet you in the city",
-            "effects": { "soul": 1, "connections": 2, "money": -1 }
+            "effects": { "soul": 1, "connections": 2, "money": -1 },
+            "powerMeter": null
           }
         ]
       },
@@ -206,11 +232,13 @@
         "choices": [
           {
             "text": "Submit the resignation letter",
-            "effects": { "soul": 3, "connections": -1, "money": -3 }
+            "effects": { "soul": 3, "connections": -1, "money": -3 },
+            "powerMeter": "critical"
           },
           {
             "text": "Save it as a draft, reconsider later",
-            "effects": { "soul": -1, "connections": 0, "money": 1 }
+            "effects": { "soul": -1, "connections": 0, "money": 1 },
+            "powerMeter": null
           }
         ]
       },
@@ -221,11 +249,13 @@
         "choices": [
           {
             "text": "Stay on the train, see where it takes you",
-            "effects": { "soul": 3, "connections": -1, "money": -1 }
+            "effects": { "soul": 3, "connections": -1, "money": -1 },
+            "powerMeter": "noOvershot"
           },
           {
             "text": "This is your stop, you have responsibilities",
-            "effects": { "soul": -1, "connections": 1, "money": 1 }
+            "effects": { "soul": -1, "connections": 1, "money": 1 },
+            "powerMeter": null
           }
         ]
       }
@@ -266,6 +296,54 @@
         "effect": {
           "connections": 1
         }
+      }
+    },
+    "powerMeterTypes": {
+      "standard": {
+        "title": "STANDARD CHALLENGE",
+        "narrative": "Balance is key. Find the right amount of effort without going too far.",
+        "zones": [
+          { "width": 240, "color": "#e74c3c" }, 
+          { "width": 50, "color": "#ff9933" },
+          { "width": 50, "color": "#2ecc71" },
+          { "width": 60, "color": "#ff9933" }
+        ],
+        "results": {
+          "fail": {"text": "TOO WEAK", "modifier": -1},
+          "okay": {"text": "ADEQUATE", "modifier": 0},
+          "good": {"text": "PERFECT", "modifier": 1}
+        },
+        "speed": 5
+      },
+      "critical": {
+        "title": "CRITICAL MOMENT",
+        "narrative": "Perfect timing required. This is your one chance - a single moment will define everything.",
+        "zones": [
+          { "width": 280, "color": "#e74c3c" },
+          { "width": 40, "color": "#2ecc71" },
+          { "width": 80, "color": "#e74c3c" }
+        ],
+        "results": {
+          "fail": {"text": "FAILURE", "modifier": -2},
+          "good": {"text": "SUCCESS", "modifier": 2}
+        },
+        "speed": 6
+      },
+      "noOvershot": {
+        "title": "MEASURED RESPONSE",
+        "narrative": "Finding balance is crucial. Neither too little nor too much will serve you here.",
+        "zones": [
+          { "width": 240, "color": "#e74c3c" },
+          { "width": 60, "color": "#ff9933" },
+          { "width": 60, "color": "#2ecc71" },
+          { "width": 40, "color": "#e74c3c" }
+        ],
+        "results": {
+          "fail": {"text": "MISSED THE MARK", "modifier": -1},
+          "okay": {"text": "CLOSE ENOUGH", "modifier": 0},
+          "good": {"text": "BALANCED", "modifier": 1}
+        },
+        "speed": 5
       }
     }
   }

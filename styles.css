@@ -207,6 +207,7 @@ h1 {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 .choice-button:first-child {
@@ -225,6 +226,14 @@ h1 {
     opacity: 0.5;
     cursor: not-allowed;
     border-left: 4px solid #e74c3c;
+}
+
+.power-meter-icon {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 0.9rem;
+    color: #ffcc00;
 }
 
 /* History Track Styling */
@@ -288,6 +297,18 @@ h1 {
 
 .history-card.connections-negative {
     border-color: #e74c3c;
+}
+
+.history-card.power-meter-good {
+    box-shadow: 0 0 8px #2ecc71;
+}
+
+.history-card.power-meter-okay {
+    box-shadow: 0 0 8px #ff9933;
+}
+
+.history-card.power-meter-fail {
+    box-shadow: 0 0 8px #e74c3c;
 }
 
 .history-card-counter {
@@ -359,6 +380,30 @@ h1 {
     color: #e67e22;
 }
 
+.power-meter-indicator {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 16px;
+    height: 16px;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.power-meter-indicator.good {
+    color: #2ecc71;
+}
+
+.power-meter-indicator.okay {
+    color: #ff9933;
+}
+
+.power-meter-indicator.fail {
+    color: #e74c3c;
+}
+
 /* Passive Effects Styling - collapsible */
 .passive-effects-container {
     margin-bottom: 10px;
@@ -424,6 +469,149 @@ h1 {
 
 .passive-effect.money-positive {
     color: #f1c40f;
+}
+
+/* Power Meter Styling */
+.power-meter-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.power-meter-popup {
+    width: 90%;
+    max-width: 500px;
+    background-color: #1a1a1a;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.power-meter-narrative {
+    background-color: #252525;
+    width: 100%;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.power-meter-narrative h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.power-meter-narrative p {
+    font-size: 0.9rem;
+    color: #ccc;
+    font-style: italic;
+}
+
+.power-meter {
+    width: 100%;
+    height: 100px;
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.meter-background {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 30px;
+    display: flex;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.meter-zone {
+    height: 100%;
+}
+
+.indicator-triangle {
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+.indicator-triangle.top {
+    top: 10px;
+    left: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 15px solid #ffcc00;
+    transform: translateX(-50%);
+}
+
+.indicator-triangle.bottom {
+    bottom: 10px;
+    left: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 15px solid #ffcc00;
+    transform: translateX(-50%);
+}
+
+.indicator-triangle.good {
+    border-top-color: #2ecc71;
+    border-bottom-color: #2ecc71;
+}
+
+.indicator-triangle.okay {
+    border-top-color: #ff9933;
+    border-bottom-color: #ff9933;
+}
+
+.indicator-triangle.fail {
+    border-top-color: #e74c3c;
+    border-bottom-color: #e74c3c;
+}
+
+.power-meter-instructions {
+    font-size: 1rem;
+    color: #fff;
+    text-align: center;
+    font-weight: bold;
+}
+
+.power-meter-result {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: 0 0 10px #000;
+    text-align: center;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 10;
+}
+
+.power-meter-result.good {
+    color: #2ecc71;
+}
+
+.power-meter-result.okay {
+    color: #ff9933;
+}
+
+.power-meter-result.fail {
+    color: #e74c3c;
 }
 
 /* Round Complete Screen */
@@ -543,4 +731,14 @@ h1 {
     .choice-button {
         min-height: 60px;
     }
+}
+
+.tap-marker {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background-color: white;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+    z-index: 2;
 }

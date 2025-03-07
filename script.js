@@ -2,6 +2,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     // Create game instance
     const game = new DroneManGame();
+    window.gameInstance = game; // Make it globally accessible for power meter
     
     // UI Elements
     const elements = {
@@ -151,6 +152,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 choiceButton.textContent += ` (+$${choice.effects.money})`;
             }
             
+            // Add power meter indicator if applicable
+            if (choice.powerMeter) {
+                const meterIcon = document.createElement('span');
+                meterIcon.className = 'power-meter-icon';
+                meterIcon.innerHTML = '⚡'; // Lightning bolt icon
+                choiceButton.appendChild(meterIcon);
+            }
+            
             choiceButton.addEventListener('click', () => makeChoice(index));
             elements.narrativeCardChoices.appendChild(choiceButton);
         });
@@ -165,6 +174,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         
+        // Check if this choice requires a power meter
+        if (result.requiresPowerMeter) {
+            // Show power meter
+            showPowerMeter(result.powerMeterType, (powerMeterResult) => {
+                // Process choice with power meter result
+                const processedResult = game.processChoiceResult(result.choiceIndex, powerMeterResult);
+                handleChoiceResult(processedResult);
+            });
+            return;
+        }
+        
+        // Handle regular choice result
+        handleChoiceResult(result);
+    }
+    
+    // Handle the result of a choice
+    function handleChoiceResult(result) {
         // Add to history
         addToHistoryTrack(game.decisionHistory[game.decisionHistory.length - 1]);
         
@@ -205,6 +231,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             historyCard.classList.add('connections-positive');
         } else if (decision.effects.connections < 0) {
             historyCard.classList.add('connections-negative');
+        }
+        
+        // Add power meter result indicator if applicable
+        if (decision.powerMeterResult) {
+            historyCard.classList.add(`power-meter-${decision.powerMeterResult}`);
         }
         
         // Add decision number/counter
@@ -253,6 +284,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         
         historyCard.appendChild(effects);
+        
+        // Add power meter result if applicable
+        if (decision.powerMeterResult) {
+            const powerMeterIndicator = document.createElement('div');
+            powerMeterIndicator.className = `power-meter-indicator ${decision.powerMeterResult}`;
+            powerMeterIndicator.textContent = '⚡'; // Lightning bolt icon
+            historyCard.appendChild(powerMeterIndicator);
+        }
         
         // Add to history track
         elements.historyTrack.appendChild(historyCard);
