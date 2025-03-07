@@ -22,9 +22,26 @@ const cannotAffordMessage = document.getElementById('cannot-afford-message');
 const passiveEffectsList = document.getElementById('passive-effects-list');
 
 // Initialize the game
-function initGame() {
+async function initGame() {
     console.log('Initializing game...');
     game = new DroneManGame();
+    
+    // Wait for game data to load before updating UI
+    await new Promise(resolve => {
+        const checkDataLoaded = setInterval(() => {
+            if (game.cardDefinitions) {
+                clearInterval(checkDataLoaded);
+                resolve();
+            }
+        }, 100);
+    });
+    
+    console.log('Game data loaded:', {
+        cards: game.cardDefinitions?.length,
+        pathA: game.currentPaths?.a,
+        pathB: game.currentPaths?.b
+    });
+    
     updateUI();
 }
 
@@ -49,6 +66,7 @@ function updateUI() {
     connectionsBar.style.backgroundColor = game.resources.connections <= 3 ? '#e74c3c' : '#3498db';
     
     // Update path cards
+    console.log('Current paths:', game.currentPaths);
     updatePathCard(pathACard, game.currentPaths.a[0]);
     updatePathCard(pathBCard, game.currentPaths.b[0]);
     
@@ -63,15 +81,23 @@ function updateUI() {
 // Update a path card's content
 function updatePathCard(cardElement, card) {
     if (!card) {
-        console.error('No card data provided');
+        console.error('No card data provided for path card');
+        cardElement.innerHTML = `
+            <div class="card-content">
+                <div class="card-title">Loading...</div>
+                <div class="card-description">Please wait while cards load...</div>
+            </div>
+        `;
         return;
     }
     
     console.log('Updating path card:', card);
     
+    let costDisplay = card.cost > 0 ? `-$${card.cost}` : `+$${Math.abs(card.cost)}`;
+    
     cardElement.innerHTML = `
         <div class="card-content">
-            <div class="card-title">${card.title}</div>
+            <div class="card-title">${card.title} (${costDisplay})</div>
             <div class="card-description">${card.description}</div>
         </div>
     `;
@@ -81,7 +107,7 @@ function updatePathCard(cardElement, card) {
 function updatePassiveEffects() {
     passiveEffectsList.innerHTML = '';
     
-    if (game.passiveEffects.length === 0) {
+    if (!game.passiveEffects || game.passiveEffects.length === 0) {
         passiveEffectsList.innerHTML = `
             <div class="passive-effect">
                 No passive effects active

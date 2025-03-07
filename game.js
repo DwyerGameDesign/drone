@@ -10,20 +10,38 @@ class DroneManGame {
         };
         this.maxTurns = 20;
         
+        // Initialize empty state
+        this.cardDefinitions = null;
+        this.passiveEffects = null;
+        this.thematicDescriptions = null;
+        
+        // Initialize game state
+        this.resources = { ...this.startingResources };
+        this.currentTurn = 1;
+        this.gameOver = false;
+        this.gameOverReason = "";
+        this.currentPaths = { a: [], b: [] };
+        this.activePassiveEffects = [];
+        
         // Load game data
         this.loadGameData();
     }
     
     async loadGameData() {
         try {
+            console.log('Loading game data...');
             const response = await fetch('cards.json');
             const data = await response.json();
+            
+            console.log('Game data loaded:', data);
+            
             this.cardDefinitions = data.cardDefinitions;
             this.passiveEffects = data.passiveEffects;
             this.thematicDescriptions = data.thematicDescriptions;
             
             // Initialize game after data is loaded
             this.resetGame();
+            console.log('Game initialized with paths:', this.currentPaths);
         } catch (error) {
             console.error('Error loading game data:', error);
         }
@@ -42,30 +60,36 @@ class DroneManGame {
         this.gameOver = false;
         this.gameOverReason = "";
         
-        // Current paths/choices
-        this.currentPaths = {
-            a: [],
-            b: []
-        };
-        
-        this.passiveEffects = [];
+        // Reset paths and effects
+        this.currentPaths = { a: [], b: [] };
+        this.activePassiveEffects = [];
         
         // Generate initial paths if data is loaded
         if (this.cardDefinitions) {
             this.generatePaths();
+        } else {
+            console.error('Cannot generate paths: card definitions not loaded');
         }
     }
     
     generatePaths() {
+        console.log('Generating paths...');
         // Generate path A (tends toward resource-positive, money-negative)
-        this.currentPaths.a = [this.getRandomCard(true)];
+        const pathACard = this.getRandomCard(true);
+        this.currentPaths.a = pathACard ? [pathACard] : [];
         
         // Generate path B (tends toward resource-negative, money-positive)
-        this.currentPaths.b = [this.getRandomCard(false)];
+        const pathBCard = this.getRandomCard(false);
+        this.currentPaths.b = pathBCard ? [pathBCard] : [];
+        
+        console.log('Generated paths:', this.currentPaths);
     }
     
     getRandomCard(isPathA) {
-        if (!this.cardDefinitions) return null;
+        if (!this.cardDefinitions) {
+            console.error('Cannot get random card: card definitions not loaded');
+            return null;
+        }
 
         // Filter cards based on path type
         const availableCards = this.cardDefinitions.filter(card => {
@@ -148,18 +172,18 @@ class DroneManGame {
     }
     
     hasPassiveEffect(effectId) {
-        return this.passiveEffects.some(effect => effect.id === effectId);
+        return this.activePassiveEffects.some(effect => effect.id === effectId);
     }
     
     addPassiveEffect(effectId) {
         const effect = this.passiveEffects[effectId];
         if (effect && !this.hasPassiveEffect(effectId)) {
-            this.passiveEffects.push(effect);
+            this.activePassiveEffects.push(effect);
         }
     }
     
     applyPassiveEffects() {
-        for (const effect of this.passiveEffects) {
+        for (const effect of this.activePassiveEffects) {
             if (effect.effect) {
                 for (const [resource, value] of Object.entries(effect.effect)) {
                     if (resource === 'money') {
