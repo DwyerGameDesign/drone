@@ -33,6 +33,8 @@ class DroneManGame {
             b: []
         };
         
+        this.passiveEffects = [];
+        
         // Generate initial paths
         this.generatePaths();
     }
@@ -106,7 +108,15 @@ class DroneManGame {
                     this.resources.connections + (card.effects.connections || 0)
                 ));
             }
+
+            // Check for passive effect unlock
+            if (card.unlockPassive && !this.hasPassiveEffect(card.unlockPassive)) {
+                this.addPassiveEffect(card.unlockPassive);
+            }
         }
+
+        // Apply passive effects
+        this.applyPassiveEffects();
 
         // Check game over conditions
         if (this.resources.soul <= 0 || this.resources.connections <= 0) {
@@ -116,6 +126,33 @@ class DroneManGame {
         // Generate new paths
         this.generatePaths();
         return true;
+    }
+    
+    hasPassiveEffect(effectId) {
+        return this.passiveEffects.some(effect => effect.id === effectId);
+    }
+    
+    addPassiveEffect(effectId) {
+        const effect = passiveEffects[effectId];
+        if (effect && !this.hasPassiveEffect(effectId)) {
+            this.passiveEffects.push(effect);
+        }
+    }
+    
+    applyPassiveEffects() {
+        for (const effect of this.passiveEffects) {
+            if (effect.effect) {
+                for (const [resource, value] of Object.entries(effect.effect)) {
+                    if (resource === 'money') {
+                        this.resources.money += value;
+                    } else {
+                        this.resources[resource] = Math.max(0, Math.min(10,
+                            this.resources[resource] + value
+                        ));
+                    }
+                }
+            }
+        }
     }
     
     getResourcePercentage(resource) {

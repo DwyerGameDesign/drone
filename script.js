@@ -19,6 +19,7 @@ const gameOverScreen = document.getElementById('game-over-screen');
 const gameOverMessage = document.getElementById('game-over-message');
 const restartButton = document.getElementById('restart-button');
 const cannotAffordMessage = document.getElementById('cannot-afford-message');
+const passiveEffectsList = document.getElementById('passive-effects-list');
 
 // Initialize the game
 function initGame() {
@@ -54,6 +55,9 @@ function updateUI() {
     // Update card states based on affordability
     updateCardAffordability(pathA, game.currentPaths.a[0]?.cost || 0);
     updateCardAffordability(pathB, game.currentPaths.b[0]?.cost || 0);
+
+    // Update passive effects
+    updatePassiveEffects();
 }
 
 // Update a path card's content
@@ -64,16 +68,32 @@ function updatePathCard(cardElement, card) {
     }
     
     console.log('Updating path card:', card);
-    const costText = card.cost > 0 ? `$${card.cost}` : `EARN $${-card.cost}`;
-    const costClass = card.cost > 0 ? '' : 'earn';
     
     cardElement.innerHTML = `
         <div class="card-title">${card.title}</div>
-        <div class="cost-badge ${costClass}">${costText}</div>
-        <div class="album-track">♫ Track: ${card.track}</div>
         <div class="card-description">${card.description}</div>
-        <div class="card-illustration">[${card.illustration}]</div>
     `;
+}
+
+// Update passive effects display
+function updatePassiveEffects() {
+    passiveEffectsList.innerHTML = '';
+    
+    if (game.passiveEffects.length === 0) {
+        passiveEffectsList.innerHTML = `
+            <div class="passive-effect">
+                No passive effects active
+            </div>
+        `;
+        return;
+    }
+    
+    for (const effect of game.passiveEffects) {
+        const effectElement = document.createElement('div');
+        effectElement.className = `passive-effect ${effect.type}`;
+        effectElement.textContent = `${effect.name}: ${effect.description}`;
+        passiveEffectsList.appendChild(effectElement);
+    }
 }
 
 // Update card affordability

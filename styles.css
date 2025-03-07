@@ -72,6 +72,9 @@ h1 {
     font-weight: bold;
     width: 120px;
     font-size: 1rem;
+}
+
+.resource:nth-child(1) .resource-label {
     color: #9b59b6;
 }
 
@@ -135,24 +138,47 @@ h1 {
     color: #f1c40f;
 }
 
-/* Game Message */
-.game-message {
-    text-align: center;
-    margin-bottom: 15px;
-    font-size: 0.9rem;
-    color: #aaa;
-}
-
-/* Destiny Banner */
-.destiny-banner {
-    background-color: #232967;
-    padding: 10px;
-    text-align: center;
-    border-radius: 5px;
+/* Section Title */
+.section-title {
     font-size: 1rem;
     font-weight: bold;
     color: #fff;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+/* Passive Effects Styling */
+.passive-effects-container {
+    margin-bottom: 20px;
+}
+
+.passive-effects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.passive-effect {
+    background-color: #1a1a1a;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.passive-effect.soul-negative {
+    color: #e74c3c;
+}
+
+.passive-effect.soul-positive {
+    color: #9b59b6;
+}
+
+.passive-effect.connections-positive {
+    color: #3498db;
+}
+
+.passive-effect.money-positive {
+    color: #f1c40f;
 }
 
 /* Paths Styling */
@@ -166,13 +192,12 @@ h1 {
 
 .path {
     background-color: #17182b;
-    border: 3px solid #3d437a;
     border-radius: 10px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     cursor: pointer;
-    transition: transform 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+    transition: transform 0.2s ease, opacity 0.2s ease;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
 }
@@ -188,34 +213,11 @@ h1 {
 }
 
 .path#path-a {
-    border-color: #9b59b6;
-}
-
-.path#path-a:not(.disabled):hover {
-    border-color: #b679d5;
+    border: 3px solid #9b59b6;
 }
 
 .path#path-b {
-    border-color: #ff5252;
-}
-
-.path#path-b:not(.disabled):hover {
-    border-color: #ff7070;
-}
-
-.card-header {
-    padding: 12px;
-    text-align: center;
-    font-weight: bold;
-    color: #fff;
-}
-
-.path#path-a .card-header {
-    background-color: #9b59b6;
-}
-
-.path#path-b .card-header {
-    background-color: #ff5252;
+    border: 3px solid #ff5252;
 }
 
 .card-content {
@@ -235,51 +237,10 @@ h1 {
     color: #fff;
 }
 
-.cost-badge {
-    background-color: #f1c40f;
-    border-radius: 15px;
-    padding: 5px 15px;
-    font-weight: bold;
-    font-size: 1rem;
-    color: #111;
-    margin: 10px auto;
-    display: inline-block;
-}
-
-.cost-badge.earn {
-    background-color: #2ecc71;
-}
-
-.album-track {
-    font-size: 0.8rem;
-    font-style: italic;
-    text-align: center;
-    margin-bottom: 10px;
-    color: #aaa;
-}
-
 .card-description {
-    background-color: #24253a;
-    border-radius: 5px;
-    padding: 10px;
+    color: #ccc;
     font-size: 0.85rem;
     line-height: 1.4;
-    color: #ccc;
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-.card-illustration {
-    background-color: #24253a;
-    border-radius: 5px;
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100px;
-    margin-top: auto;
-    color: #aaa;
-    font-size: 0.8rem;
     text-align: center;
 }
 
