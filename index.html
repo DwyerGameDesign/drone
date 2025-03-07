@@ -13,60 +13,97 @@
     <div class="game-container">
         <header class="game-header">
             <h1>DRONE MAN</h1>
-            <div class="stop-indicator">STOP <span id="turn-counter">1</span></div>
+            <div class="round-indicator">
+                ROUND <span id="round-counter">1</span>/3 · STOP <span id="stop-counter">1</span>/5
+            </div>
         </header>
         
-        <div class="resources-container">
-            <div class="resource">
-                <div class="resource-label">SOUL</div>
-                <div class="resource-bar">
-                    <div id="soul-bar" class="bar-fill"></div>
+        <!-- Condensed HUD -->
+        <div class="hud-container">
+            <div class="resources-container">
+                <div class="resource">
+                    <div class="resource-icon soul-icon">S</div>
+                    <div class="resource-bar">
+                        <div id="soul-bar" class="bar-fill"></div>
+                    </div>
+                    <div class="resource-value" id="soul-value">5</div>
                 </div>
-                <div class="resource-value" id="soul-value">5</div>
-            </div>
-            <div class="resource">
-                <div class="resource-label">CONNECTIONS</div>
-                <div class="resource-bar">
-                    <div id="connections-bar" class="bar-fill"></div>
+                <div class="resource">
+                    <div class="resource-icon connections-icon">C</div>
+                    <div class="resource-bar">
+                        <div id="connections-bar" class="bar-fill"></div>
+                    </div>
+                    <div class="resource-value" id="connections-value">5</div>
                 </div>
-                <div class="resource-value" id="connections-value">5</div>
             </div>
-        </div>
-        
-        <div class="wallet-container">
             <div class="wallet">
                 <div class="wallet-icon">💰</div>
                 <div class="wallet-amount">$<span id="money-value">3</span></div>
             </div>
         </div>
-
-        <div class="passive-effects-container">
-            <div class="section-title">PASSIVE EFFECTS</div>
-            <div id="passive-effects-list" class="passive-effects-list">
-                <!-- Passive effects will be added here dynamically -->
+        
+        <!-- Narrative Card with Choices -->
+        <div class="narrative-card-container" id="narrative-card-container">
+            <!-- Main card content will be populated by JavaScript -->
+            <div class="narrative-card" id="narrative-card">
+                <div class="narrative-card-title" id="narrative-card-title">Inbound</div>
+                <div class="narrative-card-text" id="narrative-card-text"></div>
+            </div>
+            
+            <!-- Choices for the narrative card -->
+            <div class="narrative-card-choices" id="narrative-card-choices">
+                <!-- Choices will be added here dynamically -->
             </div>
         </div>
         
-        <div class="section-title">CHOICES</div>
+        <!-- History Track (shows previous decisions as small cards) -->
+        <div class="section-title">YOUR JOURNEY</div>
+        <div class="history-track" id="history-track">
+            <!-- History cards will be added dynamically -->
+        </div>
         
-        <div class="paths-container">
-            <div class="path" id="path-a">
-                <div id="path-a-card"></div>
+        <!-- Passive Effects (collapsible) -->
+        <div class="passive-effects-container" id="passive-effects-container">
+            <div class="passive-effects-header" id="passive-effects-header">
+                <div class="passive-effects-title">PASSIVE EFFECTS</div>
+                <div class="passive-effects-icon">▼</div>
             </div>
-            <div class="path" id="path-b">
-                <div id="path-b-card"></div>
+            <div class="passive-effects-list" id="passive-effects-list">
+                <div class="passive-effect">
+                    No passive effects active
+                </div>
             </div>
         </div>
         
+        <!-- Round Complete Screen -->
+        <div class="round-complete-screen" id="round-complete-screen">
+            <h2>Round <span id="completed-round">1</span> Complete</h2>
+            <div class="round-summary">
+                <div class="summary-stats">
+                    <div class="summary-stat">
+                        <div class="summary-icon soul-icon">S</div>
+                        <div class="summary-value"><span id="round-soul-value">5</span>/10</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-icon connections-icon">C</div>
+                        <div class="summary-value"><span id="round-connections-value">5</span>/10</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-icon money-icon">$</div>
+                        <div class="summary-value"><span id="round-money-value">3</span></div>
+                    </div>
+                </div>
+                <p id="round-summary-text">You've completed the first leg of your journey. Your soul is stirring, but challenges lie ahead.</p>
+            </div>
+            <button id="next-round-button">Continue Journey</button>
+        </div>
+        
+        <!-- Game Over Screen -->
         <div class="game-over-screen" id="game-over-screen">
             <h2>Journey's End</h2>
             <p id="game-over-message"></p>
             <button id="restart-button">Start New Journey</button>
         </div>
-    </div>
-    
-    <div class="cannot-afford-message" id="cannot-afford-message">
-        You don't have enough money for this path!
     </div>
     
     <script src="game.js"></script>

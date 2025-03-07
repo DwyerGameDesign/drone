@@ -1,232 +1,332 @@
-// Initialize game state
-let game;
-let currentTurn = 1;
-const MAX_TURNS = 10;
-
-// DOM Elements
-const turnCounter = document.getElementById('turn-counter');
-const soulBar = document.getElementById('soul-bar');
-const connectionsBar = document.getElementById('connections-bar');
-const soulValue = document.getElementById('soul-value');
-const connectionsValue = document.getElementById('connections-value');
-const moneyValue = document.getElementById('money-value');
-const gameMessage = document.getElementById('game-message');
-const pathA = document.getElementById('path-a');
-const pathB = document.getElementById('path-b');
-const pathACard = document.getElementById('path-a-card');
-const pathBCard = document.getElementById('path-b-card');
-const gameOverScreen = document.getElementById('game-over-screen');
-const gameOverMessage = document.getElementById('game-over-message');
-const restartButton = document.getElementById('restart-button');
-const cannotAffordMessage = document.getElementById('cannot-afford-message');
-const passiveEffectsList = document.getElementById('passive-effects-list');
-
-// Initialize the game
-async function initGame() {
-    console.log('Initializing game...');
-    game = new DroneManGame();
+// Drone Man: The Journey - Main script
+document.addEventListener('DOMContentLoaded', async () => {
+    // Create game instance
+    const game = new DroneManGame();
     
-    // Wait for game data to load before updating UI
-    await new Promise(resolve => {
-        const checkDataLoaded = setInterval(() => {
-            if (game.cardDefinitions) {
-                clearInterval(checkDataLoaded);
-                resolve();
-            }
-        }, 100);
+    // UI Elements
+    const elements = {
+        roundCounter: document.getElementById('round-counter'),
+        stopCounter: document.getElementById('stop-counter'),
+        soulBar: document.getElementById('soul-bar'),
+        connectionsBar: document.getElementById('connections-bar'),
+        soulValue: document.getElementById('soul-value'),
+        connectionsValue: document.getElementById('connections-value'),
+        moneyValue: document.getElementById('money-value'),
+        narrativeCard: document.getElementById('narrative-card'),
+        narrativeCardTitle: document.getElementById('narrative-card-title'),
+        narrativeCardText: document.getElementById('narrative-card-text'),
+        narrativeCardChoices: document.getElementById('narrative-card-choices'),
+        historyTrack: document.getElementById('history-track'),
+        passiveEffectsList: document.getElementById('passive-effects-list'),
+        passiveEffectsContainer: document.getElementById('passive-effects-container'),
+        passiveEffectsHeader: document.getElementById('passive-effects-header'),
+        roundCompleteScreen: document.getElementById('round-complete-screen'),
+        completedRound: document.getElementById('completed-round'),
+        roundSoulValue: document.getElementById('round-soul-value'),
+        roundConnectionsValue: document.getElementById('round-connections-value'),
+        roundMoneyValue: document.getElementById('round-money-value'),
+        roundSummaryText: document.getElementById('round-summary-text'),
+        nextRoundButton: document.getElementById('next-round-button'),
+        gameOverScreen: document.getElementById('game-over-screen'),
+        gameOverMessage: document.getElementById('game-over-message'),
+        restartButton: document.getElementById('restart-button')
+    };
+    
+    // Typewriter effect variables
+    let isTyping = false;
+    let skipTyping = false;
+    const typingSpeed = 30; // ms per character
+    
+    // Add event listeners
+    elements.narrativeCard.addEventListener('click', () => {
+        if (isTyping) {
+            skipTyping = true;
+        }
     });
     
-    console.log('Game data loaded:', {
-        cards: game.cardDefinitions?.length,
-        pathA: game.currentPaths?.a,
-        pathB: game.currentPaths?.b
+    elements.nextRoundButton.addEventListener('click', () => {
+        const result = game.startNextRound();
+        elements.roundCompleteScreen.style.display = 'none';
+        displayNarrative(result.nextNarrative);
+        updateUI();
     });
     
-    // Make sure paths are properly initialized before updating UI
-    if (!game.currentPaths.a.length || !game.currentPaths.b.length) {
-        console.log('Generating initial paths...');
-        game.generatePaths();
-    }
+    elements.restartButton.addEventListener('click', () => {
+        game.restart();
+        elements.gameOverScreen.style.display = 'none';
+        elements.historyTrack.innerHTML = '';
+        const narrative = game.getCurrentNarrative();
+        displayNarrative(narrative);
+        updateUI();
+    });
     
+    // Collapsible passive effects
+    elements.passiveEffectsHeader.addEventListener('click', () => {
+        elements.passiveEffectsContainer.classList.toggle('open');
+    });
+    
+    // Wait for game data to load
+    await waitForGameData(game);
+    
+    // Start the game
+    const narrative = game.getCurrentNarrative();
+    displayNarrative(narrative);
     updateUI();
-}
-
-// Update UI elements
-function updateUI() {
-    console.log('Updating UI...');
-    turnCounter.textContent = currentTurn;
     
-    // Update resource bars and values
-    const soulPercentage = (game.resources.soul / 10) * 100;
-    const connectionsPercentage = (game.resources.connections / 10) * 100;
-    
-    soulBar.style.width = `${soulPercentage}%`;
-    connectionsBar.style.width = `${connectionsPercentage}%`;
-    
-    soulValue.textContent = game.resources.soul;
-    connectionsValue.textContent = game.resources.connections;
-    moneyValue.textContent = game.resources.money;
-    
-    // Update resource bar colors based on values
-    soulBar.style.backgroundColor = game.resources.soul <= 3 ? '#e74c3c' : '#9b59b6';
-    connectionsBar.style.backgroundColor = game.resources.connections <= 3 ? '#e74c3c' : '#3498db';
-    
-    // Update path cards - ensure paths exist before updating
-    if (game.currentPaths && game.currentPaths.a.length > 0 && game.currentPaths.b.length > 0) {
-        console.log('Current paths:', game.currentPaths);
-        updatePathCard(pathACard, game.currentPaths.a[0]);
-        updatePathCard(pathBCard, game.currentPaths.b[0]);
-        
-        // Update card states based on affordability
-        updateCardAffordability(pathA, game.currentPaths.a[0]?.cost || 0);
-        updateCardAffordability(pathB, game.currentPaths.b[0]?.cost || 0);
-    } else {
-        console.error('Paths not properly initialized');
-        // Set placeholder content
-        updatePathCard(pathACard, {
-            title: "Loading...",
-            description: "Please wait while cards load..."
-        });
-        updatePathCard(pathBCard, {
-            title: "Loading...",
-            description: "Please wait while cards load..."
+    // Function to wait for game data to load
+    async function waitForGameData(game) {
+        return new Promise(resolve => {
+            const checkInterval = setInterval(() => {
+                if (game.narratives && game.narratives.length > 0) {
+                    clearInterval(checkInterval);
+                    resolve();
+                }
+            }, 100);
+            
+            // Set a timeout just in case
+            setTimeout(() => {
+                clearInterval(checkInterval);
+                resolve();
+            }, 5000);
         });
     }
-
-    // Update passive effects
-    updatePassiveEffects();
-}
-
-// Update a path card's content
-function updatePathCard(cardElement, card) {
-    if (!card) {
-        console.error('No card data provided for path card');
-        cardElement.innerHTML = `
-            <div class="card-content">
-                <div class="card-title">Loading...</div>
-                <div class="card-description">Please wait while cards load...</div>
-            </div>
-        `;
-        return;
+    
+    // Display narrative with typewriter effect
+    function displayNarrative(narrative) {
+        if (!narrative) return;
+        
+        // Update title
+        elements.narrativeCardTitle.textContent = narrative.title;
+        
+        // Clear existing content
+        elements.narrativeCardText.textContent = '';
+        elements.narrativeCardChoices.innerHTML = '';
+        
+        // Start typewriter effect
+        let index = 0;
+        isTyping = true;
+        skipTyping = false;
+        
+        const typeNextCharacter = () => {
+            if (skipTyping) {
+                // If skipping, show the full text immediately
+                elements.narrativeCardText.textContent = narrative.narrative;
+                isTyping = false;
+                skipTyping = false;
+                displayChoices(narrative.choices);
+                return;
+            }
+            
+            if (index < narrative.narrative.length) {
+                elements.narrativeCardText.textContent += narrative.narrative.charAt(index);
+                index++;
+                setTimeout(typeNextCharacter, typingSpeed);
+            } else {
+                isTyping = false;
+                displayChoices(narrative.choices);
+            }
+        };
+        
+        typeNextCharacter();
     }
     
-    console.log('Updating path card:', card);
-    
-    let costDisplay = card.cost > 0 ? `-$${card.cost}` : card.cost < 0 ? `+$${Math.abs(card.cost)}` : "$0";
-    
-    cardElement.innerHTML = `
-        <div class="card-content">
-            <div class="card-title">${card.title} (${costDisplay})</div>
-            <div class="card-description">${card.description}</div>
-        </div>
-    `;
-}
-
-// Update passive effects display
-function updatePassiveEffects() {
-    passiveEffectsList.innerHTML = '';
-    
-    if (!game.activePassiveEffects || game.activePassiveEffects.length === 0) {
-        passiveEffectsList.innerHTML = `
-            <div class="passive-effect">
-                No passive effects active
-            </div>
-        `;
-        return;
+    // Display choices
+    function displayChoices(choices) {
+        elements.narrativeCardChoices.innerHTML = '';
+        
+        choices.forEach((choice, index) => {
+            const choiceButton = document.createElement('button');
+            choiceButton.className = 'choice-button';
+            choiceButton.textContent = choice.text;
+            
+            // Add indicator if the choice costs money
+            if (choice.effects.money < 0) {
+                choiceButton.textContent += ` ($${Math.abs(choice.effects.money)})`;
+                // Disable if can't afford
+                if (Math.abs(choice.effects.money) > game.resources.money) {
+                    choiceButton.disabled = true;
+                    choiceButton.classList.add('disabled');
+                }
+            } else if (choice.effects.money > 0) {
+                choiceButton.textContent += ` (+$${choice.effects.money})`;
+            }
+            
+            choiceButton.addEventListener('click', () => makeChoice(index));
+            elements.narrativeCardChoices.appendChild(choiceButton);
+        });
     }
     
-    // Iterate through activePassiveEffects, not passiveEffects
-    for (const effectData of game.activePassiveEffects) {
-        // Get the effect ID
-        const effectId = typeof effectData === 'string' ? effectData : effectData.id;
+    // Make a choice
+    function makeChoice(choiceIndex) {
+        const result = game.makeChoice(choiceIndex);
         
-        // Look up the full effect details from passiveEffects
-        const effect = game.passiveEffects[effectId];
+        if (!result.success) {
+            console.error('Error making choice:', result.reason);
+            return;
+        }
         
-        if (effect) {
+        // Add to history
+        addToHistoryTrack(game.decisionHistory[game.decisionHistory.length - 1]);
+        
+        // Update UI
+        updateUI();
+        
+        // Handle game over
+        if (result.gameOver) {
+            showGameOver(result.reason === 'success');
+            return;
+        }
+        
+        // Handle round complete
+        if (result.roundComplete) {
+            showRoundComplete();
+            return;
+        }
+        
+        // Display next narrative
+        displayNarrative(result.nextNarrative);
+    }
+    
+    // Add decision to history track
+    function addToHistoryTrack(decision) {
+        if (!decision) return;
+        
+        // Create history card
+        const historyCard = document.createElement('div');
+        
+        // Set class based on primary effect
+        historyCard.className = 'history-card';
+        
+        if (decision.effects.soul > 0) {
+            historyCard.classList.add('soul-positive');
+        } else if (decision.effects.soul < 0) {
+            historyCard.classList.add('soul-negative');
+        } else if (decision.effects.connections > 0) {
+            historyCard.classList.add('connections-positive');
+        } else if (decision.effects.connections < 0) {
+            historyCard.classList.add('connections-negative');
+        }
+        
+        // Add decision number/counter
+        const counter = document.createElement('div');
+        counter.className = 'history-card-counter';
+        counter.textContent = game.decisionHistory.length;
+        historyCard.appendChild(counter);
+        
+        // Add title
+        const title = document.createElement('div');
+        title.className = 'history-card-title';
+        title.textContent = decision.title;
+        historyCard.appendChild(title);
+        
+        // Add abbreviated choice text
+        const choiceText = document.createElement('div');
+        choiceText.className = 'history-card-choice';
+        // Get first few words
+        const words = decision.text.split(' ');
+        choiceText.textContent = words.slice(0, 3).join(' ') + (words.length > 3 ? '...' : '');
+        historyCard.appendChild(choiceText);
+        
+        // Add effects
+        const effects = document.createElement('div');
+        effects.className = 'history-card-effects';
+        
+        if (decision.effects.soul !== 0) {
+            const soulEffect = document.createElement('span');
+            soulEffect.className = `history-card-effect ${decision.effects.soul > 0 ? 'soul-positive' : 'soul-negative'}`;
+            soulEffect.textContent = `S${decision.effects.soul > 0 ? '+' : ''}${decision.effects.soul}`;
+            effects.appendChild(soulEffect);
+        }
+        
+        if (decision.effects.connections !== 0) {
+            const connectionsEffect = document.createElement('span');
+            connectionsEffect.className = `history-card-effect ${decision.effects.connections > 0 ? 'connections-positive' : 'connections-negative'}`;
+            connectionsEffect.textContent = `C${decision.effects.connections > 0 ? '+' : ''}${decision.effects.connections}`;
+            effects.appendChild(connectionsEffect);
+        }
+        
+        if (decision.effects.money !== 0) {
+            const moneyEffect = document.createElement('span');
+            moneyEffect.className = `history-card-effect ${decision.effects.money > 0 ? 'money-positive' : 'money-negative'}`;
+            moneyEffect.textContent = `$${decision.effects.money > 0 ? '+' : ''}${decision.effects.money}`;
+            effects.appendChild(moneyEffect);
+        }
+        
+        historyCard.appendChild(effects);
+        
+        // Add to history track
+        elements.historyTrack.appendChild(historyCard);
+        
+        // Scroll to latest card
+        historyCard.scrollIntoView({ behavior: 'smooth', inline: 'end' });
+    }
+    
+    // Show round complete screen
+    function showRoundComplete() {
+        // Update round summary values
+        elements.completedRound.textContent = game.currentRound;
+        elements.roundSoulValue.textContent = game.resources.soul;
+        elements.roundConnectionsValue.textContent = game.resources.connections;
+        elements.roundMoneyValue.textContent = game.resources.money;
+        
+        // Set appropriate round summary text
+        elements.roundSummaryText.textContent = game.getRoundSummaryText();
+        
+        // Show the round complete screen
+        elements.roundCompleteScreen.style.display = 'flex';
+    }
+    
+    // Show game over screen
+    function showGameOver(success) {
+        elements.gameOverMessage.textContent = game.getGameOverMessage(success);
+        elements.gameOverScreen.style.display = 'flex';
+    }
+    
+    // Update UI elements
+    function updateUI() {
+        elements.roundCounter.textContent = game.currentRound;
+        elements.stopCounter.textContent = ((game.currentStop - 1) % game.stopsPerRound) + 1;
+        
+        // Update resource bars and values
+        const soulPercentage = (game.resources.soul / 10) * 100;
+        const connectionsPercentage = (game.resources.connections / 10) * 100;
+        
+        elements.soulBar.style.width = `${soulPercentage}%`;
+        elements.connectionsBar.style.width = `${connectionsPercentage}%`;
+        
+        elements.soulValue.textContent = game.resources.soul;
+        elements.connectionsValue.textContent = game.resources.connections;
+        elements.moneyValue.textContent = game.resources.money;
+        
+        // Update resource bar colors based on values
+        elements.soulBar.style.backgroundColor = game.resources.soul <= 3 ? '#e74c3c' : '#9b59b6';
+        elements.connectionsBar.style.backgroundColor = game.resources.connections <= 3 ? '#e74c3c' : '#3498db';
+        
+        // Update passive effects
+        updatePassiveEffects();
+    }
+    
+    // Update passive effects display
+    function updatePassiveEffects() {
+        elements.passiveEffectsList.innerHTML = '';
+        
+        if (!game.activePassiveEffects || game.activePassiveEffects.length === 0) {
+            elements.passiveEffectsList.innerHTML = `
+                <div class="passive-effect">
+                    No passive effects active
+                </div>
+            `;
+            return;
+        }
+        
+        for (const effect of game.activePassiveEffects) {
             const effectElement = document.createElement('div');
             effectElement.className = `passive-effect ${effect.type}`;
             effectElement.textContent = `${effect.name}: ${effect.description}`;
-            passiveEffectsList.appendChild(effectElement);
+            elements.passiveEffectsList.appendChild(effectElement);
         }
-    }
-}
-
-// Update card affordability
-function updateCardAffordability(cardElement, cost) {
-    if (cost > game.resources.money) {
-        cardElement.classList.add('disabled');
-    } else {
-        cardElement.classList.remove('disabled');
-    }
-}
-
-// Show cannot afford message
-function showCannotAffordMessage() {
-    cannotAffordMessage.classList.add('show');
-    setTimeout(() => {
-        cannotAffordMessage.classList.remove('show');
-    }, 2000);
-}
-
-// Handle path selection
-function handlePathSelect(path) {
-    console.log('Path selected:', path);
-    
-    const success = game.choosePath(path);
-    if (!success) {
-        showCannotAffordMessage();
-        return;
-    }
-    
-    currentTurn++;
-    
-    // Check game over conditions
-    if (currentTurn > MAX_TURNS || game.gameOver) {
-        endGame();
-    } else {
-        updateUI();
-    }
-}
-
-// End the game
-function endGame() {
-    let message = '';
-    
-    if (game.resources.soul <= 0) {
-        message = "Your soul has been crushed by the corporate machine. Game Over.";
-    } else if (game.resources.connections <= 0) {
-        message = "You've become completely isolated. Game Over.";
-    } else {
-        message = `Journey complete! Final stats:\nSoul: ${game.resources.soul}/10\nConnections: ${game.resources.connections}/10\nMoney: $${game.resources.money}`;
-    }
-    
-    gameOverMessage.textContent = message;
-    gameOverScreen.style.display = 'flex';
-}
-
-// Event Listeners
-pathA.addEventListener('click', () => {
-    if (!pathA.classList.contains('disabled')) {
-        handlePathSelect('a');
-    } else {
-        showCannotAffordMessage();
+        
+        // Open the passive effects section if there are effects
+        elements.passiveEffectsContainer.classList.add('open');
     }
 });
-
-pathB.addEventListener('click', () => {
-    if (!pathB.classList.contains('disabled')) {
-        handlePathSelect('b');
-    } else {
-        showCannotAffordMessage();
-    }
-});
-
-restartButton.addEventListener('click', () => {
-    currentTurn = 1;
-    gameOverScreen.style.display = 'none';
-    initGame();
-});
-
-// Start the game
-document.addEventListener('DOMContentLoaded', initGame);

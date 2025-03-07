@@ -1,4 +1,4 @@
-// Game state and core mechanics
+// Drone Man: The Journey - Game Core Class
 class DroneManGame {
     constructor() {
         // Game settings
@@ -8,234 +8,210 @@ class DroneManGame {
             connections: 5,
             money: 3
         };
-        this.maxTurns = 20;
-        
-        // Initialize empty state
-        this.cardDefinitions = null;
-        this.passiveEffects = null;
-        this.thematicDescriptions = null;
         
         // Initialize game state
         this.resources = { ...this.startingResources };
-        this.currentTurn = 1;
+        this.currentRound = 1;
+        this.currentStop = 1;
+        this.maxRounds = 3;
+        this.stopsPerRound = 5;
         this.gameOver = false;
         this.gameOverReason = "";
-        this.currentPaths = { a: [], b: [] };
         this.activePassiveEffects = [];
+        this.narratives = [];
+        this.passiveEffects = {};
+        this.currentNarrative = null;
+        this.currentChoices = [];
+        this.decisionHistory = [];
         
         // Load game data
         this.loadGameData();
     }
     
+    // Load game data from JSON
     async loadGameData() {
         try {
-            console.log('Loading game data...');
             const response = await fetch('cards.json');
-            
             if (!response.ok) {
-                throw new Error(`Failed to load cards.json: ${response.status} ${response.statusText}`);
+                throw new Error(`Failed to load cards.json: ${response.status}`);
             }
             
             const data = await response.json();
-            
             console.log('Game data loaded:', data);
             
-            this.cardDefinitions = data.cardDefinitions;
-            this.passiveEffects = data.passiveEffects;
-            this.thematicDescriptions = data.thematicDescriptions;
+            this.narratives = data.narratives || [];
+            this.passiveEffects = data.passiveEffects || {};
             
-            // Initialize game after data is loaded
-            this.resetGame();
-            console.log('Game initialized with paths:', this.currentPaths);
+            // Return the loaded data to signal it's ready
+            return { success: true, data };
         } catch (error) {
             console.error('Error loading game data:', error);
-            // Provide some fallback data so the game can still function
-            this.provideFallbackData();
+            return { success: false, error };
         }
     }
     
-    provideFallbackData() {
-        console.log('Providing fallback data');
-        // Basic fallback data in case the JSON fails to load
-        this.cardDefinitions = [
-            {
-                id: "fallback_card_1",
-                title: "Take a Chance",
-                cost: 2,
-                effects: { soul: 1, connections: 0 },
-                description: "Step out of your comfort zone.",
-                type: "soul-focused"
-            },
-            {
-                id: "fallback_card_2",
-                title: "Work Overtime",
-                cost: -2,
-                effects: { soul: -1, connections: -1 },
-                description: "Earn money at the cost of your well-being.",
-                type: "money-earning"
-            }
-        ];
-        
-        this.passiveEffects = {
-            "fallback_effect": {
-                id: "fallback_effect",
-                name: "Trying Again",
-                description: "Facing difficulties with resilience",
-                type: "soul-positive",
-                effect: { soul: 1 }
-            }
-        };
-        
-        this.thematicDescriptions = {
-            "fallback_card_1": "Step out of your comfort zone.",
-            "fallback_card_2": "Earn money at the cost of your well-being."
-        };
-        
-        this.resetGame();
-    }
-    
-    resetGame() {
-        // Initialize resources
-        this.resources = {
-            soul: this.startingResources.soul,
-            connections: this.startingResources.connections,
-            money: this.startingResources.money
-        };
-        
-        // Game progression
-        this.currentTurn = 1;
+    // Start or restart the game
+    restart() {
+        // Reset resources
+        this.resources = { ...this.startingResources };
+        this.currentRound = 1;
+        this.currentStop = 1;
         this.gameOver = false;
         this.gameOverReason = "";
-        
-        // Reset paths and effects
-        this.currentPaths = { a: [], b: [] };
         this.activePassiveEffects = [];
+        this.decisionHistory = [];
         
-        // Generate initial paths if data is loaded
-        if (this.cardDefinitions) {
-            this.generatePaths();
-        } else {
-            console.error('Cannot generate paths: card definitions not loaded');
-        }
-    }
-    
-    generatePaths() {
-        console.log('Generating paths...');
-        
-        if (!this.cardDefinitions || this.cardDefinitions.length === 0) {
-            console.error('Cannot generate paths: card definitions empty or not loaded');
-            return;
-        }
-        
-        // Generate path A (tends toward resource-positive, money-negative)
-        const pathACard = this.getRandomCard(true);
-        this.currentPaths.a = pathACard ? [pathACard] : [];
-        
-        // Generate path B (tends toward resource-negative, money-positive)
-        const pathBCard = this.getRandomCard(false);
-        this.currentPaths.b = pathBCard ? [pathBCard] : [];
-        
-        console.log('Generated paths:', this.currentPaths);
-    }
-    
-    getRandomCard(isPathA) {
-        if (!this.cardDefinitions || this.cardDefinitions.length === 0) {
-            console.error('Cannot get random card: card definitions empty or not loaded');
-            return null;
-        }
-
-        // Filter cards based on path type
-        const availableCards = this.cardDefinitions.filter(card => {
-            if (isPathA) {
-                // Path A: Tends to cost money but give resources
-                return card.cost > 0 || 
-                       (card.effects.soul > 0 || card.effects.connections > 0);
-            } else {
-                // Path B: Tends to earn money but cost resources
-                return card.cost < 0 || 
-                       (card.effects.soul < 0 || card.effects.connections < 0);
-            }
-        });
-
-        if (availableCards.length === 0) {
-            console.error('No available cards found for path:', isPathA ? 'A' : 'B');
-            // Fallback: just use any card
-            return this.cardDefinitions[Math.floor(Math.random() * this.cardDefinitions.length)];
-        }
-
-        // Select random card
-        const card = availableCards[Math.floor(Math.random() * availableCards.length)];
-        
-        // Add description from thematic descriptions if available
-        return {
-            ...card,
-            description: this.thematicDescriptions[card.id] || this.generateDescription(card)
-        };
-    }
-    
-    canAffordPath(path) {
-        const cards = this.currentPaths[path];
-        if (!cards || cards.length === 0) return false;
-        
-        const totalCost = cards.reduce((sum, card) => sum + (card.cost || 0), 0);
-        return totalCost <= this.resources.money;
-    }
-    
-    choosePath(path) {
-        if (!this.canAffordPath(path)) {
-            return false;
-        }
-
-        const cards = this.currentPaths[path];
-        if (!cards || cards.length === 0) {
-            return false;
-        }
-
-        // Apply effects of all cards in the path
-        for (const card of cards) {
-            // Apply cost
-            this.resources.money -= card.cost || 0;
-
-            // Apply effects
-            if (card.effects) {
-                this.resources.soul = Math.max(0, Math.min(10, 
-                    this.resources.soul + (card.effects.soul || 0)
-                ));
-                this.resources.connections = Math.max(0, Math.min(10, 
-                    this.resources.connections + (card.effects.connections || 0)
-                ));
-            }
-
-            // Check for passive effect unlock
-            if (card.unlockPassive && !this.hasPassiveEffect(card.unlockPassive)) {
-                this.addPassiveEffect(card.unlockPassive);
-            }
-        }
-
-        // Apply passive effects
-        this.applyPassiveEffects();
-
-        // Check game over conditions
-        if (this.resources.soul <= 0 || this.resources.connections <= 0) {
-            this.gameOver = true;
-        }
-
-        // Generate new paths
-        this.generatePaths();
         return true;
     }
     
+    // Get the current narrative
+    getCurrentNarrative() {
+        return this.narratives.find(n => n.stop === this.currentStop) || null;
+    }
+    
+    // Make a choice for the current narrative
+    makeChoice(choiceIndex) {
+        // Get current narrative
+        const narrative = this.getCurrentNarrative();
+        if (!narrative) return { success: false, reason: 'No current narrative found' };
+        
+        // Get chosen choice
+        const choice = narrative.choices[choiceIndex];
+        if (!choice) return { success: false, reason: 'Invalid choice' };
+        
+        // Check if player can afford this choice
+        if (choice.effects.money < 0 && Math.abs(choice.effects.money) > this.resources.money) {
+            return { success: false, reason: 'Cannot afford this choice' };
+        }
+        
+        // Save the decision to history
+        const decision = {
+            round: this.currentRound,
+            stop: this.currentStop,
+            title: narrative.title,
+            choice: choiceIndex,
+            text: choice.text,
+            effects: choice.effects
+        };
+        
+        this.decisionHistory.push(decision);
+        
+        // Apply effects of the choice
+        this.resources.soul = Math.max(0, Math.min(this.maxResources, this.resources.soul + (choice.effects.soul || 0)));
+        this.resources.connections = Math.max(0, Math.min(this.maxResources, this.resources.connections + (choice.effects.connections || 0)));
+        this.resources.money = Math.max(0, this.resources.money + (choice.effects.money || 0));
+        
+        // Check for passive effect unlock
+        if (choice.unlockPassive && !this.hasPassiveEffect(choice.unlockPassive)) {
+            this.addPassiveEffect(choice.unlockPassive);
+        }
+        
+        // Apply passive effects
+        this.applyPassiveEffects();
+        
+        // Check game over conditions
+        if (this.resources.soul <= 0) {
+            this.gameOver = true;
+            this.gameOverReason = "Your soul has been crushed by the corporate machine.";
+            return { 
+                success: true, 
+                gameOver: true, 
+                reason: this.gameOverReason,
+                roundComplete: false,
+                nextNarrative: null,
+                resources: { ...this.resources }
+            };
+        } else if (this.resources.connections <= 0) {
+            this.gameOver = true;
+            this.gameOverReason = "You've become completely isolated from everyone who matters to you.";
+            return { 
+                success: true, 
+                gameOver: true, 
+                reason: this.gameOverReason,
+                roundComplete: false,
+                nextNarrative: null,
+                resources: { ...this.resources }
+            };
+        }
+        
+        // Move to next stop
+        this.currentStop++;
+        
+        // Check if round is complete
+        let roundComplete = false;
+        if (this.currentStop > this.currentRound * this.stopsPerRound) {
+            // Check if all rounds are complete
+            if (this.currentRound >= this.maxRounds) {
+                // Game completed
+                this.gameOver = true;
+                return { 
+                    success: true, 
+                    gameOver: true, 
+                    reason: "success",
+                    roundComplete: false,
+                    nextNarrative: null,
+                    resources: { ...this.resources }
+                };
+            }
+            
+            // Round is complete, but game continues
+            roundComplete = true;
+            return { 
+                success: true, 
+                gameOver: false, 
+                roundComplete: true,
+                resources: { ...this.resources },
+                nextNarrative: null,
+                currentRound: this.currentRound
+            };
+        }
+        
+        // Get next narrative
+        const nextNarrative = this.narratives.find(n => n.stop === this.currentStop) || null;
+        
+        return { 
+            success: true, 
+            gameOver: false, 
+            roundComplete: false,
+            nextNarrative,
+            resources: { ...this.resources }
+        };
+    }
+    
+    // Start the next round
+    startNextRound() {
+        // Update round counter
+        this.currentRound++;
+        this.currentStop = ((this.currentRound - 1) * this.stopsPerRound) + 1;
+        
+        // Get next narrative
+        const nextNarrative = this.narratives.find(n => n.stop === this.currentStop) || null;
+        
+        return { 
+            success: true, 
+            nextNarrative,
+            resources: { ...this.resources },
+            currentRound: this.currentRound,
+            currentStop: this.currentStop
+        };
+    }
+    
+    // Check if player has a passive effect
     hasPassiveEffect(effectId) {
         return this.activePassiveEffects.some(effect => effect.id === effectId);
     }
     
+    // Add a passive effect
     addPassiveEffect(effectId) {
         const effect = this.passiveEffects[effectId];
         if (effect && !this.hasPassiveEffect(effectId)) {
             this.activePassiveEffects.push(effect);
+            return true;
         }
+        return false;
     }
     
+    // Apply all active passive effects
     applyPassiveEffects() {
         for (const effect of this.activePassiveEffects) {
             if (effect.effect) {
@@ -252,29 +228,56 @@ class DroneManGame {
         }
     }
     
-    getResourcePercentage(resource) {
-        return (this.resources[resource] / 10) * 100;
-    }
-
-    generateDescription(card) {
-        const effects = [];
+    // Get summary text for round completion
+    getRoundSummaryText() {
+        let summaryText = '';
         
-        if (card.effects.soul > 0) effects.push("enriches your soul");
-        else if (card.effects.soul < 0) effects.push("drains your spirit");
-        
-        if (card.effects.connections > 0) effects.push("strengthens your connections");
-        else if (card.effects.connections < 0) effects.push("weakens your relationships");
-        
-        let description = effects.length > 0 
-            ? `This choice ${effects.join(" and ")}.` 
-            : "This choice will test your resolve.";
-            
-        if (card.cost > 0) {
-            description += " It costs money but could be worth the investment.";
-        } else if (card.cost < 0) {
-            description += " You'll earn money but at what cost to yourself?";
+        if (this.currentRound === 1) {
+            // End of first round
+            if (this.resources.soul >= 7) {
+                summaryText = "You've completed the first leg of your journey. Your soul is awakening, but greater challenges lie ahead.";
+            } else if (this.resources.connections >= 7) {
+                summaryText = "Your first steps have been taken. Your connections with others are strong, but your inner self still stirs with discontent.";
+            } else if (this.resources.money >= 6) {
+                summaryText = "Financial success has marked your early path, but at what cost to your deeper self?";
+            } else {
+                summaryText = "The initial steps of your journey have been tumultuous. The path forward remains uncertain.";
+            }
+        } else if (this.currentRound === 2) {
+            // End of second round
+            if (this.resources.soul >= 8 && this.resources.connections >= 6) {
+                summaryText = "Balance is forming in your journey. Your soul and connections strengthen each other as you approach the final leg.";
+            } else if (this.resources.soul <= 3 || this.resources.connections <= 3) {
+                summaryText = "You're walking a dangerous line. One aspect of your life is suffering greatly - can you find equilibrium?";
+            } else {
+                summaryText = "The middle of your journey finds you changed, but still searching. The final steps will define you.";
+            }
         }
         
-        return description;
+        return summaryText;
+    }
+    
+    // Get game over message based on final state
+    getGameOverMessage(success = true) {
+        if (!success) {
+            return this.gameOverReason;
+        }
+        
+        let message = `Journey complete! You've come full circle in the Drone Man's story.\n\nFinal stats:\nSoul: ${this.resources.soul}/10\nConnections: ${this.resources.connections}/10\nMoney: $${this.resources.money}`;
+        
+        // Custom ending based on final stats
+        if (this.resources.soul >= 8 && this.resources.connections >= 8) {
+            message += "\n\nYou broke free from the cycle and found genuine fulfillment.";
+        } else if (this.resources.soul >= 8 && this.resources.connections < 5) {
+            message += "\n\nYou found inner peace, though somewhat isolated from others.";
+        } else if (this.resources.soul < 5 && this.resources.connections >= 8) {
+            message += "\n\nYou're surrounded by people, but still searching for meaning.";
+        } else if (this.resources.money >= 8) {
+            message += "\n\nYou achieved financial success, but at what cost?";
+        } else {
+            message += "\n\nYou survived the journey, changed but still seeking.";
+        }
+        
+        return message;
     }
 }

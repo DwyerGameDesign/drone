@@ -1,195 +1,271 @@
 {
-    "cardDefinitions": [
-        {
-            "id": "overtime",
-            "title": "Overtime Work",
-            "cost": -2,
-            "effects": {
-                "soul": -1,
-                "connections": -1
-            },
-            "description": "Put in extra hours at work to earn more money, sacrificing your personal time and energy.",
-            "unlockPassive": "for_me",
-            "type": "money-earning"
-        },
-        {
-            "id": "freelance",
-            "title": "Freelance Gig",
-            "cost": -3,
-            "effects": {
-                "soul": 0,
-                "connections": -1
-            },
-            "description": "Take on additional work in your spare time. The money's good, but it leaves less time for friends.",
-            "type": "money-earning"
-        },
-        {
-            "id": "corporate_bonus",
-            "title": "Corporate Bonus",
-            "cost": -5,
-            "effects": {
-                "soul": -2,
-                "connections": 0
-            },
-            "description": "A substantial bonus comes with strings attached and growing expectations.",
-            "unlockPassive": "last_life",
-            "type": "money-earning"
-        },
-        {
-            "id": "guitar",
-            "title": "Buy a Guitar",
-            "cost": 3,
-            "effects": {
-                "soul": 2,
-                "connections": 0
-            },
-            "description": "Invest in a creative outlet that speaks to your soul. The instrument becomes an extension of your expression.",
-            "type": "soul-focused"
-        },
-        {
-            "id": "art_supplies",
-            "title": "Art Supplies",
-            "cost": 2,
-            "effects": {
-                "soul": 1,
-                "connections": 1
-            },
-            "description": "Stock up on materials to fuel your artistic journey. Each color holds infinite possibilities.",
-            "type": "soul-focused"
-        },
-        {
-            "id": "meditation",
-            "title": "Meditation Course",
-            "cost": 2,
-            "effects": {
-                "soul": 2,
-                "connections": 0
-            },
-            "description": "Learn to find peace within yourself through mindfulness and meditation practices.",
-            "unlockPassive": "strange_passenger",
-            "type": "soul-focused"
-        },
-        {
-            "id": "concert_tickets",
-            "title": "Concert Tickets",
-            "cost": 4,
-            "effects": {
-                "soul": 1,
-                "connections": 2
-            },
-            "description": "Share an unforgettable live music experience with friends. The memories will last forever.",
-            "type": "connection-focused"
-        },
-        {
-            "id": "dinner_party",
-            "title": "Host Dinner Party",
-            "cost": 3,
-            "effects": {
-                "soul": 0,
-                "connections": 2
-            },
-            "description": "Bring people together over good food and conversation. Strengthen bonds through shared moments.",
-            "type": "connection-focused"
-        },
-        {
-            "id": "join_club",
-            "title": "Join a Club",
-            "cost": 2,
-            "effects": {
-                "soul": 1,
-                "connections": 2
-            },
-            "description": "Become part of a community that shares your interests. Find your tribe.",
-            "unlockPassive": "write_along",
-            "type": "connection-focused"
-        },
-        {
-            "id": "road_trip",
-            "title": "Weekend Road Trip",
-            "cost": 4,
-            "effects": {
-                "soul": 2,
-                "connections": 1
-            },
-            "track": "Highway",
-            "illustration": "Road Illustration",
-            "type": "mixed"
-        },
-        {
-            "id": "volunteer",
-            "title": "Volunteer Work",
-            "cost": 0,
-            "effects": {
-                "soul": 1,
-                "connections": 1
-            },
-            "track": "Giving Back",
-            "illustration": "Helping Hands Illustration",
-            "type": "mixed"
-        },
-        {
-            "id": "night_class",
-            "title": "Night Class",
-            "cost": 3,
-            "effects": {
-                "soul": 1,
-                "connections": 1
-            },
-            "track": "Learning",
-            "illustration": "Classroom Illustration",
-            "type": "mixed"
-        }
+    "narratives": [
+      {
+        "stop": 1,
+        "title": "Inbound",
+        "narrative": "6:40 AM. The platform is cold and quiet as you wait for the train. The same train you've taken every weekday for years. You pull your beige trenchcoat tighter around your shoulders as you scan the empty platform. A distant rumble signals the approaching train. Just like yesterday, and the day before, and all the days stretching back through the calendar of your memory.",
+        "choices": [
+          {
+            "text": "Think about the life you once dreamed of",
+            "effects": { "soul": 1, "connections": 0, "money": 0 }
+          },
+          {
+            "text": "Review your upcoming work presentation",
+            "effects": { "soul": -1, "connections": 0, "money": 1 }
+          }
+        ]
+      },
+      {
+        "stop": 2,
+        "title": "Drone",
+        "narrative": "The train lurches forward as you settle into your usual seat. Through the window, the suburbs slide by in a blur of sameness. You're halfway through the commute when your phone buzzes. It's your boss: \"I need that report finished by noon.\" You were planning to take lunch with an old friend today, someone you've been meaning to reconnect with for months.",
+        "choices": [
+          {
+            "text": "Cancel lunch, finish the report",
+            "effects": { "soul": -1, "connections": -1, "money": 2 },
+            "unlockPassive": "for_me"
+          },
+          {
+            "text": "Keep the lunch date, rush the report later",
+            "effects": { "soul": 1, "connections": 2, "money": -1 }
+          }
+        ]
+      },
+      {
+        "stop": 3,
+        "title": "Write Along The Way",
+        "narrative": "Your college journal sits on your nightstand, gathering dust. Inside are fragments of stories you once wanted to write, dreams you once planned to chase. Tonight, you find yourself flipping through its pages, feeling a strange spark that hasn't flickered in years. The blank page calls to you.",
+        "choices": [
+          {
+            "text": "Start writing again, even if just for yourself",
+            "effects": { "soul": 2, "connections": 0, "money": 0 },
+            "unlockPassive": "write_along"
+          },
+          {
+            "text": "Close the journal, there's no time for fantasies",
+            "effects": { "soul": -1, "connections": 0, "money": 0 }
+          }
+        ]
+      },
+      {
+        "stop": 4,
+        "title": "Last Life",
+        "narrative": "It's 2AM. The blue light of your monitor is the only illumination in your apartment. \"Just one more level,\" you told yourself three hours ago. Your friends have invited you out countless times, but the digital world feels safer, more controllable. Your character stands victorious on screen, but the victory feels hollow.",
+        "choices": [
+          {
+            "text": "Log off and text your friends about weekend plans",
+            "effects": { "soul": 1, "connections": 2, "money": -1 }
+          },
+          {
+            "text": "Start a new game, you're on a roll tonight",
+            "effects": { "soul": -1, "connections": -1, "money": 0 },
+            "unlockPassive": "last_life"
+          }
+        ]
+      },
+      {
+        "stop": 5,
+        "title": "Strange Passenger",
+        "narrative": "A stranger sits beside you on today's commute - something that never happens in your carefully regulated routine. They're reading a book you loved years ago. Your eyes meet, and there's a strange pull, an unexpected connection. They smile, and for a moment, the train seems less gray.",
+        "choices": [
+          {
+            "text": "Strike up a conversation about the book",
+            "effects": { "soul": 1, "connections": 2, "money": 0 }
+          },
+          {
+            "text": "Look away, relationships are too complicated",
+            "effects": { "soul": -2, "connections": -1, "money": 0 },
+            "unlockPassive": "strange_passenger"
+          }
+        ]
+      },
+      {
+        "stop": 6,
+        "title": "For Me",
+        "narrative": "Your neighbor just bought a new car - sleek, expensive, turning heads. Your reliable old vehicle suddenly seems inadequate. The showroom downtown is having a sale. You don't need a new car, but the thought of rolling up to work in something impressive plants itself in your mind.",
+        "choices": [
+          {
+            "text": "Visit the dealership, get what you deserve",
+            "effects": { "soul": -1, "connections": 0, "money": -4 }
+          },
+          {
+            "text": "Your current car is fine, save your money",
+            "effects": { "soul": 1, "connections": 0, "money": 1 }
+          }
+        ]
+      },
+      {
+        "stop": 7,
+        "title": "Bioavailable",
+        "narrative": "Your doctor mentions your blood pressure during your annual checkup. \"Stress,\" he says. \"You need to find ways to relax.\" But the constant emails, the deadlines, the mortgage payments - they create an addictive cycle of pressure. The adrenaline rush of solving one crisis after another has become your normal.",
+        "choices": [
+          {
+            "text": "Take prescribed medication, make lifestyle changes",
+            "effects": { "soul": 2, "connections": 0, "money": -1 }
+          },
+          {
+            "text": "You thrive under pressure, it's fine",
+            "effects": { "soul": -2, "connections": 0, "money": 1 }
+          }
+        ]
+      },
+      {
+        "stop": 8,
+        "title": "Outbound",
+        "narrative": "A work conference in another city. As the return train pulls away from the station, you realize you didn't check your email once today. The world didn't end. For the first time in years, you watch the scenery without your mind racing ahead to the next task. Something is shifting inside you.",
+        "choices": [
+          {
+            "text": "Enjoy the moment, stay disconnected",
+            "effects": { "soul": 2, "connections": 0, "money": 0 }
+          },
+          {
+            "text": "Check your phone, you've been irresponsible",
+            "effects": { "soul": -1, "connections": 0, "money": 1 }
+          }
+        ]
+      },
+      {
+        "stop": 9,
+        "title": "Life Between Life",
+        "narrative": "A former colleague has died suddenly. At the funeral, people speak of his achievements, his career. But no one mentions joy, passion, or love. You recognize yourself in the tributes - a life measured in promotions and acquisitions. The thought follows you home like a shadow.",
+        "choices": [
+          {
+            "text": "Start a bucket list of experiences, not achievements",
+            "effects": { "soul": 2, "connections": 1, "money": -1 }
+          },
+          {
+            "text": "Double down on your career, legacy matters",
+            "effects": { "soul": -1, "connections": -1, "money": 2 }
+          }
+        ]
+      },
+      {
+        "stop": 10,
+        "title": "Squares",
+        "narrative": "The pandemic has transformed your dining room into an office. Your world has contracted into Zoom squares, each one a tiny window into other lives similarly confined. The boundaries between work and home have dissolved. You haven't left your apartment in three days.",
+        "choices": [
+          {
+            "text": "Set strict work boundaries, reclaim your space",
+            "effects": { "soul": 2, "connections": 0, "money": -1 }
+          },
+          {
+            "text": "Work longer hours, show your dedication",
+            "effects": { "soul": -2, "connections": -1, "money": 2 }
+          }
+        ]
+      },
+      {
+        "stop": 11,
+        "title": "Star Light",
+        "narrative": "3:17 AM. You stare at the ceiling, watching the star-shaped chandelier cast shadows as cars pass by outside. Sleep eludes you night after night. Your mind races with everything you've done and everything you've failed to do. The star seems to pulse with each anxious thought.",
+        "choices": [
+          {
+            "text": "Get up and write down your thoughts",
+            "effects": { "soul": 2, "connections": 0, "money": 0 }
+          },
+          {
+            "text": "Check work emails to distract yourself",
+            "effects": { "soul": -1, "connections": 0, "money": 1 }
+          }
+        ]
+      },
+      {
+        "stop": 12,
+        "title": "Sick of Home",
+        "narrative": "You notice the crack in your living room wall for the first time, though it's probably been there for years. Looking around, you see the faded furniture, the dusty shelves, the life you've been sleepwalking through. This place doesn't feel like home anymore - or perhaps it never really did.",
+        "choices": [
+          {
+            "text": "It's time for a major change in your life",
+            "effects": { "soul": 2, "connections": 1, "money": -2 }
+          },
+          {
+            "text": "Redecorate, a fresh coat of paint will help",
+            "effects": { "soul": 0, "connections": 0, "money": -1 }
+          }
+        ]
+      },
+      {
+        "stop": 13,
+        "title": "Contact High",
+        "narrative": "You find yourself on a train platform, but not your usual one. You don't remember deciding to come here. The departures board shows destinations you've never visited. A sense of liberation washes over you - the realization that you could go anywhere, be anyone. For the first time in years, possibilities feel endless.",
+        "choices": [
+          {
+            "text": "Board a train to somewhere new",
+            "effects": { "soul": 2, "connections": -1, "money": -1 }
+          },
+          {
+            "text": "Call a friend to meet you in the city",
+            "effects": { "soul": 1, "connections": 2, "money": -1 }
+          }
+        ]
+      },
+      {
+        "stop": 14,
+        "title": "Sick of Home",
+        "narrative": "In your hands is a resignation letter. You've written and deleted it a dozen times over the years, but this version feels different. Final. Your boss would be shocked - you've always been the reliable one, the steady worker, the company drone. But something has changed inside you.",
+        "choices": [
+          {
+            "text": "Submit the resignation letter",
+            "effects": { "soul": 3, "connections": -1, "money": -3 }
+          },
+          {
+            "text": "Save it as a draft, reconsider later",
+            "effects": { "soul": -1, "connections": 0, "money": 1 }
+          }
+        ]
+      },
+      {
+        "stop": 15,
+        "title": "The Feel",
+        "narrative": "The train slows as it approaches your station - the same one you've departed from and arrived at thousands of times. But today, you don't automatically rise from your seat. The doors open. Other passengers file past. You remain seated, watching the familiar platform. The same platform that will be there tomorrow, and the next day. Unless...",
+        "choices": [
+          {
+            "text": "Stay on the train, see where it takes you",
+            "effects": { "soul": 3, "connections": -1, "money": -1 }
+          },
+          {
+            "text": "This is your stop, you have responsibilities",
+            "effects": { "soul": -1, "connections": 1, "money": 1 }
+          }
+        ]
+      }
     ],
     "passiveEffects": {
-        "strange_passenger": {
-            "id": "strange_passenger",
-            "name": "Strange Passenger",
-            "description": "-1 Soul each stop",
-            "type": "soul-negative",
-            "effect": {
-                "soul": -1
-            }
-        },
-        "last_life": {
-            "id": "last_life",
-            "name": "Last Life",
-            "description": "-1 Soul each stop",
-            "type": "soul-negative",
-            "effect": {
-                "soul": -1
-            }
-        },
-        "for_me": {
-            "id": "for_me",
-            "name": "For Me",
-            "description": "+1 Money each stop",
-            "type": "money-positive",
-            "effect": {
-                "money": 1
-            }
-        },
-        "write_along": {
-            "id": "write_along",
-            "name": "Write Along The Way",
-            "description": "+1 Connection each stop",
-            "type": "connections-positive",
-            "effect": {
-                "connections": 1
-            }
+      "strange_passenger": {
+        "id": "strange_passenger",
+        "name": "Strange Passenger",
+        "description": "-1 Soul each stop",
+        "type": "soul-negative",
+        "effect": {
+          "soul": -1
         }
-    },
-    "thematicDescriptions": {
-        "overtime": "Put in extra hours at work to earn more money, sacrificing your personal time and energy.",
-        "freelance": "Take on additional work in your spare time. The money's good, but it leaves less time for friends.",
-        "corporate_bonus": "A substantial bonus comes with strings attached and growing expectations.",
-        "guitar": "Invest in a creative outlet that speaks to your soul. The instrument becomes an extension of your expression.",
-        "art_supplies": "Stock up on materials to fuel your artistic journey. Each color holds infinite possibilities.",
-        "meditation": "Learn to find peace within yourself through mindfulness and meditation practices.",
-        "concert_tickets": "Share an unforgettable live music experience with friends. The memories will last forever.",
-        "dinner_party": "Bring people together over good food and conversation. Strengthen bonds through shared moments.",
-        "join_club": "Become part of a community that shares your interests. Find your tribe.",
-        "road_trip": "Break free from routine with an adventure. The open road calls to your spirit.",
-        "volunteer": "Give your time to help others. The rewards are intangible but deeply fulfilling.",
-        "night_class": "Expand your horizons while meeting like-minded people. Growth comes in many forms."
+      },
+      "last_life": {
+        "id": "last_life",
+        "name": "Last Life",
+        "description": "-1 Soul each stop",
+        "type": "soul-negative",
+        "effect": {
+          "soul": -1
+        }
+      },
+      "for_me": {
+        "id": "for_me",
+        "name": "For Me",
+        "description": "+1 Money each stop",
+        "type": "money-positive",
+        "effect": {
+          "money": 1
+        }
+      },
+      "write_along": {
+        "id": "write_along",
+        "name": "Write Along The Way",
+        "description": "+1 Connection each stop",
+        "type": "connections-positive",
+        "effect": {
+          "connections": 1
+        }
+      }
     }
-}
+  }
