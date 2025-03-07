@@ -25,7 +25,6 @@ function initGame() {
     console.log('Initializing game...');
     game = new DroneManGame();
     updateUI();
-    generateNewPaths();
 }
 
 // Update UI elements
@@ -34,52 +33,46 @@ function updateUI() {
     turnCounter.textContent = currentTurn;
     
     // Update resource bars and values
-    updateResourceUI('soul', soulBar, soulValue);
-    updateResourceUI('connections', connectionsBar, connectionsValue);
+    const soulPercentage = (game.resources.soul / 10) * 100;
+    const connectionsPercentage = (game.resources.connections / 10) * 100;
     
-    // Update money
+    soulBar.style.width = `${soulPercentage}%`;
+    connectionsBar.style.width = `${connectionsPercentage}%`;
+    
+    soulValue.textContent = game.resources.soul;
+    connectionsValue.textContent = game.resources.connections;
     moneyValue.textContent = game.resources.money;
     
+    // Update resource bar colors based on values
+    soulBar.style.backgroundColor = game.resources.soul <= 3 ? '#e74c3c' : '#9b59b6';
+    connectionsBar.style.backgroundColor = game.resources.connections <= 3 ? '#e74c3c' : '#3498db';
+    
     // Update path cards
-    updatePathCard('a', pathACard);
-    updatePathCard('b', pathBCard);
+    updatePathCard(pathACard, game.currentPaths.a[0]);
+    updatePathCard(pathBCard, game.currentPaths.b[0]);
     
     // Update card states based on affordability
-    updateCardStates();
-    
-    // Update game message based on turn
-    updateGameMessage();
-}
-
-// Generate new path choices
-function generateNewPaths() {
-    console.log('Generating new paths...');
-    const [cardA, cardB] = game.generatePathChoices();
-    
-    if (!cardA || !cardB) {
-        console.error('Failed to generate cards:', { cardA, cardB });
-        return;
-    }
-    
-    updatePathCard('a', pathACard);
-    updatePathCard('b', pathBCard);
-    
-    // Update card states based on affordability
-    updateCardAffordability(pathA, cardA.cost);
-    updateCardAffordability(pathB, cardB.cost);
+    updateCardAffordability(pathA, game.currentPaths.a[0]?.cost || 0);
+    updateCardAffordability(pathB, game.currentPaths.b[0]?.cost || 0);
 }
 
 // Update a path card's content
-function updatePathCard(path, containerElement) {
-    const card = game.currentPaths[path][0]; // Get first card for the path
-    if (!card) return;
+function updatePathCard(cardElement, card) {
+    if (!card) {
+        console.error('No card data provided');
+        return;
+    }
     
-    containerElement.innerHTML = `
+    console.log('Updating path card:', card);
+    const costText = card.cost > 0 ? `$${card.cost}` : `EARN $${-card.cost}`;
+    const costClass = card.cost > 0 ? '' : 'earn';
+    
+    cardElement.innerHTML = `
         <div class="card-title">${card.title}</div>
-        <div class="cost-badge ${card.cost < 0 ? 'earn' : ''}">${card.cost < 0 ? `EARN $${-card.cost}` : `$${card.cost}`}</div>
-        <div class="album-track">♫ Track: ${card.albumTrack}</div>
-        <div class="card-description">${thematicDescriptions[card.id] || generateDescription(card)}</div>
-        <div class="card-illustration">[ ${card.title} Illustration ]</div>
+        <div class="cost-badge ${costClass}">${costText}</div>
+        <div class="album-track">♫ Track: ${card.track}</div>
+        <div class="card-description">${card.description}</div>
+        <div class="card-illustration">[${card.illustration}]</div>
     `;
 }
 
@@ -101,28 +94,22 @@ function showCannotAffordMessage() {
 }
 
 // Handle path selection
-function handlePathSelect(card, isPathA) {
-    console.log('Path selected:', isPathA ? 'A' : 'B');
+function handlePathSelect(path) {
+    console.log('Path selected:', path);
     
-    // Check if card is affordable
-    if (card.cost > game.resources.money) {
+    const success = game.choosePath(path);
+    if (!success) {
         showCannotAffordMessage();
         return;
     }
     
-    // Apply card effects
-    game.resources.money -= card.cost;
-    game.resources.soul = Math.max(0, Math.min(10, game.resources.soul + card.effects.soul));
-    game.resources.connections = Math.max(0, Math.min(10, game.resources.connections + card.effects.connections));
-    
     currentTurn++;
     
     // Check game over conditions
-    if (currentTurn > MAX_TURNS || game.resources.soul <= 0 || game.resources.connections <= 0) {
+    if (currentTurn > MAX_TURNS || game.gameOver) {
         endGame();
     } else {
         updateUI();
-        generateNewPaths();
     }
 }
 
@@ -145,7 +132,7 @@ function endGame() {
 // Event Listeners
 pathA.addEventListener('click', () => {
     if (!pathA.classList.contains('disabled')) {
-        handlePathSelect(game.currentPaths[0][0], true);
+        handlePathSelect('a');
     } else {
         showCannotAffordMessage();
     }
@@ -153,7 +140,7 @@ pathA.addEventListener('click', () => {
 
 pathB.addEventListener('click', () => {
     if (!pathB.classList.contains('disabled')) {
-        handlePathSelect(game.currentPaths[1][0], false);
+        handlePathSelect('b');
     } else {
         showCannotAffordMessage();
     }
@@ -161,10 +148,9 @@ pathB.addEventListener('click', () => {
 
 restartButton.addEventListener('click', () => {
     currentTurn = 1;
-    game.resetGame();
     gameOverScreen.style.display = 'none';
     initGame();
 });
 
 // Start the game
-initGame();
+document.addEventListener('DOMContentLoaded', initGame);

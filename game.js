@@ -65,7 +65,13 @@ class DroneManGame {
         }
 
         // Select random card
-        return availableCards[Math.floor(Math.random() * availableCards.length)];
+        const card = availableCards[Math.floor(Math.random() * availableCards.length)];
+        
+        // Add description from thematic descriptions
+        return {
+            ...card,
+            description: thematicDescriptions[card.id] || this.generateDescription(card)
+        };
     }
     
     canAffordPath(path) {
@@ -114,5 +120,27 @@ class DroneManGame {
     
     getResourcePercentage(resource) {
         return (this.resources[resource] / 10) * 100;
+    }
+
+    generateDescription(card) {
+        const effects = [];
+        
+        if (card.effects.soul > 0) effects.push("enriches your soul");
+        else if (card.effects.soul < 0) effects.push("drains your spirit");
+        
+        if (card.effects.connections > 0) effects.push("strengthens your connections");
+        else if (card.effects.connections < 0) effects.push("weakens your relationships");
+        
+        let description = effects.length > 0 
+            ? `This choice ${effects.join(" and ")}.` 
+            : "This choice will test your resolve.";
+            
+        if (card.cost > 0) {
+            description += " It costs money but could be worth the investment.";
+        } else if (card.cost < 0) {
+            description += " You'll earn money but at what cost to yourself?";
+        }
+        
+        return description;
     }
 }
