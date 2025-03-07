@@ -6,12 +6,27 @@ class DroneManGame {
         this.startingResources = {
             soul: 5,
             connections: 5,
-            money: 3 // Starting money as currency
+            money: 3
         };
-        this.maxTurns = 20; // About 20 train stops in the journey
+        this.maxTurns = 20;
         
-        // Initialize game state
-        this.resetGame();
+        // Load game data
+        this.loadGameData();
+    }
+    
+    async loadGameData() {
+        try {
+            const response = await fetch('cards.json');
+            const data = await response.json();
+            this.cardDefinitions = data.cardDefinitions;
+            this.passiveEffects = data.passiveEffects;
+            this.thematicDescriptions = data.thematicDescriptions;
+            
+            // Initialize game after data is loaded
+            this.resetGame();
+        } catch (error) {
+            console.error('Error loading game data:', error);
+        }
     }
     
     resetGame() {
@@ -35,8 +50,10 @@ class DroneManGame {
         
         this.passiveEffects = [];
         
-        // Generate initial paths
-        this.generatePaths();
+        // Generate initial paths if data is loaded
+        if (this.cardDefinitions) {
+            this.generatePaths();
+        }
     }
     
     generatePaths() {
@@ -48,8 +65,10 @@ class DroneManGame {
     }
     
     getRandomCard(isPathA) {
+        if (!this.cardDefinitions) return null;
+
         // Filter cards based on path type
-        const availableCards = cardDefinitions.filter(card => {
+        const availableCards = this.cardDefinitions.filter(card => {
             if (isPathA) {
                 // Path A: Tends to cost money but give resources
                 return card.cost > 0 || 
@@ -69,10 +88,10 @@ class DroneManGame {
         // Select random card
         const card = availableCards[Math.floor(Math.random() * availableCards.length)];
         
-        // Add description from thematic descriptions
+        // Add description from thematic descriptions if available
         return {
             ...card,
-            description: thematicDescriptions[card.id] || this.generateDescription(card)
+            description: this.thematicDescriptions[card.id] || this.generateDescription(card)
         };
     }
     
@@ -133,7 +152,7 @@ class DroneManGame {
     }
     
     addPassiveEffect(effectId) {
-        const effect = passiveEffects[effectId];
+        const effect = this.passiveEffects[effectId];
         if (effect && !this.hasPassiveEffect(effectId)) {
             this.passiveEffects.push(effect);
         }

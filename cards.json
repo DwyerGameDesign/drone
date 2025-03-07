@@ -1,203 +1,195 @@
 {
-    "cards": [
-      {
-        "id": 1,
-        "title": "Overtime Work",
-        "effects": { "soul": -1 },
-        "cost": -2,
-        "rarity": "common",
-        "description": "Put in extra hours at work to earn money at the cost of your spirit.",
-        "thematicOptions": [
-          "Late night at the office",
-          "Weekend work assignment",
-          "Extra shift"
-        ]
-      },
-      {
-        "id": 2,
-        "title": "Side Gig",
-        "effects": { "soul": -1 },
-        "cost": -1,
-        "rarity": "common",
-        "description": "Take on additional work to supplement your income.",
-        "thematicOptions": [
-          "Freelance project",
-          "Drive for a ride-share service",
-          "Evening tutoring"
-        ]
-      },
-      {
-        "id": 3,
-        "title": "Paycheck",
-        "effects": {},
-        "cost": -3,
-        "rarity": "common",
-        "description": "Your regular income arrives.",
-        "thematicOptions": [
-          "Direct deposit day",
-          "Cash your check",
-          "Payday ritual"
-        ]
-      },
-      {
-        "id": 5,
-        "title": "Cancel Plans",
-        "effects": { "connections": -1 },
-        "cost": -1,
-        "rarity": "common",
-        "description": "Ditch your social obligations to pick up an extra shift.",
-        "thematicOptions": [
-          "Rain check on dinner",
-          "Miss a birthday party",
-          "Skip the gathering"
-        ]
-      },
-      {
-        "id": 10,
-        "title": "Meditation",
-        "effects": { "soul": 1 },
-        "cost": 0,
-        "rarity": "common",
-        "description": "Take time to center yourself and clear your mind.",
-        "thematicOptions": [
-          "Morning mindfulness",
-          "Breathing exercise",
-          "Evening reflection"
-        ]
-      },
-      {
-        "id": 12,
-        "title": "Art Class",
-        "effects": { "soul": 2 },
-        "cost": 1,
-        "rarity": "common",
-        "description": "Express yourself through creative activity.",
-        "thematicOptions": [
-          "Pottery workshop",
-          "Painting session",
-          "Creative writing group"
-        ]
-      },
-      {
-        "id": 15,
-        "title": "Buy a Guitar",
-        "effects": { "soul": 3 },
-        "cost": 3,
-        "rarity": "uncommon",
-        "description": "Invest in a creative outlet that speaks to you.",
-        "thematicOptions": [
-          "Start learning an instrument",
-          "Upgrade your equipment",
-          "Rediscover an old passion"
-        ]
-      },
-      {
-        "id": 17,
-        "title": "Quick Text",
-        "effects": { "connections": 1 },
-        "cost": 0,
-        "rarity": "common",
-        "description": "Take a moment to check in with someone important to you.",
-        "thematicOptions": [
-          "Message an old friend",
-          "Digital hello to family",
-          "Reconnect with acquaintance"
-        ]
-      },
-      {
-        "id": 18,
-        "title": "Coffee Date",
-        "effects": { "connections": 1 },
-        "cost": 1,
-        "rarity": "common",
-        "description": "Meet up with a friend for conversation.",
-        "thematicOptions": [
-          "Catch up with old friend",
-          "Meet a colleague outside work",
-          "First date at a café"
-        ]
-      },
-      {
-        "id": 20,
-        "title": "Weekend Trip",
-        "effects": { "connections": 3 },
-        "cost": 3,
-        "rarity": "uncommon",
-        "description": "Get away with friends or family to strengthen bonds.",
-        "thematicOptions": [
-          "Beach getaway",
-          "Camping adventure",
-          "City exploration"
-        ]
-      },
-      {
-        "id": 24,
-        "title": "Family Time",
-        "effects": { "connections": 2, "soul": 1 },
-        "cost": 1,
-        "rarity": "common",
-        "description": "Spend quality time with loved ones.",
-        "thematicOptions": [
-          "Game night",
-          "Family dinner",
-          "Holiday gathering"
-        ]
-      },
-      {
-        "id": 31,
-        "title": "Write Along The Way",
-        "effects": { "soul": 2 },
-        "cost": 0,
-        "rarity": "uncommon",
-        "albumTrack": true,
-        "description": "You embrace the spontaneity of life without a plan.",
-        "thematicOptions": [
-          "Improvise a speech",
-          "Start writing without an outline",
-          "Take an unplanned road trip"
-        ]
-      },
-      {
-        "id": 34,
-        "title": "For Me",
-        "effects": { "soul": -1 },
-        "cost": -2,
-        "rarity": "uncommon",
-        "albumTrack": true,
-        "description": "Chase material gains at the expense of your spirit.",
-        "thematicOptions": [
-          "Buy status symbols",
-          "Focus on appearances",
-          "Chase the next shiny object"
-        ]
-      },
-      {
-        "id": 40,
-        "title": "Contact High",
-        "effects": { "soul": 2, "connections": 1 },
-        "cost": 2,
-        "rarity": "very rare",
-        "albumTrack": true,
-        "description": "You experience the intoxicating feeling of true freedom.",
-        "thematicOptions": [
-          "Major life decision",
-          "Drastic career change",
-          "Breaking free from constraints"
-        ]
-      },
-      {
-        "id": 41,
-        "title": "The Feel",
-        "effects": { "soul": 3 },
-        "cost": 3,
-        "rarity": "rare",
-        "albumTrack": true,
-        "description": "You find peace in uncertainty and acceptance.",
-        "thematicOptions": [
-          "Embracing the unknown",
-          "Finding stillness in chaos",
-          "Accepting life's imperfections"
-        ]
-      }
-    ]
-  }
+    "cardDefinitions": [
+        {
+            "id": "overtime",
+            "title": "Overtime Work",
+            "cost": -2,
+            "effects": {
+                "soul": -1,
+                "connections": -1
+            },
+            "description": "Put in extra hours at work to earn more money, sacrificing your personal time and energy.",
+            "unlockPassive": "for_me",
+            "type": "money-earning"
+        },
+        {
+            "id": "freelance",
+            "title": "Freelance Gig",
+            "cost": -3,
+            "effects": {
+                "soul": 0,
+                "connections": -1
+            },
+            "description": "Take on additional work in your spare time. The money's good, but it leaves less time for friends.",
+            "type": "money-earning"
+        },
+        {
+            "id": "corporate_bonus",
+            "title": "Corporate Bonus",
+            "cost": -5,
+            "effects": {
+                "soul": -2,
+                "connections": 0
+            },
+            "description": "A substantial bonus comes with strings attached and growing expectations.",
+            "unlockPassive": "last_life",
+            "type": "money-earning"
+        },
+        {
+            "id": "guitar",
+            "title": "Buy a Guitar",
+            "cost": 3,
+            "effects": {
+                "soul": 2,
+                "connections": 0
+            },
+            "description": "Invest in a creative outlet that speaks to your soul. The instrument becomes an extension of your expression.",
+            "type": "soul-focused"
+        },
+        {
+            "id": "art_supplies",
+            "title": "Art Supplies",
+            "cost": 2,
+            "effects": {
+                "soul": 1,
+                "connections": 1
+            },
+            "description": "Stock up on materials to fuel your artistic journey. Each color holds infinite possibilities.",
+            "type": "soul-focused"
+        },
+        {
+            "id": "meditation",
+            "title": "Meditation Course",
+            "cost": 2,
+            "effects": {
+                "soul": 2,
+                "connections": 0
+            },
+            "description": "Learn to find peace within yourself through mindfulness and meditation practices.",
+            "unlockPassive": "strange_passenger",
+            "type": "soul-focused"
+        },
+        {
+            "id": "concert_tickets",
+            "title": "Concert Tickets",
+            "cost": 4,
+            "effects": {
+                "soul": 1,
+                "connections": 2
+            },
+            "description": "Share an unforgettable live music experience with friends. The memories will last forever.",
+            "type": "connection-focused"
+        },
+        {
+            "id": "dinner_party",
+            "title": "Host Dinner Party",
+            "cost": 3,
+            "effects": {
+                "soul": 0,
+                "connections": 2
+            },
+            "description": "Bring people together over good food and conversation. Strengthen bonds through shared moments.",
+            "type": "connection-focused"
+        },
+        {
+            "id": "join_club",
+            "title": "Join a Club",
+            "cost": 2,
+            "effects": {
+                "soul": 1,
+                "connections": 2
+            },
+            "description": "Become part of a community that shares your interests. Find your tribe.",
+            "unlockPassive": "write_along",
+            "type": "connection-focused"
+        },
+        {
+            "id": "road_trip",
+            "title": "Weekend Road Trip",
+            "cost": 4,
+            "effects": {
+                "soul": 2,
+                "connections": 1
+            },
+            "track": "Highway",
+            "illustration": "Road Illustration",
+            "type": "mixed"
+        },
+        {
+            "id": "volunteer",
+            "title": "Volunteer Work",
+            "cost": 0,
+            "effects": {
+                "soul": 1,
+                "connections": 1
+            },
+            "track": "Giving Back",
+            "illustration": "Helping Hands Illustration",
+            "type": "mixed"
+        },
+        {
+            "id": "night_class",
+            "title": "Night Class",
+            "cost": 3,
+            "effects": {
+                "soul": 1,
+                "connections": 1
+            },
+            "track": "Learning",
+            "illustration": "Classroom Illustration",
+            "type": "mixed"
+        }
+    ],
+    "passiveEffects": {
+        "strange_passenger": {
+            "id": "strange_passenger",
+            "name": "Strange Passenger",
+            "description": "-1 Soul each stop",
+            "type": "soul-negative",
+            "effect": {
+                "soul": -1
+            }
+        },
+        "last_life": {
+            "id": "last_life",
+            "name": "Last Life",
+            "description": "-1 Soul each stop",
+            "type": "soul-negative",
+            "effect": {
+                "soul": -1
+            }
+        },
+        "for_me": {
+            "id": "for_me",
+            "name": "For Me",
+            "description": "+1 Money each stop",
+            "type": "money-positive",
+            "effect": {
+                "money": 1
+            }
+        },
+        "write_along": {
+            "id": "write_along",
+            "name": "Write Along The Way",
+            "description": "+1 Connection each stop",
+            "type": "connections-positive",
+            "effect": {
+                "connections": 1
+            }
+        }
+    },
+    "thematicDescriptions": {
+        "overtime": "Put in extra hours at work to earn more money, sacrificing your personal time and energy.",
+        "freelance": "Take on additional work in your spare time. The money's good, but it leaves less time for friends.",
+        "corporate_bonus": "A substantial bonus comes with strings attached and growing expectations.",
+        "guitar": "Invest in a creative outlet that speaks to your soul. The instrument becomes an extension of your expression.",
+        "art_supplies": "Stock up on materials to fuel your artistic journey. Each color holds infinite possibilities.",
+        "meditation": "Learn to find peace within yourself through mindfulness and meditation practices.",
+        "concert_tickets": "Share an unforgettable live music experience with friends. The memories will last forever.",
+        "dinner_party": "Bring people together over good food and conversation. Strengthen bonds through shared moments.",
+        "join_club": "Become part of a community that shares your interests. Find your tribe.",
+        "road_trip": "Break free from routine with an adventure. The open road calls to your spirit.",
+        "volunteer": "Give your time to help others. The rewards are intangible but deeply fulfilling.",
+        "night_class": "Expand your horizons while meeting like-minded people. Growth comes in many forms."
+    }
+}
