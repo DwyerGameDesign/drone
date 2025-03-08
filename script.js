@@ -6,31 +6,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // UI Elements
     const elements = {
-        roundCounter: document.getElementById('round-counter'),
-        stopCounter: document.getElementById('stop-counter'),
+        roundNumber: document.getElementById('round-number'),
         soulBar: document.getElementById('soul-bar'),
         connectionsBar: document.getElementById('connections-bar'),
         soulValue: document.getElementById('soul-value'),
         connectionsValue: document.getElementById('connections-value'),
         moneyValue: document.getElementById('money-value'),
         narrativeCard: document.getElementById('narrative-card'),
-        narrativeCardTitle: document.getElementById('narrative-card-title'),
-        narrativeCardText: document.getElementById('narrative-card-text'),
-        narrativeCardChoices: document.getElementById('narrative-card-choices'),
+        narrativeCardTitle: document.querySelector('.narrative-card-title'),
+        narrativeCardText: document.querySelector('.narrative-card-text'),
+        narrativeCardChoices: document.querySelector('.narrative-card-choices'),
         historyTrack: document.getElementById('history-track'),
-        passiveEffectsList: document.getElementById('passive-effects-list'),
-        passiveEffectsContainer: document.getElementById('passive-effects-container'),
-        passiveEffectsHeader: document.getElementById('passive-effects-header'),
-        roundCompleteScreen: document.getElementById('round-complete-screen'),
+        roundComplete: document.getElementById('round-complete'),
         completedRound: document.getElementById('completed-round'),
         roundSoulValue: document.getElementById('round-soul-value'),
         roundConnectionsValue: document.getElementById('round-connections-value'),
         roundMoneyValue: document.getElementById('round-money-value'),
         roundSummaryText: document.getElementById('round-summary-text'),
         nextRoundButton: document.getElementById('next-round-button'),
-        gameOverScreen: document.getElementById('game-over-screen'),
+        gameOver: document.getElementById('game-over'),
         gameOverMessage: document.getElementById('game-over-message'),
-        restartButton: document.getElementById('restart-button')
+        restartButton: document.getElementById('restart-button'),
+        pathA: document.getElementById('path-a'),
+        pathB: document.getElementById('path-b')
     };
     
     // Typewriter effect variables
@@ -47,23 +45,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     elements.nextRoundButton.addEventListener('click', () => {
         const result = game.startNextRound();
-        elements.roundCompleteScreen.style.display = 'none';
+        elements.roundComplete.style.display = 'none';
         displayNarrative(result.nextNarrative);
         updateUI();
     });
     
     elements.restartButton.addEventListener('click', () => {
         game.restart();
-        elements.gameOverScreen.style.display = 'none';
+        elements.gameOver.style.display = 'none';
         elements.historyTrack.innerHTML = '';
         const narrative = game.getCurrentNarrative();
         displayNarrative(narrative);
         updateUI();
-    });
-    
-    // Collapsible passive effects
-    elements.passiveEffectsHeader.addEventListener('click', () => {
-        elements.passiveEffectsContainer.classList.toggle('open');
     });
     
     // Wait for game data to load
@@ -101,7 +94,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Clear existing content
         elements.narrativeCardText.textContent = '';
-        elements.narrativeCardChoices.innerHTML = '';
+        
+        // Clear choices
+        elements.pathA.innerHTML = '<span class="choice-text"></span><span class="power-meter-icon">⚡</span>';
+        elements.pathB.innerHTML = '<span class="choice-text"></span><span class="power-meter-icon">⚡</span>';
         
         // Start typewriter effect
         let index = 0;
@@ -133,35 +129,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Display choices
     function displayChoices(choices) {
-        elements.narrativeCardChoices.innerHTML = '';
+        const buttons = [elements.pathA, elements.pathB];
         
         choices.forEach((choice, index) => {
-            const choiceButton = document.createElement('button');
-            choiceButton.className = 'choice-button';
-            choiceButton.textContent = choice.text;
+            if (index >= buttons.length) return;
             
-            // Add indicator if the choice costs money
+            const button = buttons[index];
+            const choiceText = button.querySelector('.choice-text');
+            
+            // Set choice text
+            let text = choice.text;
+            
+            // Add cost/reward indicator
             if (choice.effects.money < 0) {
-                choiceButton.textContent += ` ($${Math.abs(choice.effects.money)})`;
+                text += ` ($${Math.abs(choice.effects.money)})`;
                 // Disable if can't afford
                 if (Math.abs(choice.effects.money) > game.resources.money) {
-                    choiceButton.disabled = true;
-                    choiceButton.classList.add('disabled');
+                    button.disabled = true;
+                    button.classList.add('disabled');
+                } else {
+                    button.disabled = false;
+                    button.classList.remove('disabled');
                 }
             } else if (choice.effects.money > 0) {
-                choiceButton.textContent += ` (+$${choice.effects.money})`;
+                text += ` (+$${choice.effects.money})`;
+                button.disabled = false;
+                button.classList.remove('disabled');
             }
             
-            // Add power meter indicator if applicable
-            if (choice.powerMeter) {
-                const meterIcon = document.createElement('span');
-                meterIcon.className = 'power-meter-icon';
-                meterIcon.innerHTML = '⚡'; // Lightning bolt icon
-                choiceButton.appendChild(meterIcon);
-            }
+            choiceText.textContent = text;
             
-            choiceButton.addEventListener('click', () => makeChoice(index));
-            elements.narrativeCardChoices.appendChild(choiceButton);
+            // Show/hide power meter icon
+            const meterIcon = button.querySelector('.power-meter-icon');
+            meterIcon.style.display = choice.powerMeter ? 'block' : 'none';
+            
+            // Add click handler
+            button.onclick = () => makeChoice(index);
         });
     }
     
@@ -250,122 +253,69 @@ document.addEventListener('DOMContentLoaded', async () => {
         title.textContent = decision.title;
         historyCard.appendChild(title);
         
-        // Add abbreviated choice text
-        const choiceText = document.createElement('div');
-        choiceText.className = 'history-card-choice';
-        // Get first few words
-        const words = decision.text.split(' ');
-        choiceText.textContent = words.slice(0, 3).join(' ') + (words.length > 3 ? '...' : '');
-        historyCard.appendChild(choiceText);
+        // Add choice text
+        const choice = document.createElement('div');
+        choice.className = 'history-card-choice';
+        choice.textContent = decision.choiceText;
+        historyCard.appendChild(choice);
         
         // Add effects
         const effects = document.createElement('div');
         effects.className = 'history-card-effects';
         
+        // Soul effect
         if (decision.effects.soul !== 0) {
-            const soulEffect = document.createElement('span');
+            const soulEffect = document.createElement('div');
             soulEffect.className = `history-card-effect ${decision.effects.soul > 0 ? 'soul-positive' : 'soul-negative'}`;
-            soulEffect.textContent = `S${decision.effects.soul > 0 ? '+' : ''}${decision.effects.soul}`;
+            soulEffect.textContent = `${decision.effects.soul > 0 ? '+' : ''}${decision.effects.soul}S`;
             effects.appendChild(soulEffect);
         }
         
+        // Connections effect
         if (decision.effects.connections !== 0) {
-            const connectionsEffect = document.createElement('span');
+            const connectionsEffect = document.createElement('div');
             connectionsEffect.className = `history-card-effect ${decision.effects.connections > 0 ? 'connections-positive' : 'connections-negative'}`;
-            connectionsEffect.textContent = `C${decision.effects.connections > 0 ? '+' : ''}${decision.effects.connections}`;
+            connectionsEffect.textContent = `${decision.effects.connections > 0 ? '+' : ''}${decision.effects.connections}C`;
             effects.appendChild(connectionsEffect);
         }
         
+        // Money effect
         if (decision.effects.money !== 0) {
-            const moneyEffect = document.createElement('span');
+            const moneyEffect = document.createElement('div');
             moneyEffect.className = `history-card-effect ${decision.effects.money > 0 ? 'money-positive' : 'money-negative'}`;
-            moneyEffect.textContent = `$${decision.effects.money > 0 ? '+' : ''}${decision.effects.money}`;
+            moneyEffect.textContent = `${decision.effects.money > 0 ? '+' : ''}$${decision.effects.money}`;
             effects.appendChild(moneyEffect);
         }
         
         historyCard.appendChild(effects);
-        
-        // Add power meter result if applicable
-        if (decision.powerMeterResult) {
-            const powerMeterIndicator = document.createElement('div');
-            powerMeterIndicator.className = `power-meter-indicator ${decision.powerMeterResult}`;
-            powerMeterIndicator.textContent = '⚡'; // Lightning bolt icon
-            historyCard.appendChild(powerMeterIndicator);
-        }
-        
-        // Add to history track
         elements.historyTrack.appendChild(historyCard);
-        
-        // Scroll to latest card
-        historyCard.scrollIntoView({ behavior: 'smooth', inline: 'end' });
-    }
-    
-    // Show round complete screen
-    function showRoundComplete() {
-        // Update round summary values
-        elements.completedRound.textContent = game.currentRound;
-        elements.roundSoulValue.textContent = game.resources.soul;
-        elements.roundConnectionsValue.textContent = game.resources.connections;
-        elements.roundMoneyValue.textContent = game.resources.money;
-        
-        // Set appropriate round summary text
-        elements.roundSummaryText.textContent = game.getRoundSummaryText();
-        
-        // Show the round complete screen
-        elements.roundCompleteScreen.style.display = 'flex';
-    }
-    
-    // Show game over screen
-    function showGameOver(success) {
-        elements.gameOverMessage.textContent = game.getGameOverMessage(success);
-        elements.gameOverScreen.style.display = 'flex';
+        elements.historyTrack.scrollLeft = elements.historyTrack.scrollWidth;
     }
     
     // Update UI elements
     function updateUI() {
-        elements.roundCounter.textContent = game.currentRound;
-        elements.stopCounter.textContent = ((game.currentStop - 1) % game.stopsPerRound) + 1;
-        
         // Update resource bars and values
-        const soulPercentage = (game.resources.soul / 10) * 100;
-        const connectionsPercentage = (game.resources.connections / 10) * 100;
-        
-        elements.soulBar.style.width = `${soulPercentage}%`;
-        elements.connectionsBar.style.width = `${connectionsPercentage}%`;
-        
+        elements.soulBar.style.width = `${(game.resources.soul / game.maxResources.soul) * 100}%`;
+        elements.connectionsBar.style.width = `${(game.resources.connections / game.maxResources.connections) * 100}%`;
         elements.soulValue.textContent = game.resources.soul;
         elements.connectionsValue.textContent = game.resources.connections;
         elements.moneyValue.textContent = game.resources.money;
-        
-        // Update resource bar colors based on values
-        elements.soulBar.style.backgroundColor = game.resources.soul <= 3 ? '#e74c3c' : '#9b59b6';
-        elements.connectionsBar.style.backgroundColor = game.resources.connections <= 3 ? '#e74c3c' : '#3498db';
-        
-        // Update passive effects
-        updatePassiveEffects();
+        elements.roundNumber.textContent = game.currentRound;
     }
     
-    // Update passive effects display
-    function updatePassiveEffects() {
-        elements.passiveEffectsList.innerHTML = '';
-        
-        if (!game.activePassiveEffects || game.activePassiveEffects.length === 0) {
-            elements.passiveEffectsList.innerHTML = `
-                <div class="passive-effect">
-                    No passive effects active
-                </div>
-            `;
-            return;
-        }
-        
-        for (const effect of game.activePassiveEffects) {
-            const effectElement = document.createElement('div');
-            effectElement.className = `passive-effect ${effect.type}`;
-            effectElement.textContent = `${effect.name}: ${effect.description}`;
-            elements.passiveEffectsList.appendChild(effectElement);
-        }
-        
-        // Open the passive effects section if there are effects
-        elements.passiveEffectsContainer.classList.add('open');
+    // Show round complete screen
+    function showRoundComplete() {
+        elements.roundComplete.style.display = 'flex';
+        elements.completedRound.textContent = game.currentRound;
+        elements.roundSoulValue.textContent = game.resources.soul;
+        elements.roundConnectionsValue.textContent = game.resources.connections;
+        elements.roundMoneyValue.textContent = game.resources.money;
+        elements.roundSummaryText.textContent = game.getRoundSummary();
+    }
+    
+    // Show game over screen
+    function showGameOver(success) {
+        elements.gameOver.style.display = 'flex';
+        elements.gameOverMessage.textContent = game.getGameOverMessage(success);
     }
 });
