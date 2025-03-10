@@ -62,6 +62,17 @@
     padding: 5px;
 }
 
+.meter-instructions.completed {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+.integrated-power-meter.completed {
+    cursor: default;
+    opacity: 0.8;
+    pointer-events: none;
+}
+
 .integrated-meter-result {
     position: absolute;
     top: 50%;

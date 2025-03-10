@@ -345,9 +345,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // Display the swing meter immediately
     function displaySwingMeter(narrative) {
         console.log('Displaying swing meter');
+        
+        // Check if this swing meter has already been completed in the game state
+        if (narrative.id && game.isSwingMeterCompleted(narrative.id)) {
+            console.log(`Swing meter for narrative ${narrative.id} already completed, skipping display`);
+            
+            // Process the last result again or use a default result
+            const defaultResult = 'okay'; // Default to 'okay' if no previous result
+            const processedResult = game.handleSwingMeter(defaultResult);
+            handleInteractionResult(processedResult);
+            return;
+        }
+        
         // Create a container for the swing meter if it doesn't exist
         const meterContainerId = 'swing-meter-container';
         let meterContainer = document.getElementById(meterContainerId);
+        
+        // Check if there's already a completed swing meter in the DOM
+        if (meterContainer && meterContainer.querySelector('.integrated-power-meter.completed')) {
+            console.log('Swing meter already completed in DOM, skipping display');
+            return;
+        }
         
         if (!meterContainer) {
             meterContainer = document.createElement('div');

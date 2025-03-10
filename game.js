@@ -31,6 +31,7 @@ class DroneManGame {
         this.lastRandomEventId = null;
         this.randomEventProbability = 30; // 30% chance of a random event after each narrative
         this.currentRandomEvent = null;
+        this.completedSwingMeters = []; // Track completed swing meters
         
         // Load game data
         this.loadGameData();
@@ -168,7 +169,25 @@ class DroneManGame {
         // Add swing meter result to the processed result
         processedResult.swingMeterResult = result;
         
+        // Mark this swing meter as completed
+        if (narrative.id) {
+            this.markSwingMeterCompleted(narrative.id);
+        }
+        
         return processedResult;
+    }
+    
+    // Mark a swing meter as completed to prevent replaying
+    markSwingMeterCompleted(narrativeId) {
+        if (!this.completedSwingMeters.includes(narrativeId)) {
+            this.completedSwingMeters.push(narrativeId);
+            console.log(`Marked swing meter for narrative ${narrativeId} as completed`);
+        }
+    }
+    
+    // Check if a swing meter has been completed
+    isSwingMeterCompleted(narrativeId) {
+        return this.completedSwingMeters.includes(narrativeId);
     }
     
     // Handle choice interaction

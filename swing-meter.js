@@ -16,6 +16,7 @@ class SwingMeter {
         this.tapPosition = null;
         this.hasPlayerTapped = false;
         this.animationComplete = false;
+        this.completed = false; // Track if the meter has been completed
         
         this.render();
     }
@@ -89,6 +90,11 @@ class SwingMeter {
     }
     
     handleClick() {
+        // If the meter has already been completed, ignore clicks
+        if (this.completed) {
+            return;
+        }
+        
         if (!this.isMoving) {
             // First click - start the meter
             this.isMoving = true;
@@ -180,7 +186,20 @@ class SwingMeter {
         }
         
         this.result = result;
+        this.completed = true; // Mark the meter as completed
         this.showResult(result);
+        
+        // Add a "completed" class to the meter to visually indicate it's done
+        if (this.meterElement) {
+            this.meterElement.classList.add('completed');
+        }
+        
+        // Update instructions to show it's completed
+        const instructions = this.container.querySelector('.meter-instructions');
+        if (instructions) {
+            instructions.textContent = 'COMPLETED';
+            instructions.classList.add('completed');
+        }
     }
     
     showResult(result) {
@@ -216,6 +235,12 @@ function showSwingMeter(containerId, meterType, context, callback) {
     if (!container) {
         console.error('Container not found:', containerId);
         callback(null);
+        return;
+    }
+    
+    // Check if there's already a completed meter in this container
+    if (container.querySelector('.integrated-power-meter.completed')) {
+        console.log('Swing meter already completed in this container');
         return;
     }
     
