@@ -12,6 +12,7 @@ class SwingMeter {
         this.totalWidth = 0; // Will be calculated based on actual meter width
         this.meterElement = null;
         this.indicator = null;
+        this.bottomIndicator = null;
         this.tapMarker = null;
         this.tapPosition = null;
         this.hasPlayerTapped = false;
@@ -67,25 +68,35 @@ class SwingMeter {
         // Add meter background to meter first
         meter.appendChild(meterBackground);
         
-        // Add indicator (single triangle that moves)
-        const indicator = document.createElement('div');
-        indicator.className = 'meter-indicator';
-        indicator.style.display = 'block'; // Ensure it's visible
-        indicator.style.position = 'absolute'; // Ensure position is absolute
-        indicator.style.zIndex = '100'; // Ensure it's on top
-        indicator.style.left = '0px'; // Start at the left edge
-        this.indicator = indicator;
+        // Add top indicator (triangle pointing down)
+        const topIndicator = document.createElement('div');
+        topIndicator.className = 'meter-indicator meter-indicator-top';
+        topIndicator.style.display = 'block';
+        topIndicator.style.position = 'absolute';
+        topIndicator.style.zIndex = '100';
+        topIndicator.style.left = '0px';
+        this.indicator = topIndicator; // Store reference to top indicator
+        
+        // Add bottom indicator (triangle pointing up)
+        const bottomIndicator = document.createElement('div');
+        bottomIndicator.className = 'meter-indicator meter-indicator-bottom';
+        bottomIndicator.style.display = 'block';
+        bottomIndicator.style.position = 'absolute';
+        bottomIndicator.style.zIndex = '100';
+        bottomIndicator.style.left = '0px';
+        this.bottomIndicator = bottomIndicator; // Store reference to bottom indicator
         
         // Create tap marker (initially hidden)
         const tapMarker = document.createElement('div');
         tapMarker.className = 'tap-marker';
         tapMarker.style.display = 'none';
-        tapMarker.style.position = 'absolute'; // Ensure position is absolute
-        tapMarker.style.zIndex = '99'; // Ensure it's on top but below indicator
+        tapMarker.style.position = 'absolute';
+        tapMarker.style.zIndex = '99';
         this.tapMarker = tapMarker;
         
-        // Add indicator and tap marker to meter
-        meter.appendChild(indicator);
+        // Add indicators and tap marker to meter
+        meter.appendChild(topIndicator);
+        meter.appendChild(bottomIndicator);
         meter.appendChild(tapMarker);
         
         // Add instructions
@@ -120,9 +131,11 @@ class SwingMeter {
             // Get the meter background for positioning
             const meterBackground = this.meterElement.querySelector('.meter-background');
             
-            // Ensure indicator starts at the beginning and is visible
+            // Ensure indicators start at the beginning and are visible
             this.indicator.style.left = '0px';
             this.indicator.style.display = 'block';
+            this.bottomIndicator.style.left = '0px';
+            this.bottomIndicator.style.display = 'block';
             this.tapMarker.style.display = 'none';
             
             console.log('Starting animation');
@@ -148,10 +161,14 @@ class SwingMeter {
         
         console.log('Animation range: 0 to', meterWidth, 'Width:', meterWidth);
         
-        // Make sure the indicator is visible and properly positioned
+        // Make sure both indicators are visible and properly positioned
         this.indicator.style.display = 'block';
         this.indicator.style.position = 'absolute';
         this.indicator.style.left = '0px';
+        
+        this.bottomIndicator.style.display = 'block';
+        this.bottomIndicator.style.position = 'absolute';
+        this.bottomIndicator.style.left = '0px';
         
         const animate = () => {
             if (!this.isMoving) return;
@@ -177,8 +194,9 @@ class SwingMeter {
                 this.evaluateResult();
             }
             
-            // Update indicator position
+            // Update both indicators' positions
             this.indicator.style.left = `${this.position}px`;
+            this.bottomIndicator.style.left = `${this.position}px`;
             
             // Continue animation
             if (this.isMoving) {
@@ -189,6 +207,7 @@ class SwingMeter {
         // Start from the beginning position
         this.position = startX;
         this.indicator.style.left = `${startX}px`;
+        this.bottomIndicator.style.left = `${startX}px`;
         
         this.animationId = requestAnimationFrame(animate);
     }
@@ -268,8 +287,9 @@ class SwingMeter {
             instructions.classList.add('completed');
         }
         
-        // Highlight the indicator and tap marker
+        // Highlight the indicators and tap marker
         this.indicator.classList.add(result);
+        this.bottomIndicator.classList.add(result);
         if (this.tapMarker) {
             this.tapMarker.classList.add(result);
         }

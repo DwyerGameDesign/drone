@@ -246,6 +246,7 @@ body {
     margin: 15px 0;
     position: relative;
     min-height: 60px;
+    padding: 25px 0;
 }
 
 .meter-background {
@@ -253,7 +254,7 @@ body {
     width: 400px;
     height: 30px;
     border-radius: 4px;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
     z-index: 1;
 }
@@ -323,11 +324,8 @@ body {
     position: absolute;
     width: 0;
     height: 0;
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-bottom: 24px solid #ffcc00;
-    top: -24px;
-    left: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
     transform: translateX(-50%);
     z-index: 100;
     transition: left 0.05s linear;
@@ -336,15 +334,33 @@ body {
     filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
 }
 
-.meter-indicator.good {
+.meter-indicator-top {
+    border-top: 16px solid white;
+    border-bottom: none;
+    top: -20px;
+}
+
+.meter-indicator-bottom {
+    border-bottom: 16px solid white;
+    border-top: none;
+    bottom: -20px;
+}
+
+.meter-indicator-top.good,
+.meter-indicator-bottom.good {
+    border-top-color: #2ecc71;
     border-bottom-color: #2ecc71;
 }
 
-.meter-indicator.okay {
+.meter-indicator-top.okay,
+.meter-indicator-bottom.okay {
+    border-top-color: #ff9933;
     border-bottom-color: #ff9933;
 }
 
-.meter-indicator.fail {
+.meter-indicator-top.fail,
+.meter-indicator-bottom.fail {
+    border-top-color: #e74c3c;
     border-bottom-color: #e74c3c;
 }
 
