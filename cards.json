@@ -6,7 +6,7 @@
         "narrative": "6:40 AM. The platform is cold and quiet as you wait for the train. The same train you've taken every weekday for years. You pull your beige trenchcoat tighter around your shoulders as you scan the empty platform. A distant rumble signals the approaching train. Just like yesterday, and the day before, and all the days stretching back through the calendar of your memory.",
         "interactionType": "swingMeter",
         "meterType": "standard",
-        "meterContext": "You try to find your natural balance between focus and flow...",
+        "meterContext": "As the train approaches, your mind begins to...",
         "outcomes": [
           {
             "result": "fail",
@@ -48,7 +48,7 @@
         "narrative": "Your college journal sits on your nightstand, gathering dust. Inside are fragments of stories you once wanted to write, dreams you once planned to chase. Tonight, you find yourself flipping through its pages, feeling a strange spark that hasn't flickered in years. The blank page calls to you.",
         "interactionType": "swingMeter",
         "meterType": "standard",
-        "meterContext": "You try to quiet your inner critic and let the words flow naturally...",
+        "meterContext": "As your fingers hover over the empty page, you decide to...",
         "outcomes": [
           {
             "result": "fail",
@@ -74,7 +74,7 @@
         "narrative": "It's 2AM. The blue light of your monitor is the only illumination in your apartment. \"Just one more level,\" you told yourself three hours ago. Your friends have invited you out countless times, but the digital world feels safer, more controllable. Your character stands victorious on screen, but the victory feels hollow.",
         "interactionType": "swingMeter",
         "meterType": "noOvershot",
-        "meterContext": "You need to find balance between digital escape and real-world connection...",
+        "meterContext": "As the victory screen fades, you find yourself...",
         "outcomes": [
           {
             "result": "fail",
@@ -100,7 +100,7 @@
         "narrative": "A stranger sits beside you on today's commute - something that never happens in your carefully regulated routine. They're reading a book you loved years ago. Your eyes meet, and there's a strange pull, an unexpected connection. They smile, and for a moment, the train seems less gray.",
         "interactionType": "swingMeter",
         "meterType": "critical",
-        "meterContext": "You feel a momentary surge of courage competing with your usual caution...",
+        "meterContext": "The book in their hands sparks a memory, and you...",
         "outcomes": [
           {
             "result": "fail",
@@ -137,7 +137,7 @@
         "narrative": "Your doctor mentions your blood pressure during your annual checkup. \"Stress,\" he says. \"You need to find ways to relax.\" But the constant emails, the deadlines, the mortgage payments - they create an addictive cycle of pressure. The adrenaline rush of solving one crisis after another has become your normal.",
         "interactionType": "swingMeter",
         "meterType": "noOvershot",
-        "meterContext": "You try to find balance between productivity and self-care...",
+        "meterContext": "Leaving the doctor's office, you consider his advice and decide to...",
         "outcomes": [
           {
             "result": "fail",
@@ -178,7 +178,7 @@
         "narrative": "A former colleague has died suddenly. At the funeral, people speak of his achievements, his career. But no one mentions joy, passion, or love. You recognize yourself in the tributes - a life measured in promotions and acquisitions. The thought follows you home like a shadow.",
         "interactionType": "swingMeter",
         "meterType": "critical",
-        "meterContext": "This moment of clarity requires decisive action...",
+        "meterContext": "As you reflect on what you've heard today, you feel compelled to...",
         "outcomes": [
           {
             "result": "fail",
@@ -198,7 +198,7 @@
         "narrative": "The pandemic has transformed your dining room into an office. Your world has contracted into Zoom squares, each one a tiny window into other lives similarly confined. The boundaries between work and home have dissolved. You haven't left your apartment in three days.",
         "interactionType": "swingMeter",
         "meterType": "noOvershot",
-        "meterContext": "You need to find balance in this new reality...",
+        "meterContext": "As another meeting invitation appears on your screen, you find yourself...",
         "outcomes": [
           {
             "result": "fail",
@@ -223,7 +223,7 @@
         "narrative": "3:17 AM. You stare at the ceiling, watching the star-shaped chandelier cast shadows as cars pass by outside. Sleep eludes you night after night. Your mind races with everything you've done and everything you've failed to do. The star seems to pulse with each anxious thought.",
         "interactionType": "swingMeter",
         "meterType": "standard",
-        "meterContext": "Your racing thoughts need to be channeled somewhere...",
+        "meterContext": "Realizing sleep won't come easily tonight, you reluctantly...",
         "outcomes": [
           {
             "result": "fail",
@@ -264,7 +264,7 @@
         "narrative": "You find yourself on a train platform, but not your usual one. You don't remember deciding to come here. The departures board shows destinations you've never visited. A sense of liberation washes over you - the realization that you could go anywhere, be anyone. For the first time in years, possibilities feel endless.",
         "interactionType": "swingMeter",
         "meterType": "standard",
-        "meterContext": "You feel a pull between adventure and connection...",
+        "meterContext": "Standing before the departures board, you find yourself ready to...",
         "outcomes": [
           {
             "result": "fail",
@@ -305,7 +305,7 @@
         "narrative": "The train slows as it approaches your station - the same one you've departed from and arrived at thousands of times. But today, you don't automatically rise from your seat. The doors open. Other passengers file past. You remain seated, watching the familiar platform. The same platform that will be there tomorrow, and the next day. Unless...",
         "interactionType": "swingMeter",
         "meterType": "critical",
-        "meterContext": "This final moment requires you to seize the chance or let it pass...",
+        "meterContext": "As the conductor announces the final call, you make your decision to...",
         "outcomes": [
           {
             "result": "fail",
