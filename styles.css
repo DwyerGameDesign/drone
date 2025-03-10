@@ -23,7 +23,7 @@
     text-align: center;
 }
 
-.integrated-power-meter {
+.integrated-swing-meter {
     position: relative;
     height: 80px;
     margin: 0 auto;
@@ -67,7 +67,7 @@
     font-weight: bold;
 }
 
-.integrated-power-meter.completed {
+.integrated-swing-meter.completed {
     cursor: default;
     opacity: 0.8;
     pointer-events: none;

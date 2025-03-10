@@ -36,7 +36,7 @@ class SwingMeter {
         
         // Create meter and zones
         const meter = document.createElement('div');
-        meter.className = 'integrated-power-meter';
+        meter.className = 'integrated-swing-meter';
         this.meterElement = meter;
         
         // Add indicator (single triangle that moves)
@@ -239,7 +239,7 @@ function showSwingMeter(containerId, meterType, context, callback) {
     }
     
     // Check if there's already a completed meter in this container
-    if (container.querySelector('.integrated-power-meter.completed')) {
+    if (container.querySelector('.integrated-swing-meter.completed')) {
         console.log('Swing meter already completed in this container');
         return;
     }

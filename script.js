@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let meterContainer = document.getElementById(meterContainerId);
         
         // Check if there's already a completed swing meter in the DOM
-        if (meterContainer && meterContainer.querySelector('.integrated-power-meter.completed')) {
+        if (meterContainer && meterContainer.querySelector('.integrated-swing-meter.completed')) {
             console.log('Swing meter already completed in DOM, skipping display');
             return;
         }
