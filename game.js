@@ -36,48 +36,384 @@ class DroneManGame {
         this.loadGameData();
     }
     
-    // Load game data from JSON
+    // Load game data from JSON - with error handling and retries
     async loadGameData() {
+        console.log('Loading game data...');
         try {
-            // Load main game data
-            const cardsResponse = await fetch('cards.json');
-            if (!cardsResponse.ok) {
-                throw new Error(`Failed to load cards.json: ${cardsResponse.status}`);
+            // First attempt to load from external files
+            const cardsData = await this.loadJSON('cards.json');
+            const eventsData = await this.loadJSON('events.json');
+            
+            // Process the loaded data
+            this.processGameData(cardsData, eventsData);
+            console.log('Game data loaded successfully from files');
+            return { success: true };
+        } catch (error) {
+            console.warn('Failed to load from external files, using embedded data:', error);
+            
+            // Fallback to embedded data
+            const cardsData = this.getEmbeddedCardsData();
+            const eventsData = this.getEmbeddedEventsData();
+            
+            // Process the embedded data
+            this.processGameData(cardsData, eventsData);
+            console.log('Game data loaded from embedded source');
+            return { success: true };
+        }
+    }
+    
+    // Helper to load JSON with retries
+    async loadJSON(url, retries = 2) {
+        let lastError;
+        
+        for (let i = 0; i <= retries; i++) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Failed to load ${url}: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.warn(`Attempt ${i + 1} failed to load ${url}:`, error);
+                lastError = error;
+                // Wait a moment before retrying
+                if (i < retries) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
             }
-            
-            const cardsData = await cardsResponse.json();
-            console.log('Game data loaded:', cardsData);
-            
+        }
+        
+        throw lastError || new Error(`Failed to load ${url} after ${retries + 1} attempts`);
+    }
+    
+    // Process loaded game data
+    processGameData(cardsData, eventsData) {
+        // Process cards data
+        if (cardsData) {
             this.narratives = cardsData.narratives || [];
             this.passiveEffects = cardsData.passiveEffects || {};
             this.powerMeterTypes = cardsData.powerMeterTypes || {};
-            
-            // Load random events data
-            const eventsResponse = await fetch('events.json');
-            if (!eventsResponse.ok) {
-                throw new Error(`Failed to load events.json: ${eventsResponse.status}`);
-            }
-            
-            const eventsData = await eventsResponse.json();
-            console.log('Events data loaded:', eventsData);
-            
+        }
+        
+        // Process events data
+        if (eventsData) {
             this.purchaseEvents = eventsData.purchaseEvents || [];
             
             // Merge any additional passive effects from events
             if (eventsData.passiveEffects) {
                 this.passiveEffects = { ...this.passiveEffects, ...eventsData.passiveEffects };
             }
-            
-            // Return the loaded data to signal it's ready
-            return { success: true, data: { cards: cardsData, events: eventsData } };
-        } catch (error) {
-            console.error('Error loading game data:', error);
-            return { success: false, error };
         }
+        
+        console.log('Game data processed:', {
+            narratives: this.narratives.length,
+            powerMeterTypes: Object.keys(this.powerMeterTypes).length,
+            purchaseEvents: this.purchaseEvents.length
+        });
+    }
+    
+    // Embedded data as fallback
+    getEmbeddedCardsData() {
+        return {
+            "narratives": [
+                {
+                    "stop": 1,
+                    "title": "Inbound",
+                    "narrative": "6:40 AM. The platform is cold and quiet as you wait for the train. The same train you've taken every weekday for years. You pull your beige trenchcoat tighter around your shoulders as you scan the empty platform. A distant rumble signals the approaching train. Just like yesterday, and the day before, and all the days stretching back through the calendar of your memory.",
+                    "interactionType": "swingMeter",
+                    "meterType": "standard",
+                    "meterContext": "You try to find your natural balance between focus and flow...",
+                    "outcomes": [
+                        {
+                            "result": "fail",
+                            "text": "Review your upcoming work presentation",
+                            "effects": { "soul": -1, "connections": 0, "money": 1 }
+                        },
+                        {
+                            "result": "okay",
+                            "text": "Observe the world around you",
+                            "effects": { "soul": 0, "connections": 0, "money": 0 }
+                        },
+                        {
+                            "result": "good",
+                            "text": "Think about the life you once dreamed of",
+                            "effects": { "soul": 1, "connections": 0, "money": 0 }
+                        }
+                    ]
+                },
+                {
+                    "stop": 2,
+                    "title": "Drone",
+                    "narrative": "The train lurches forward as you settle into your usual seat. Through the window, the suburbs slide by in a blur of sameness. You're halfway through the commute when your phone buzzes. It's your boss: \"I need that report finished by noon.\" You were planning to take lunch with an old friend today, someone you've been meaning to reconnect with for months.",
+                    "interactionType": "choice",
+                    "choices": [
+                        {
+                            "text": "Cancel lunch, finish the report",
+                            "effects": { "soul": -1, "connections": -1, "money": 2 },
+                            "unlockPassive": "for_me"
+                        },
+                        {
+                            "text": "Keep the lunch date, rush the report later",
+                            "effects": { "soul": 1, "connections": 2, "money": -1 }
+                        }
+                    ]
+                },
+                {
+                    "stop": 3,
+                    "title": "Write Along The Way",
+                    "narrative": "Your college journal sits on your nightstand, gathering dust. Inside are fragments of stories you once wanted to write, dreams you once planned to chase. Tonight, you find yourself flipping through its pages, feeling a strange spark that hasn't flickered in years. The blank page calls to you.",
+                    "interactionType": "swingMeter",
+                    "meterType": "standard",
+                    "meterContext": "You try to quiet your inner critic and let the words flow naturally...",
+                    "outcomes": [
+                        {
+                            "result": "fail",
+                            "text": "Close the journal, there's no time for fantasies",
+                            "effects": { "soul": -1, "connections": 0, "money": 0 }
+                        },
+                        {
+                            "result": "okay",
+                            "text": "Write a few lines before getting distracted",
+                            "effects": { "soul": 1, "connections": 0, "money": 0 }
+                        },
+                        {
+                            "result": "good",
+                            "text": "Start writing again, even if just for yourself",
+                            "effects": { "soul": 2, "connections": 0, "money": 0 },
+                            "unlockPassive": "write_along"
+                        }
+                    ]
+                },
+                {
+                    "stop": 4,
+                    "title": "Last Life",
+                    "narrative": "It's 2AM. The blue light of your monitor is the only illumination in your apartment. \"Just one more level,\" you told yourself three hours ago. Your friends have invited you out countless times, but the digital world feels safer, more controllable. Your character stands victorious on screen, but the victory feels hollow.",
+                    "interactionType": "swingMeter",
+                    "meterType": "noOvershot",
+                    "meterContext": "You need to find balance between digital escape and real-world connection...",
+                    "outcomes": [
+                        {
+                            "result": "fail",
+                            "text": "Start a new game, you're on a roll tonight",
+                            "effects": { "soul": -1, "connections": -1, "money": 0 },
+                            "unlockPassive": "last_life"
+                        },
+                        {
+                            "result": "okay",
+                            "text": "Go to bed, you'll text friends tomorrow maybe",
+                            "effects": { "soul": 0, "connections": 0, "money": 0 }
+                        },
+                        {
+                            "result": "good",
+                            "text": "Log off and text your friends about weekend plans",
+                            "effects": { "soul": 1, "connections": 2, "money": -1 }
+                        }
+                    ]
+                },
+                {
+                    "stop": 5,
+                    "title": "Strange Passenger",
+                    "narrative": "A stranger sits beside you on today's commute - something that never happens in your carefully regulated routine. They're reading a book you loved years ago. Your eyes meet, and there's a strange pull, an unexpected connection. They smile, and for a moment, the train seems less gray.",
+                    "interactionType": "swingMeter",
+                    "meterType": "critical",
+                    "meterContext": "You feel a momentary surge of courage competing with your usual caution...",
+                    "outcomes": [
+                        {
+                            "result": "fail",
+                            "text": "Look away, relationships are too complicated",
+                            "effects": { "soul": -2, "connections": -1, "money": 0 },
+                            "unlockPassive": "strange_passenger"
+                        },
+                        {
+                            "result": "good",
+                            "text": "Strike up a conversation about the book",
+                            "effects": { "soul": 1, "connections": 2, "money": 0 }
+                        }
+                    ]
+                }
+            ],
+            "passiveEffects": {
+                "strange_passenger": {
+                    "id": "strange_passenger",
+                    "name": "Strange Passenger",
+                    "description": "-1 Soul each stop",
+                    "type": "soul-negative",
+                    "effect": {
+                        "soul": -1
+                    }
+                },
+                "last_life": {
+                    "id": "last_life",
+                    "name": "Last Life",
+                    "description": "-1 Soul each stop",
+                    "type": "soul-negative",
+                    "effect": {
+                        "soul": -1
+                    }
+                },
+                "for_me": {
+                    "id": "for_me",
+                    "name": "For Me",
+                    "description": "+1 Money each stop",
+                    "type": "money-positive",
+                    "effect": {
+                        "money": 1
+                    }
+                },
+                "write_along": {
+                    "id": "write_along",
+                    "name": "Write Along The Way",
+                    "description": "+1 Connection each stop",
+                    "type": "connections-positive",
+                    "effect": {
+                        "connections": 1
+                    }
+                }
+            },
+            "powerMeterTypes": {
+                "standard": {
+                    "title": "STANDARD CHALLENGE",
+                    "narrative": "Balance is key. Find the right amount of effort without going too far.",
+                    "zones": [
+                        { "width": 240, "color": "#e74c3c" }, 
+                        { "width": 50, "color": "#ff9933" },
+                        { "width": 50, "color": "#2ecc71" },
+                        { "width": 60, "color": "#ff9933" }
+                    ],
+                    "results": {
+                        "fail": {"text": "TOO WEAK", "modifier": -1},
+                        "okay": {"text": "ADEQUATE", "modifier": 0},
+                        "good": {"text": "PERFECT", "modifier": 1}
+                    },
+                    "speed": 5
+                },
+                "critical": {
+                    "title": "CRITICAL MOMENT",
+                    "narrative": "Perfect timing required. This is your one chance - a single moment will define everything.",
+                    "zones": [
+                        { "width": 280, "color": "#e74c3c" },
+                        { "width": 40, "color": "#2ecc71" },
+                        { "width": 80, "color": "#e74c3c" }
+                    ],
+                    "results": {
+                        "fail": {"text": "FAILURE", "modifier": -2},
+                        "good": {"text": "SUCCESS", "modifier": 2}
+                    },
+                    "speed": 6
+                },
+                "noOvershot": {
+                    "title": "MEASURED RESPONSE",
+                    "narrative": "Finding balance is crucial. Neither too little nor too much will serve you here.",
+                    "zones": [
+                        { "width": 240, "color": "#e74c3c" },
+                        { "width": 60, "color": "#ff9933" },
+                        { "width": 60, "color": "#2ecc71" },
+                        { "width": 40, "color": "#e74c3c" }
+                    ],
+                    "results": {
+                        "fail": {"text": "MISSED THE MARK", "modifier": -1},
+                        "okay": {"text": "CLOSE ENOUGH", "modifier": 0},
+                        "good": {"text": "BALANCED", "modifier": 1}
+                    },
+                    "speed": 5
+                }
+            }
+        };
+    }
+    
+    getEmbeddedEventsData() {
+        return {
+            "purchaseEvents": [
+                {
+                    "id": "new_gadget",
+                    "title": "Tech Temptation",
+                    "narrative": "Walking past an electronics store, a sleek new smartphone catches your eye. The latest model with features you don't need but suddenly want. Your current phone works fine, but the allure of something new pulls at you.",
+                    "options": [
+                        {
+                            "text": "Buy the new phone",
+                            "cost": 3,
+                            "effects": { "soul": -1, "connections": 0, "money": -3 }
+                        },
+                        {
+                            "text": "Walk away, it's just a distraction",
+                            "effects": { "soul": 1, "connections": 0, "money": 0 }
+                        }
+                    ],
+                    "requiredMoney": 3,
+                    "probability": 3,
+                    "conditions": {
+                        "minStop": 2
+                    }
+                },
+                {
+                    "id": "art_class",
+                    "title": "Creative Opportunity",
+                    "narrative": "A flyer on a community board catches your attention: \"Express Yourself: Evening Art Classes for Beginners.\" Something stirs inside you at the thought of creating something with your hands, of learning a new skill just for the joy of it.",
+                    "options": [
+                        {
+                            "text": "Sign up for the class",
+                            "cost": 2,
+                            "effects": { "soul": 2, "connections": 1, "money": -2 }
+                        },
+                        {
+                            "text": "Take the flyer but decide later",
+                            "effects": { "soul": 0, "connections": 0, "money": 0 }
+                        }
+                    ],
+                    "requiredMoney": 2,
+                    "probability": 4,
+                    "conditions": {
+                        "minSoul": 6
+                    }
+                },
+                {
+                    "id": "coffee_upgrade",
+                    "title": "Daily Ritual",
+                    "narrative": "The barista at your regular coffee shop smiles as you approach. \"Want to try our premium single-origin today? It's a few dollars more, but it's incredible.\" It's a small luxury, but one that might brighten your morning routine.",
+                    "options": [
+                        {
+                            "text": "Treat yourself to the premium coffee",
+                            "cost": 1,
+                            "effects": { "soul": 1, "connections": 0, "money": -1 }
+                        },
+                        {
+                            "text": "Stick with your usual order",
+                            "effects": { "soul": 0, "connections": 0, "money": 0 }
+                        }
+                    ],
+                    "requiredMoney": 1,
+                    "probability": 5,
+                    "conditions": {
+                        "minStop": 1
+                    }
+                }
+            ],
+            "passiveEffects": {
+                "career_investment": {
+                    "id": "career_investment",
+                    "name": "Career Investment",
+                    "description": "+1 Money each stop",
+                    "type": "money-positive",
+                    "effect": {
+                        "money": 1
+                    }
+                },
+                "creative_outlet": {
+                    "id": "creative_outlet",
+                    "name": "Creative Outlet",
+                    "description": "+1 Soul each stop",
+                    "type": "soul-positive",
+                    "effect": {
+                        "soul": 1
+                    }
+                }
+            }
+        };
     }
     
     // Start or restart the game
     restart() {
+        console.log('Restarting game...');
         // Reset resources
         this.resources = { ...this.startingResources };
         this.currentRound = 1;
@@ -94,11 +430,16 @@ class DroneManGame {
     
     // Get the current narrative
     getCurrentNarrative() {
-        return this.narratives.find(n => n.stop === this.currentStop) || null;
+        const narrative = this.narratives.find(n => n.stop === this.currentStop) || null;
+        if (!narrative) {
+            console.warn(`No narrative found for stop ${this.currentStop}`);
+        }
+        return narrative;
     }
     
     // Handle interaction based on narrative type
     handleInteraction(params) {
+        console.log('Handling interaction:', params);
         const narrative = this.getCurrentNarrative();
         if (!narrative) return { success: false, reason: 'No current narrative found' };
         
@@ -116,6 +457,7 @@ class DroneManGame {
     
     // Handle swing meter interaction
     handleSwingMeter(result) {
+        console.log('Handling swing meter result:', result);
         const narrative = this.getCurrentNarrative();
         if (!narrative || narrative.interactionType !== 'swingMeter') {
             return { success: false, reason: 'Not a swing meter narrative' };
@@ -138,6 +480,7 @@ class DroneManGame {
     
     // Handle choice interaction
     handleChoice(choiceIndex) {
+        console.log('Handling choice:', choiceIndex);
         const narrative = this.getCurrentNarrative();
         if (!narrative || narrative.interactionType !== 'choice') {
             return { success: false, reason: 'Not a choice narrative' };
@@ -158,6 +501,7 @@ class DroneManGame {
     
     // Handle random event interaction
     handleRandomEvent(optionIndex) {
+        console.log('Handling random event option:', optionIndex);
         // Use the stored current random event
         const event = this.getCurrentRandomEvent();
         if (!event) {
@@ -193,6 +537,7 @@ class DroneManGame {
     
     // Process the outcome of any narrative interaction
     processOutcome(outcome) {
+        console.log('Processing outcome:', outcome);
         // Save the decision to history
         const narrative = this.getCurrentNarrative();
         const decision = {
@@ -303,6 +648,7 @@ class DroneManGame {
     
     // Process the outcome of a random event
     processRandomEventOutcome(event, option) {
+        console.log('Processing random event outcome:', event.id, option);
         // Save to decision history
         const decision = {
             round: this.currentRound,
@@ -361,8 +707,6 @@ class DroneManGame {
         };
     }
 
-    // ADDED FUNCTIONS TO FIX THE ISSUES
-
     // Check for a random event
     checkForRandomEvent() {
         // Check if we should trigger a random event
@@ -416,6 +760,7 @@ class DroneManGame {
 
     // Set the current random event
     setCurrentRandomEvent(event) {
+        console.log('Setting current random event:', event.id);
         this.currentRandomEvent = event;
     }
 
@@ -426,6 +771,7 @@ class DroneManGame {
 
     // Add a passive effect
     addPassiveEffect(effectId) {
+        console.log('Adding passive effect:', effectId);
         if (this.passiveEffects[effectId] && !this.activePassiveEffects.includes(effectId)) {
             this.activePassiveEffects.push(effectId);
         }
@@ -438,6 +784,7 @@ class DroneManGame {
 
     // Apply all active passive effects
     applyPassiveEffects() {
+        console.log('Applying passive effects:', this.activePassiveEffects);
         for (const effectId of this.activePassiveEffects) {
             const effect = this.passiveEffects[effectId];
             if (effect && effect.effect) {
@@ -457,11 +804,17 @@ class DroneManGame {
 
     // Get a power meter configuration
     getPowerMeterConfig(meterType) {
-        return this.powerMeterTypes[meterType] || null;
+        const config = this.powerMeterTypes[meterType] || null;
+        if (!config) {
+            console.warn(`Power meter type "${meterType}" not found, falling back to standard`);
+            return this.powerMeterTypes.standard || null;
+        }
+        return config;
     }
 
     // Start the next round
     startNextRound() {
+        console.log('Starting next round');
         this.currentRound++;
         this.currentStop = (this.currentRound - 1) * this.stopsPerRound + 1;
         
@@ -524,6 +877,17 @@ class DroneManGame {
         } else {
             return "Your journey has changed you in subtle but significant ways. The corporate drone is gone, replaced by someone more aware, more alive. It's not perfect, but it's progress, and that's enough.";
         }
+    }
+
+    // Helper function to log the current game state (useful for debugging)
+    logGameState() {
+        console.log('=== GAME STATE ===');
+        console.log('Round:', this.currentRound, 'Stop:', this.currentStop);
+        console.log('Resources:', this.resources);
+        console.log('Active Effects:', this.activePassiveEffects);
+        console.log('Decision History:', this.decisionHistory.length, 'decisions');
+        console.log('Current Narrative:', this.getCurrentNarrative()?.title);
+        console.log('=================');
     }
 }
 

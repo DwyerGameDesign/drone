@@ -12,7 +12,7 @@
 <body>
     <div class="game-container">
         <div class="game-header">
-            <h1>DRONE</h1>
+            <h1>DRONE MAN</h1>
             <div class="round-indicator">Round <span id="round-number">1</span></div>
         </div>
 
@@ -31,7 +31,7 @@
             </div>
             <div class="wallet">
                 <span class="wallet-icon">$</span>
-                <span id="money-value" class="wallet-amount">0</span>
+                <span id="money-value" class="wallet-amount">3</span>
             </div>
         </div>
 
@@ -52,7 +52,6 @@
                     <span class="choice-text"></span>
                     <span class="power-meter-icon">⚡</span>
                 </button>
-                <!-- The swing meter container will be added here dynamically -->
                 <div id="swing-meter-container" class="swing-meter-container" style="display: none;"></div>
                 <div id="balance-meter-container" class="balance-meter-container" style="display: none;"></div>
             </div>
@@ -87,7 +86,7 @@
         <button id="restart-button">Start New Journey</button>
     </div>
     
-    <!-- Changed order and removed module type -->
+    <!-- Ensure scripts are loaded in the right order -->
     <script src="game.js"></script>
     <script src="power-meter.js"></script>
     <script src="script.js"></script>

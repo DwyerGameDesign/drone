@@ -103,6 +103,13 @@ class ImprovedPowerMeter {
             this.tapPosition = this.position;
             this.tapMarker.style.display = 'block';
             this.tapMarker.style.left = `${this.position}px`;
+            
+            // Stop animation and evaluate after a short delay
+            setTimeout(() => {
+                this.isMoving = false;
+                cancelAnimationFrame(this.animationId);
+                this.evaluateResult();
+            }, 100);
         }
     }
     
@@ -205,6 +212,12 @@ function showImprovedPowerMeter(containerId, meterType, context, callback) {
     
     // Get meter config from game
     const game = window.gameInstance;
+    if (!game) {
+        console.error('Game instance not found!');
+        callback(null);
+        return;
+    }
+    
     const meterConfig = game.getPowerMeterConfig(meterType);
     
     if (!meterConfig) {
@@ -262,5 +275,5 @@ function showPowerMeter(meterType, callback) {
 }
 
 // Replace the old functions with improved ones
-window.showIntegratedPowerMeter = showImprovedPowerMeter;
+window.showImprovedPowerMeter = showImprovedPowerMeter;
 window.showPowerMeter = showPowerMeter;

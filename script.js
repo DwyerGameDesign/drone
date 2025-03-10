@@ -1,5 +1,7 @@
 // Drone Man: The Journey - Main script
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded. Initializing game...');
+    
     // Create game instance
     const game = new DroneManGame();
     window.gameInstance = game; // Make it globally accessible for power meter
@@ -31,26 +33,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         pathB: document.getElementById('path-b')
     };
     
+    // Debug check if all elements are available
+    console.log('UI Elements initialized: ', elements);
+    
     // Typewriter effect variables
     let isTyping = false;
     let skipTyping = false;
     const typingSpeed = 30; // ms per character
     
     // Add event listeners
-    elements.narrativeCard.addEventListener('click', () => {
+    elements.narrativeCard.addEventListener('click', function() {
         if (isTyping) {
             skipTyping = true;
         }
     });
     
-    elements.nextRoundButton.addEventListener('click', () => {
+    elements.nextRoundButton.addEventListener('click', function() {
         const result = game.startNextRound();
         elements.roundComplete.style.display = 'none';
         displayNarrative(result.nextNarrative);
         updateUI();
     });
     
-    elements.restartButton.addEventListener('click', () => {
+    elements.restartButton.addEventListener('click', function() {
         game.restart();
         elements.gameOver.style.display = 'none';
         elements.historyTrack.innerHTML = '';
@@ -60,34 +65,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     
     // Wait for game data to load
-    await waitForGameData(game);
-    
-    // Start the game
-    const narrative = game.getCurrentNarrative();
-    displayNarrative(narrative);
-    updateUI();
+    waitForGameData(game).then(() => {
+        console.log('Game data loaded successfully');
+        // Start the game
+        const narrative = game.getCurrentNarrative();
+        console.log('Current narrative:', narrative);
+        displayNarrative(narrative);
+        updateUI();
+    }).catch(error => {
+        console.error('Failed to load game data:', error);
+    });
     
     // Function to wait for game data to load
     async function waitForGameData(game) {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
+            console.log('Waiting for game data to load...');
+            const maxAttempts = 50; // 5 seconds with 100ms interval
+            let attempts = 0;
+            
             const checkInterval = setInterval(() => {
+                attempts++;
                 if (game.narratives && game.narratives.length > 0) {
                     clearInterval(checkInterval);
+                    console.log('Game data loaded after', attempts, 'attempts');
                     resolve();
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(checkInterval);
+                    reject(new Error('Timeout waiting for game data'));
                 }
             }, 100);
-            
-            // Set a timeout just in case
-            setTimeout(() => {
-                clearInterval(checkInterval);
-                resolve();
-            }, 5000);
         });
     }
     
     // Display narrative with typewriter effect
     function displayNarrative(narrative) {
-        if (!narrative) return;
+        console.log('Displaying narrative:', narrative);
+        if (!narrative) {
+            console.error('No narrative to display');
+            return;
+        }
         
         // Update title
         elements.narrativeCardTitle.textContent = narrative.title;
@@ -128,6 +144,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Display a random event
     function displayRandomEvent(event) {
+        console.log('Displaying random event:', event);
+        
         // Store the current random event in the game instance
         game.setCurrentRandomEvent(event);
         
@@ -178,6 +196,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Create the random event container if it doesn't exist
     function createRandomEventContainer() {
+        console.log('Creating random event container');
         const container = document.createElement('div');
         container.id = 'random-event-container';
         container.className = 'random-event-container';
@@ -208,7 +227,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         elements.randomEventOptions = options;
         
         // Add click listener to the text area to skip typewriter
-        text.addEventListener('click', () => {
+        text.addEventListener('click', function() {
             if (isTyping) {
                 skipTyping = true;
             }
@@ -238,7 +257,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             button.textContent = text;
             
             // Add click handler
-            button.onclick = () => {
+            button.onclick = function() {
                 const result = game.handleRandomEvent(index);
                 handleInteractionResult(result);
             };
@@ -249,6 +268,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Hide all interaction elements
     function hideAllInteractions() {
+        console.log('Hiding all interactions');
         // Choice buttons
         elements.pathA.style.display = 'none';
         elements.pathB.style.display = 'none';
@@ -258,20 +278,28 @@ document.addEventListener('DOMContentLoaded', async () => {
             elements.randomEventContainer.style.display = 'none';
         }
         
-        // Remove any existing swing meter container
+        // Ensure swing meter container is hidden
         const swingMeterContainer = document.getElementById('swing-meter-container');
         if (swingMeterContainer) {
             swingMeterContainer.innerHTML = '';
             swingMeterContainer.style.display = 'none';
         }
         
-        // Show the narrative card
+        // Ensure balance meter container is hidden
+        const balanceMeterContainer = document.getElementById('balance-meter-container');
+        if (balanceMeterContainer) {
+            balanceMeterContainer.innerHTML = '';
+            balanceMeterContainer.style.display = 'none';
+        }
+        
+        // Show the narrative card and choices
         elements.narrativeCard.style.display = 'block';
         elements.narrativeCardChoices.style.display = 'flex';
     }
     
     // Display the appropriate interaction based on narrative type
     function displayInteraction(narrative) {
+        console.log('Displaying interaction for narrative type:', narrative.interactionType);
         switch (narrative.interactionType) {
             case 'swingMeter':
                 displaySwingMeterButton(narrative);
@@ -286,6 +314,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Display the swing meter button
     function displaySwingMeterButton(narrative) {
+        console.log('Displaying swing meter button');
         // Create a container for the swing meter if it doesn't exist
         const meterContainerId = 'swing-meter-container';
         let meterContainer = document.getElementById(meterContainerId);
@@ -307,7 +336,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         swingButton.className = 'choice-button swing-meter-button';
         swingButton.textContent = 'TEST YOUR TIMING';
         
-        swingButton.onclick = () => {
+        swingButton.onclick = function() {
+            console.log('Swing meter button clicked');
             // Create a new container for the integrated meter
             const integratedMeterContainer = document.createElement('div');
             integratedMeterContainer.id = 'integrated-meter-container';
@@ -325,6 +355,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (narrative.outcomes && narrative.outcomes.length > 0) {
                 const outcomeContainer = document.createElement('div');
                 outcomeContainer.className = 'outcomes-preview';
+                outcomeContainer.style.display = 'flex'; // Ensure it's visible
                 
                 narrative.outcomes.forEach(outcome => {
                     const outcomePreview = document.createElement('div');
@@ -336,34 +367,41 @@ document.addEventListener('DOMContentLoaded', async () => {
                 meterContainer.appendChild(outcomeContainer);
             }
             
-            showImprovedPowerMeter('integrated-meter-container', meterType, meterContext, (result) => {
-                if (result) {
-                    // Process the swing meter result
-                    const processedResult = game.handleSwingMeter(result);
-                    
-                    // Show the outcome text based on the result
-                    if (narrative.outcomes) {
-                        const outcome = narrative.outcomes.find(o => o.result === result);
-                        if (outcome) {
-                            const outcomeText = document.createElement('div');
-                            outcomeText.className = 'outcome-result';
-                            outcomeText.textContent = outcome.text;
-                            meterContainer.appendChild(outcomeText);
-                            
-                            // Add a short delay before proceeding
-                            setTimeout(() => {
-                                handleInteractionResult(processedResult);
-                            }, 2000);
-                            return;
+            // Check if the showImprovedPowerMeter function exists
+            if (typeof showImprovedPowerMeter === 'function') {
+                console.log('Using showImprovedPowerMeter with type:', meterType);
+                showImprovedPowerMeter('integrated-meter-container', meterType, meterContext, function(result) {
+                    if (result) {
+                        console.log('Power meter result:', result);
+                        // Process the swing meter result
+                        const processedResult = game.handleSwingMeter(result);
+                        
+                        // Show the outcome text based on the result
+                        if (narrative.outcomes) {
+                            const outcome = narrative.outcomes.find(o => o.result === result);
+                            if (outcome) {
+                                const outcomeText = document.createElement('div');
+                                outcomeText.className = 'outcome-result';
+                                outcomeText.textContent = outcome.text;
+                                meterContainer.appendChild(outcomeText);
+                                
+                                // Add a short delay before proceeding
+                                setTimeout(function() {
+                                    handleInteractionResult(processedResult);
+                                }, 2000);
+                                return;
+                            }
                         }
+                        
+                        // Default handling if no outcome found
+                        handleInteractionResult(processedResult);
+                    } else {
+                        console.error('No result from power meter');
                     }
-                    
-                    // Default handling if no outcome found
-                    handleInteractionResult(processedResult);
-                } else {
-                    console.error('No result from power meter');
-                }
-            });
+                });
+            } else {
+                console.error('showImprovedPowerMeter function not found');
+            }
         };
         
         meterContainer.appendChild(swingButton);
@@ -386,6 +424,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Display choices
     function displayChoices(choices) {
+        console.log('Displaying choices:', choices);
         const buttons = [elements.pathA, elements.pathB];
         
         choices.forEach((choice, index) => {
@@ -428,7 +467,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             button.style.display = 'block';
             
             // Add click handler
-            button.onclick = () => {
+            button.onclick = function() {
+                console.log('Choice button clicked:', index);
                 const result = game.handleInteraction({ choiceIndex: index });
                 handleInteractionResult(result);
             };
@@ -437,6 +477,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Handle the result of any interaction
     function handleInteractionResult(result) {
+        console.log('Handling interaction result:', result);
         if (!result.success) {
             console.error('Error processing interaction:', result.reason);
             return;
@@ -486,6 +527,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Add decision to history track
     function addToHistoryTrack(decision) {
+        console.log('Adding decision to history track:', decision);
         if (!decision) return;
         
         // Create history card
@@ -562,6 +604,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Update UI elements
     function updateUI() {
+        console.log('Updating UI with resources:', game.resources);
         // Update resource bars and values
         elements.soulBar.style.width = `${(game.resources.soul / game.maxResources.soul) * 100}%`;
         elements.connectionsBar.style.width = `${(game.resources.connections / game.maxResources.connections) * 100}%`;
@@ -573,6 +616,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Show round complete screen
     function showRoundComplete() {
+        console.log('Showing round complete screen');
         elements.roundComplete.style.display = 'flex';
         elements.completedRound.textContent = game.currentRound;
         elements.roundSoulValue.textContent = game.resources.soul;
@@ -583,6 +627,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Show game over screen
     function showGameOver(success) {
+        console.log('Showing game over screen, success:', success);
         elements.gameOver.style.display = 'flex';
         elements.gameOverMessage.textContent = game.getGameOverMessage(success);
     }
