@@ -324,8 +324,8 @@ body {
     border-right: 8px solid transparent;
     border-bottom: 16px solid #ffcc00;
     top: 10px;
-    left: -8px;
-    transform: translateX(0);
+    left: 0;
+    transform: translateX(-50%);
     z-index: 10;
     transition: left 0.05s linear;
 }
@@ -349,7 +349,7 @@ body {
     width: 2px;
     background-color: white;
     box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
-    transform: translateX(1px);
+    transform: translateX(-50%);
 }
 
 .tap-marker.good {

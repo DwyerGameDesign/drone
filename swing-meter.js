@@ -86,7 +86,11 @@ class SwingMeter {
         
         // Set initial position to 0
         this.position = 0;
-        this.indicator.style.left = '0px';
+        
+        // Position the indicator at the start of the meter background (left edge)
+        const meterRect = meterBackground.getBoundingClientRect();
+        const startPosition = meterBackground.offsetLeft;
+        this.indicator.style.left = `${startPosition}px`;
     }
     
     handleClick() {
@@ -100,10 +104,14 @@ class SwingMeter {
             this.isMoving = true;
             this.hasPlayerTapped = false;
             this.animationComplete = false;
-            this.position = 0;
+            
+            // Get the starting position (left edge of meter background)
+            const meterBackground = this.meterElement.querySelector('.meter-background');
+            const startPosition = meterBackground ? meterBackground.offsetLeft : 0;
+            this.position = startPosition;
             
             // Ensure indicator starts at the beginning
-            this.indicator.style.left = '0px';
+            this.indicator.style.left = `${startPosition}px`;
             this.tapMarker.style.display = 'none';
             this.startAnimation();
         } else if (!this.hasPlayerTapped && !this.animationComplete) {
@@ -116,6 +124,10 @@ class SwingMeter {
     }
     
     startAnimation() {
+        // Get the starting position (left edge of meter background)
+        const meterBackground = this.meterElement.querySelector('.meter-background');
+        const startPosition = meterBackground ? meterBackground.offsetLeft : 0;
+        
         const animate = () => {
             if (!this.isMoving) return;
             
@@ -123,13 +135,13 @@ class SwingMeter {
             this.position += this.speed;
             
             // Check if we've reached the end
-            if (this.position >= this.totalWidth) {
-                this.position = this.totalWidth;
+            if (this.position >= startPosition + this.totalWidth) {
+                this.position = startPosition + this.totalWidth;
                 this.animationComplete = true;
                 
                 // If player hasn't tapped, it's a fail
                 if (!this.hasPlayerTapped) {
-                    this.tapPosition = this.totalWidth;
+                    this.tapPosition = this.position;
                     this.hasPlayerTapped = true;
                     this.tapMarker.style.display = 'block';
                     this.tapMarker.style.left = `${this.position}px`;
@@ -149,23 +161,30 @@ class SwingMeter {
             }
         };
         
-        // Start from position 0
-        this.position = 0;
-        this.indicator.style.left = '0px';
+        // Start from the beginning position
+        this.position = startPosition;
+        this.indicator.style.left = `${startPosition}px`;
         
         this.animationId = requestAnimationFrame(animate);
     }
     
     evaluateResult() {
+        // Get the starting position (left edge of meter background)
+        const meterBackground = this.meterElement.querySelector('.meter-background');
+        const startPosition = meterBackground ? meterBackground.offsetLeft : 0;
+        
+        // Adjust the tap position relative to the start of the meter
+        const adjustedTapPosition = this.tapPosition - startPosition;
+        
         let currentPosition = 0;
         let result = 'fail'; // Default
         
-        // Use tapPosition for evaluation
+        // Use adjusted tapPosition for evaluation
         for (let i = 0; i < this.config.zones.length; i++) {
             const zone = this.config.zones[i];
             const zoneEnd = currentPosition + zone.width;
             
-            if (this.tapPosition >= currentPosition && this.tapPosition < zoneEnd) {
+            if (adjustedTapPosition >= currentPosition && adjustedTapPosition < zoneEnd) {
                 // Determine result based on color
                 if (zone.color === '#2ecc71') { // Green
                     result = 'good';
@@ -181,7 +200,7 @@ class SwingMeter {
         }
         
         // If the position is at the very end (totalWidth), ensure it's a fail
-        if (this.tapPosition >= this.totalWidth) {
+        if (adjustedTapPosition >= this.totalWidth) {
             result = 'fail';
         }
         
