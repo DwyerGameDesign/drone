@@ -29,7 +29,7 @@ class DroneManGame {
         this.decisionHistory = [];
         this.purchaseEvents = [];
         this.lastRandomEventId = null;
-        this.randomEventProbability = 30; // 30% chance of a random event after each narrative
+        this.randomEventProbability = 0; // Disabled: was 30% chance of a random event after each narrative
         this.currentRandomEvent = null;
         this.completedSwingMeters = []; // Track completed swing meters
         
@@ -427,6 +427,11 @@ class DroneManGame {
 
     // Check for a random event
     checkForRandomEvent() {
+        // DISABLED: Random events are temporarily disabled
+        console.log('Random events are disabled');
+        return null;
+        
+        /* Original implementation:
         // Check if we should trigger a random event
         if (Math.random() * 100 < this.randomEventProbability) {
             // Get eligible random events
@@ -474,6 +479,7 @@ class DroneManGame {
         }
         
         return null;
+        */
     }
 
     // Set the current random event
