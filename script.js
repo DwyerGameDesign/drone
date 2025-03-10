@@ -314,7 +314,17 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show the narrative card and choices container
         elements.narrativeCard.style.display = 'block';
         elements.narrativeCardChoices.style.display = 'flex';
-        elements.narrativeCardChoices.innerHTML = ''; // Clear any existing choices
+        
+        // Reset choice buttons text and state
+        const choiceButtons = [elements.pathA, elements.pathB];
+        choiceButtons.forEach(button => {
+            const choiceText = button.querySelector('.choice-text');
+            if (choiceText) choiceText.textContent = '';
+            const meterIcon = button.querySelector('.power-meter-icon');
+            if (meterIcon) meterIcon.style.display = 'none';
+            button.disabled = false;
+            button.classList.remove('disabled');
+        });
     }
     
     // Display the appropriate interaction based on narrative type
