@@ -381,10 +381,10 @@
         "title": "STANDARD CHALLENGE",
         "narrative": "Balance is key. Find the right amount of effort without going too far.",
         "zones": [
-          { "width": 240, "color": "#e74c3c" }, 
+          { "width": 200, "color": "#e74c3c" }, 
           { "width": 50, "color": "#ff9933" },
-          { "width": 50, "color": "#2ecc71" },
-          { "width": 60, "color": "#ff9933" }
+          { "width": 100, "color": "#2ecc71" },
+          { "width": 50, "color": "#ff9933" }
         ],
         "results": {
           "fail": {"text": "TOO WEAK", "modifier": -1},

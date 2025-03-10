@@ -37,12 +37,8 @@ class SwingMeter {
         // Create meter and zones
         const meter = document.createElement('div');
         meter.className = 'integrated-swing-meter';
+        meter.style.position = 'relative'; // Ensure position is relative
         this.meterElement = meter;
-        
-        // Add indicator (single triangle that moves)
-        const indicator = document.createElement('div');
-        indicator.className = 'meter-indicator';
-        this.indicator = indicator;
         
         // Create meter background
         const meterBackground = document.createElement('div');
@@ -56,6 +52,11 @@ class SwingMeter {
             zoneElement.style.backgroundColor = zone.color;
             meterBackground.appendChild(zoneElement);
         });
+        
+        // Add indicator (single triangle that moves)
+        const indicator = document.createElement('div');
+        indicator.className = 'meter-indicator';
+        this.indicator = indicator;
         
         // Create tap marker (initially hidden)
         const tapMarker = document.createElement('div');
@@ -84,13 +85,21 @@ class SwingMeter {
         // Add click event to the meter
         meter.addEventListener('click', () => this.handleClick());
         
-        // Set initial position to 0
-        this.position = 0;
-        
-        // Position the indicator at the start of the meter background (left edge)
-        const meterRect = meterBackground.getBoundingClientRect();
-        const startPosition = meterBackground.offsetLeft;
-        this.indicator.style.left = `${startPosition}px`;
+        // Wait for elements to be in the DOM and positioned
+        setTimeout(() => {
+            // Get the actual position of the meter background
+            const meterRect = meterBackground.getBoundingClientRect();
+            const meterLeft = meterRect.left;
+            
+            // Set initial position to the left edge of the first zone
+            this.startX = meterLeft;
+            this.position = meterLeft;
+            
+            // Position the indicator at the start
+            this.indicator.style.left = `${meterLeft}px`;
+            
+            console.log('Meter positioned at:', meterLeft);
+        }, 50);
     }
     
     handleClick() {
@@ -105,14 +114,20 @@ class SwingMeter {
             this.hasPlayerTapped = false;
             this.animationComplete = false;
             
-            // Get the starting position (left edge of meter background)
+            // Get the current position of the meter background
             const meterBackground = this.meterElement.querySelector('.meter-background');
-            const startPosition = meterBackground ? meterBackground.offsetLeft : 0;
-            this.position = startPosition;
+            const meterRect = meterBackground.getBoundingClientRect();
+            const startX = meterRect.left;
+            
+            // Set the starting position
+            this.startX = startX;
+            this.position = startX;
             
             // Ensure indicator starts at the beginning
-            this.indicator.style.left = `${startPosition}px`;
+            this.indicator.style.left = `${startX}px`;
             this.tapMarker.style.display = 'none';
+            
+            console.log('Starting animation from:', startX);
             this.startAnimation();
         } else if (!this.hasPlayerTapped && !this.animationComplete) {
             // Player's tap - mark position
@@ -120,13 +135,19 @@ class SwingMeter {
             this.tapPosition = this.position;
             this.tapMarker.style.display = 'block';
             this.tapMarker.style.left = `${this.position}px`;
+            
+            console.log('Tap position:', this.position);
         }
     }
     
     startAnimation() {
-        // Get the starting position (left edge of meter background)
+        // Get the current position of the meter background
         const meterBackground = this.meterElement.querySelector('.meter-background');
-        const startPosition = meterBackground ? meterBackground.offsetLeft : 0;
+        const meterRect = meterBackground.getBoundingClientRect();
+        const startX = meterRect.left;
+        const endX = startX + this.totalWidth;
+        
+        console.log('Animation range:', startX, 'to', endX);
         
         const animate = () => {
             if (!this.isMoving) return;
@@ -135,8 +156,8 @@ class SwingMeter {
             this.position += this.speed;
             
             // Check if we've reached the end
-            if (this.position >= startPosition + this.totalWidth) {
-                this.position = startPosition + this.totalWidth;
+            if (this.position >= endX) {
+                this.position = endX;
                 this.animationComplete = true;
                 
                 // If player hasn't tapped, it's a fail
@@ -162,19 +183,22 @@ class SwingMeter {
         };
         
         // Start from the beginning position
-        this.position = startPosition;
-        this.indicator.style.left = `${startPosition}px`;
+        this.position = startX;
+        this.indicator.style.left = `${startX}px`;
         
         this.animationId = requestAnimationFrame(animate);
     }
     
     evaluateResult() {
-        // Get the starting position (left edge of meter background)
+        // Get the current position of the meter background
         const meterBackground = this.meterElement.querySelector('.meter-background');
-        const startPosition = meterBackground ? meterBackground.offsetLeft : 0;
+        const meterRect = meterBackground.getBoundingClientRect();
+        const startX = meterRect.left;
         
         // Adjust the tap position relative to the start of the meter
-        const adjustedTapPosition = this.tapPosition - startPosition;
+        const adjustedTapPosition = this.tapPosition - startX;
+        
+        console.log('Evaluating result:', adjustedTapPosition, 'relative to start:', startX);
         
         let currentPosition = 0;
         let result = 'fail'; // Default
@@ -203,6 +227,8 @@ class SwingMeter {
         if (adjustedTapPosition >= this.totalWidth) {
             result = 'fail';
         }
+        
+        console.log('Result:', result);
         
         this.result = result;
         this.completed = true; // Mark the meter as completed

@@ -252,7 +252,7 @@ body {
     display: flex;
     border-radius: 4px;
     overflow: hidden;
-    width: 300px;
+    width: 400px;
 }
 
 .meter-zone {
@@ -328,6 +328,7 @@ body {
     transform: translateX(-50%);
     z-index: 10;
     transition: left 0.05s linear;
+    pointer-events: none;
 }
 
 .meter-indicator.good {
