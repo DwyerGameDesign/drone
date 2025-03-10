@@ -305,40 +305,56 @@ class SwingMeter {
         
         // Wait a moment to show the result, then transition to outcome display
         setTimeout(() => {
-            // Find the parent container (integrated-meter-container)
-            const meterContainer = this.container;
+            // Add fade-out class to the meter
+            this.meterElement.classList.add('fade-out');
             
-            // Clear the container
-            meterContainer.innerHTML = '';
-            
-            // Create context container to preserve the context
-            const contextContainer = document.createElement('div');
-            contextContainer.className = 'meter-context';
-            contextContainer.textContent = contextText;
-            meterContainer.appendChild(contextContainer);
-            
-            // Create outcome container
+            // Create outcome container but keep it hidden initially
             const outcomeContainer = document.createElement('div');
-            outcomeContainer.className = 'outcome-result';
-            
-            // Leave the outcome text empty - it will be filled with the narrative outcome text
+            outcomeContainer.className = 'outcome-result fade-out';
             outcomeContainer.textContent = '';
-            
-            // Add the outcome container to the meter container
-            meterContainer.appendChild(outcomeContainer);
             
             // Create Next Stop button (initially hidden)
             const nextButton = document.createElement('button');
-            nextButton.className = 'next-stop-button';
+            nextButton.className = 'next-stop-button fade-out';
             nextButton.textContent = 'Next Stop';
-            nextButton.style.display = 'none'; // Initially hide the button
+            nextButton.style.display = 'none';
             
-            // Add the button to the container
-            meterContainer.appendChild(nextButton);
+            // After meter fades out, show the outcome
+            setTimeout(() => {
+                // Remove the meter element
+                this.meterElement.style.display = 'none';
+                
+                // Get the current narrative to access outcome text
+                const game = window.gameInstance;
+                const currentNarrative = game.getCurrentNarrative();
+                if (currentNarrative && currentNarrative.outcomes) {
+                    const outcome = currentNarrative.outcomes.find(o => o.result === result);
+                    if (outcome) {
+                        outcomeContainer.textContent = outcome.text;
+                    }
+                }
+                
+                // Add the outcome container to the meter container
+                this.container.appendChild(outcomeContainer);
+                this.container.appendChild(nextButton);
+                
+                // Trigger reflow to ensure the fade-in animation plays
+                outcomeContainer.offsetHeight;
+                
+                // Remove the fade-out class to fade in the outcome
+                outcomeContainer.classList.remove('fade-out');
+                
+                // After outcome fades in, show the Next Stop button
+                setTimeout(() => {
+                    nextButton.style.display = 'block';
+                    nextButton.offsetHeight;
+                    nextButton.classList.remove('fade-out');
+                }, 500);
+            }, 500); // Wait for meter fade-out
             
             // Store the button reference for the callback
             this.nextButton = nextButton;
-        }, 1500); // Wait 1.5 seconds before transitioning
+        }, 1500); // Wait to show the initial result
     }
     
     getResult() {

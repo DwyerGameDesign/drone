@@ -261,6 +261,12 @@ body {
     position: relative;
     min-height: 60px;
     padding: 25px 0;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.integrated-swing-meter.fade-out {
+    opacity: 0;
 }
 
 .meter-background {
@@ -837,10 +843,15 @@ body {
     padding: 15px;
     background-color: rgba(0, 0, 0, 0.4);
     border-radius: 8px;
-    animation: fadeIn 0.5s ease-in-out;
     line-height: 1.5;
     max-width: 100%;
     min-height: 100px;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.outcome-result.fade-out {
+    opacity: 0;
 }
 
 .meter-context + .outcome-result {
@@ -944,7 +955,12 @@ body {
     border-radius: 4px;
     font-size: 1rem;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, opacity 0.5s ease-in-out;
+    opacity: 1;
+}
+
+.next-stop-button.fade-out {
+    opacity: 0;
 }
 
 .next-stop-button:hover {
