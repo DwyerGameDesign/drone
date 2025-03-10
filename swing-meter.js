@@ -53,20 +53,24 @@ class SwingMeter {
             meterBackground.appendChild(zoneElement);
         });
         
+        // Add meter background to meter first
+        meter.appendChild(meterBackground);
+        
         // Add indicator (single triangle that moves)
         const indicator = document.createElement('div');
         indicator.className = 'meter-indicator';
         indicator.style.display = 'block'; // Ensure it's visible
+        indicator.style.zIndex = '100'; // Ensure it's on top
         this.indicator = indicator;
         
         // Create tap marker (initially hidden)
         const tapMarker = document.createElement('div');
         tapMarker.className = 'tap-marker';
         tapMarker.style.display = 'none';
+        tapMarker.style.zIndex = '99'; // Ensure it's on top but below indicator
         this.tapMarker = tapMarker;
         
-        // Add elements to meter
-        meter.appendChild(meterBackground);
+        // Add indicator and tap marker to meter
         meter.appendChild(indicator);
         meter.appendChild(tapMarker);
         
@@ -313,10 +317,11 @@ class SwingMeter {
             // Add the outcome container to the meter container
             meterContainer.appendChild(outcomeContainer);
             
-            // Create Next Stop button
+            // Create Next Stop button (initially hidden)
             const nextButton = document.createElement('button');
             nextButton.className = 'next-stop-button';
             nextButton.textContent = 'Next Stop';
+            nextButton.style.display = 'none'; // Initially hide the button
             
             // Add the button to the container
             meterContainer.appendChild(nextButton);
@@ -386,6 +391,9 @@ function showSwingMeter(containerId, meterType, context, callback) {
                 if (nextButton) {
                     clearInterval(buttonCheckInterval);
                     
+                    // Initially hide the next button until text is fully typed
+                    nextButton.style.display = 'none';
+                    
                     // Find the outcome text from the narrative
                     if (currentNarrative && currentNarrative.outcomes) {
                         const outcome = currentNarrative.outcomes.find(o => o.result === result);
@@ -404,6 +412,9 @@ function showSwingMeter(containerId, meterType, context, callback) {
                                         outcomeContainer.textContent += outcome.text.charAt(i);
                                         i++;
                                         setTimeout(typeWriter, speed);
+                                    } else {
+                                        // Only show the next button after text is fully typed
+                                        nextButton.style.display = 'block';
                                     }
                                 }
                                 typeWriter();
