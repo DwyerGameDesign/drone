@@ -300,9 +300,6 @@ class SwingMeter {
         resultElement.textContent = resultText;
         this.meterElement.appendChild(resultElement);
         
-        // Store the context text to preserve it
-        const contextText = this.context;
-        
         // Wait a moment to show the result, then transition to outcome display
         setTimeout(() => {
             // Add fade-out class to the meter
@@ -321,7 +318,7 @@ class SwingMeter {
             
             // After meter fades out, show the outcome
             setTimeout(() => {
-                // Remove the meter element
+                // Hide the meter element
                 this.meterElement.style.display = 'none';
                 
                 // Get the current narrative to access outcome text
@@ -335,8 +332,9 @@ class SwingMeter {
                 }
                 
                 // Add the outcome container to the meter container
-                this.container.appendChild(outcomeContainer);
-                this.container.appendChild(nextButton);
+                const meterContainer = this.container.querySelector('.integrated-meter-container');
+                meterContainer.appendChild(outcomeContainer);
+                meterContainer.appendChild(nextButton);
                 
                 // Trigger reflow to ensure the fade-in animation plays
                 outcomeContainer.offsetHeight;
