@@ -217,21 +217,33 @@ document.addEventListener('DOMContentLoaded', function() {
         container.appendChild(text);
         container.appendChild(options);
         
-        // Add to the game container before the narrative card
-        document.querySelector('.game-container').insertBefore(container, elements.narrativeCard);
+        // Find the game container and narrative card
+        const gameContainer = document.querySelector('.game-container');
+        const narrativeCard = document.getElementById('narrative-card');
         
-        // Update the elements object
-        elements.randomEventContainer = container;
-        elements.randomEventTitle = title;
-        elements.randomEventText = text;
-        elements.randomEventOptions = options;
-        
-        // Add click listener to the text area to skip typewriter
-        text.addEventListener('click', function() {
-            if (isTyping) {
-                skipTyping = true;
+        if (gameContainer) {
+            // If narrative card exists, insert before it, otherwise append to game container
+            if (narrativeCard) {
+                gameContainer.insertBefore(container, narrativeCard);
+            } else {
+                gameContainer.appendChild(container);
             }
-        });
+            
+            // Update the elements object
+            elements.randomEventContainer = container;
+            elements.randomEventTitle = title;
+            elements.randomEventText = text;
+            elements.randomEventOptions = options;
+            
+            // Add click listener to the text area to skip typewriter
+            text.addEventListener('click', function() {
+                if (isTyping) {
+                    skipTyping = true;
+                }
+            });
+        } else {
+            console.error('Game container not found');
+        }
     }
     
     // Display options for a random event
