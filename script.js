@@ -478,6 +478,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle the result of any interaction
     function handleInteractionResult(result) {
         console.log('Handling interaction result:', result);
+        
         if (!result.success) {
             console.error('Error processing interaction:', result.reason);
             return;
@@ -511,7 +512,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Handle random event completion
         if (result.randomEventComplete) {
-            // Hide random event container and show narrative card
             if (elements.randomEventContainer) {
                 elements.randomEventContainer.style.display = 'none';
             }
@@ -521,7 +521,22 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Display next narrative
         if (result.nextNarrative) {
+            console.log('Displaying next narrative:', result.nextNarrative);
             displayNarrative(result.nextNarrative);
+        } else {
+            console.warn('No next narrative found in result:', result);
+            
+            // Fix: If nextNarrative is missing, try to get it manually from the game
+            const currentStop = game.currentStop;
+            console.log('Current game stop:', currentStop);
+            const manualNextNarrative = game.narratives.find(n => n.stop === currentStop);
+            
+            if (manualNextNarrative) {
+                console.log('Found manual next narrative:', manualNextNarrative);
+                displayNarrative(manualNextNarrative);
+            } else {
+                console.error('Cannot find next narrative for stop:', currentStop);
+            }
         }
     }
     

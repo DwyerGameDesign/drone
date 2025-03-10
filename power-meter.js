@@ -94,6 +94,9 @@ class ImprovedPowerMeter {
             this.hasPlayerTapped = false;
             this.animationComplete = false;
             this.position = 0;
+            
+            // Fix: Set the indicator position to 0px but visually it will be aligned at the start of the meter
+            // due to the -50% transform. This aligns with the evaluation logic.
             this.indicator.style.left = '0px';
             this.tapMarker.style.display = 'none';
             this.startAnimation();
@@ -170,6 +173,11 @@ class ImprovedPowerMeter {
             }
             
             currentPosition += zone.width;
+        }
+        
+        // Fix: If the position is at the very end (totalWidth), ensure it's a fail
+        if (this.tapPosition >= this.totalWidth) {
+            result = 'fail';
         }
         
         this.result = result;

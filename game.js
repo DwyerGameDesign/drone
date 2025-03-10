@@ -636,7 +636,13 @@ class DroneManGame {
         
         // Get next narrative
         const nextNarrative = this.narratives.find(n => n.stop === this.currentStop) || null;
-        
+
+        // Add logging to debug why nextNarrative might be null
+        if (!nextNarrative) {
+            console.warn(`No narrative found for stop ${this.currentStop}. Available stops:`, 
+                this.narratives.map(n => n.stop));
+        }
+
         return { 
             success: true, 
             gameOver: false, 
