@@ -858,7 +858,7 @@ h1 {
     border-bottom: 16px solid #ffcc00;
     top: 10px;
     left: 0;
-    transform: translateX(-50%);
+    transform: translateX(0);
     z-index: 10;
     transition: left 0.05s linear;
 }

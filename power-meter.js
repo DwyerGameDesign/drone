@@ -83,7 +83,8 @@ class ImprovedPowerMeter {
         // Add click event to the meter
         meter.addEventListener('click', () => this.handleClick());
         
-        // Set initial position
+        // Set initial position to 0
+        this.position = 0;
         this.indicator.style.left = '0px';
     }
     
@@ -95,8 +96,7 @@ class ImprovedPowerMeter {
             this.animationComplete = false;
             this.position = 0;
             
-            // Fix: Set the indicator position to 0px but visually it will be aligned at the start of the meter
-            // due to the -50% transform. This aligns with the evaluation logic.
+            // Ensure indicator starts at the beginning
             this.indicator.style.left = '0px';
             this.tapMarker.style.display = 'none';
             this.startAnimation();
@@ -107,12 +107,8 @@ class ImprovedPowerMeter {
             this.tapMarker.style.display = 'block';
             this.tapMarker.style.left = `${this.position}px`;
             
-            // Stop animation and evaluate after a short delay
-            setTimeout(() => {
-                this.isMoving = false;
-                cancelAnimationFrame(this.animationId);
-                this.evaluateResult();
-            }, 100);
+            // Continue animation until the end
+            // The evaluation will happen when animation completes
         }
     }
     
@@ -132,6 +128,8 @@ class ImprovedPowerMeter {
                 if (!this.hasPlayerTapped) {
                     this.tapPosition = this.totalWidth;
                     this.hasPlayerTapped = true;
+                    this.tapMarker.style.display = 'block';
+                    this.tapMarker.style.left = `${this.position}px`;
                 }
                 
                 // Stop animation and evaluate result
@@ -200,7 +198,9 @@ class ImprovedPowerMeter {
         
         // Highlight the indicator and tap marker
         this.indicator.classList.add(result);
-        this.tapMarker.classList.add(result);
+        if (this.tapMarker) {
+            this.tapMarker.classList.add(result);
+        }
     }
     
     getResult() {

@@ -351,11 +351,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const meterType = narrative.meterType || 'standard';
             const meterContext = narrative.meterContext || 'Test your timing...';
             
-            // Add outcome preview if available
+            // Create outcome container but don't display it yet
+            let outcomeContainer;
             if (narrative.outcomes && narrative.outcomes.length > 0) {
-                const outcomeContainer = document.createElement('div');
+                outcomeContainer = document.createElement('div');
                 outcomeContainer.className = 'outcomes-preview';
-                outcomeContainer.style.display = 'flex'; // Ensure it's visible
+                outcomeContainer.style.display = 'none'; // Hide initially
                 
                 narrative.outcomes.forEach(outcome => {
                     const outcomePreview = document.createElement('div');
@@ -375,6 +376,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.log('Power meter result:', result);
                         // Process the swing meter result
                         const processedResult = game.handleSwingMeter(result);
+                        
+                        // Show the outcome options now that the meter is complete
+                        if (outcomeContainer) {
+                            outcomeContainer.style.display = 'flex';
+                        }
                         
                         // Show the outcome text based on the result
                         if (narrative.outcomes) {
