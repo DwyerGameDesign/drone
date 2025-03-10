@@ -366,16 +366,16 @@ document.addEventListener('DOMContentLoaded', function() {
         integratedMeterContainer.className = 'integrated-meter-container';
         meterContainer.appendChild(integratedMeterContainer);
         
-        // Show the integrated power meter
+        // Show the swing meter
         const meterType = narrative.meterType || 'standard';
         const meterContext = narrative.meterContext || 'Test your timing...';
         
-        // Check if the showImprovedPowerMeter function exists
-        if (typeof showImprovedPowerMeter === 'function') {
-            console.log('Using showImprovedPowerMeter with type:', meterType);
-            showImprovedPowerMeter('integrated-meter-container', meterType, meterContext, function(result) {
+        // Check if the showSwingMeter function exists
+        if (typeof showSwingMeter === 'function') {
+            console.log('Using swing meter with type:', meterType);
+            showSwingMeter('integrated-meter-container', meterType, meterContext, function(result) {
                 if (result) {
-                    console.log('Power meter result:', result);
+                    console.log('Swing meter result:', result);
                     // Process the swing meter result
                     const processedResult = game.handleSwingMeter(result);
                     
@@ -414,11 +414,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Default handling if no outcome found
                     handleInteractionResult(processedResult);
                 } else {
-                    console.error('No result from power meter');
+                    console.error('No result from swing meter');
                 }
             });
         } else {
-            console.error('showImprovedPowerMeter function not found');
+            console.error('showSwingMeter function not found');
         }
     }
     

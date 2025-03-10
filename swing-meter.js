@@ -1,5 +1,5 @@
-// Drone Man: The Journey - Improved Power Meter Module
-class ImprovedPowerMeter {
+// Drone Man: The Journey - Swing Meter Module
+class SwingMeter {
     constructor(container, config, context) {
         this.container = container;
         this.config = config;
@@ -106,9 +106,6 @@ class ImprovedPowerMeter {
             this.tapPosition = this.position;
             this.tapMarker.style.display = 'block';
             this.tapMarker.style.left = `${this.position}px`;
-            
-            // Continue animation until the end
-            // The evaluation will happen when animation completes
         }
     }
     
@@ -137,7 +134,7 @@ class ImprovedPowerMeter {
                 this.evaluateResult();
             }
             
-            // Update indicator position - add 8px offset to center the triangle
+            // Update indicator position
             this.indicator.style.left = `${this.position}px`;
             
             // Continue animation
@@ -177,7 +174,7 @@ class ImprovedPowerMeter {
             currentPosition += zone.width;
         }
         
-        // Fix: If the position is at the very end (totalWidth), ensure it's a fail
+        // If the position is at the very end (totalWidth), ensure it's a fail
         if (this.tapPosition >= this.totalWidth) {
             result = 'fail';
         }
@@ -212,8 +209,8 @@ class ImprovedPowerMeter {
     }
 }
 
-// Function to show the improved power meter
-function showImprovedPowerMeter(containerId, meterType, context, callback) {
+// Function to show the swing meter
+function showSwingMeter(containerId, meterType, context, callback) {
     // Get the container
     const container = document.getElementById(containerId);
     if (!container) {
@@ -233,23 +230,23 @@ function showImprovedPowerMeter(containerId, meterType, context, callback) {
     const meterConfig = game.getPowerMeterConfig(meterType);
     
     if (!meterConfig) {
-        console.error(`Power meter type "${meterType}" not found!`);
+        console.error(`Meter type "${meterType}" not found!`);
         callback(null);
         return;
     }
     
-    // Create power meter
-    const powerMeter = new ImprovedPowerMeter(container, meterConfig, context);
+    // Create swing meter
+    const swingMeter = new SwingMeter(container, meterConfig, context);
     
     // Listen for result
     const checkInterval = setInterval(() => {
-        if (powerMeter.getResult()) {
+        if (swingMeter.getResult()) {
             clearInterval(checkInterval);
             
             // Return result after delay
             setTimeout(() => {
-                callback(powerMeter.getResult());
-            }, 1500);
+                callback(swingMeter.getResult());
+            }, 1500); // Give time to see the result
         }
     }, 100);
 }
@@ -282,10 +279,10 @@ function showPowerMeter(meterType, callback) {
     integratedContainer.id = 'integrated-meter-container';
     container.appendChild(integratedContainer);
     
-    // Show improved meter
-    showImprovedPowerMeter('integrated-meter-container', meterType, context, callback);
+    // Show swing meter
+    showSwingMeter('integrated-meter-container', meterType, context, callback);
 }
 
 // Replace the old functions with improved ones
-window.showImprovedPowerMeter = showImprovedPowerMeter;
-window.showPowerMeter = showPowerMeter;
+window.showSwingMeter = showSwingMeter;
+window.showPowerMeter = showPowerMeter; 
