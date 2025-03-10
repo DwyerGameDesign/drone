@@ -428,39 +428,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Process the swing meter result
                     const processedResult = game.handleSwingMeter(result);
                     
-                    // Show the outcome text with typewriter effect
-                    if (narrative.outcomes) {
-                        const outcome = narrative.outcomes.find(o => o.result === result);
-                        if (outcome) {
-                            const outcomeText = document.createElement('div');
-                            outcomeText.className = 'outcome-result';
-                            meterContainer.appendChild(outcomeText);
-                            
-                            // Typewriter effect for outcome text
-                            let i = 0;
-                            const speed = 50; // Adjust speed as needed
-                            function typeWriter() {
-                                if (i < outcome.text.length) {
-                                    outcomeText.textContent += outcome.text.charAt(i);
-                                    i++;
-                                    setTimeout(typeWriter, speed);
-                                } else {
-                                    // After text is complete, show the next button
-                                    const nextButton = document.createElement('button');
-                                    nextButton.className = 'choice-button';
-                                    nextButton.textContent = 'Next Stop';
-                                    nextButton.onclick = function() {
-                                        handleInteractionResult(processedResult);
-                                    };
-                                    meterContainer.appendChild(nextButton);
-                                }
-                            }
-                            typeWriter();
-                            return;
-                        }
-                    }
-                    
-                    // Default handling if no outcome found
+                    // Handle the interaction result after the player clicks the Next Stop button
+                    // The outcome text is now displayed by the swing meter itself
                     handleInteractionResult(processedResult);
                 } else {
                     console.error('No result from swing meter');

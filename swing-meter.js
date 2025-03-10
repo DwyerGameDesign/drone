@@ -248,28 +248,77 @@ class SwingMeter {
     }
     
     showResult(result) {
-        // Create result element
-        const resultElement = document.createElement('div');
-        resultElement.className = `integrated-meter-result ${result}`;
-        
-        // Get result text from config
+        // Get the outcome text from config
         let resultText = '';
         if (this.config.results[result]) {
             resultText = this.config.results[result].text;
         }
         
-        resultElement.textContent = resultText;
-        this.meterElement.appendChild(resultElement);
+        // Mark the meter as completed
+        this.completed = true;
+        
+        // Add a "completed" class to the meter to visually indicate it's done
+        if (this.meterElement) {
+            this.meterElement.classList.add('completed');
+        }
+        
+        // Update instructions to show it's completed
+        const instructions = this.container.querySelector('.meter-instructions');
+        if (instructions) {
+            instructions.textContent = 'COMPLETED';
+            instructions.classList.add('completed');
+        }
         
         // Highlight the indicator and tap marker
         this.indicator.classList.add(result);
         if (this.tapMarker) {
             this.tapMarker.classList.add(result);
         }
+        
+        // Create result element
+        const resultElement = document.createElement('div');
+        resultElement.className = `integrated-meter-result ${result}`;
+        resultElement.textContent = resultText;
+        this.meterElement.appendChild(resultElement);
+        
+        // Wait a moment to show the result, then transition to outcome display
+        setTimeout(() => {
+            // Find the parent container (integrated-meter-container)
+            const meterContainer = this.container;
+            
+            // Clear the container
+            meterContainer.innerHTML = '';
+            
+            // Create outcome container
+            const outcomeContainer = document.createElement('div');
+            outcomeContainer.className = 'outcome-result';
+            
+            // Leave the outcome text empty - it will be filled with the narrative outcome text
+            outcomeContainer.textContent = '';
+            
+            // Add the outcome container to the meter container
+            meterContainer.appendChild(outcomeContainer);
+            
+            // Create Next Stop button
+            const nextButton = document.createElement('button');
+            nextButton.className = 'next-stop-button';
+            nextButton.textContent = 'Next Stop';
+            
+            // Add the button to the container
+            meterContainer.appendChild(nextButton);
+            
+            // Store the button reference for the callback
+            this.nextButton = nextButton;
+        }, 1500); // Wait 1.5 seconds before transitioning
     }
     
     getResult() {
         return this.result;
+    }
+    
+    // Get the next button element
+    getNextButton() {
+        return this.nextButton;
     }
 }
 
@@ -313,10 +362,47 @@ function showSwingMeter(containerId, meterType, context, callback) {
         if (swingMeter.getResult()) {
             clearInterval(checkInterval);
             
-            // Return result after delay
-            setTimeout(() => {
-                callback(swingMeter.getResult());
-            }, 1500); // Give time to see the result
+            // Get the current narrative to access outcome text
+            const currentNarrative = game.getCurrentNarrative();
+            const result = swingMeter.getResult();
+            
+            // Wait for the next button to be created
+            const buttonCheckInterval = setInterval(() => {
+                const nextButton = swingMeter.getNextButton();
+                if (nextButton) {
+                    clearInterval(buttonCheckInterval);
+                    
+                    // Find the outcome text from the narrative
+                    if (currentNarrative && currentNarrative.outcomes) {
+                        const outcome = currentNarrative.outcomes.find(o => o.result === result);
+                        if (outcome) {
+                            // Update the outcome text with the narrative outcome
+                            const outcomeContainer = container.querySelector('.outcome-result');
+                            if (outcomeContainer) {
+                                // Clear the container first
+                                outcomeContainer.textContent = '';
+                                
+                                // Add typewriter effect for the outcome text
+                                let i = 0;
+                                const speed = 30; // Adjust speed as needed
+                                function typeWriter() {
+                                    if (i < outcome.text.length) {
+                                        outcomeContainer.textContent += outcome.text.charAt(i);
+                                        i++;
+                                        setTimeout(typeWriter, speed);
+                                    }
+                                }
+                                typeWriter();
+                            }
+                        }
+                    }
+                    
+                    // Add click handler to the next button
+                    nextButton.onclick = function() {
+                        callback(swingMeter.getResult());
+                    };
+                }
+            }, 100);
         }
     }, 100);
 }
