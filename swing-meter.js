@@ -9,7 +9,7 @@ class SwingMeter {
         this.speed = config.speed || 5;
         this.animationId = null;
         this.result = null;
-        this.totalWidth = 300; // Width of the meter
+        this.totalWidth = 0; // Will be calculated based on actual meter width
         this.meterElement = null;
         this.indicator = null;
         this.tapMarker = null;
@@ -21,6 +21,7 @@ class SwingMeter {
         this.render();
     }
     
+    // Modified render method for SwingMeter class
     render() {
         // Clear any existing content
         this.container.innerHTML = '';
@@ -38,11 +39,21 @@ class SwingMeter {
         const meter = document.createElement('div');
         meter.className = 'integrated-swing-meter';
         meter.style.position = 'relative'; // Ensure position is relative
+        meter.style.overflow = 'visible'; // Ensure indicator is visible even outside the meter
         this.meterElement = meter;
         
         // Create meter background
         const meterBackground = document.createElement('div');
         meterBackground.className = 'meter-background';
+        meterBackground.style.position = 'relative'; // Add relative positioning to background
+        meterBackground.style.overflow = 'visible'; // Ensure indicator is visible
+        
+        // Calculate total width from zones
+        let totalWidth = 0;
+        this.config.zones.forEach(zone => {
+            totalWidth += zone.width;
+        });
+        this.totalWidth = totalWidth;
         
         // Add zones to meter
         this.config.zones.forEach(zone => {
@@ -60,13 +71,16 @@ class SwingMeter {
         const indicator = document.createElement('div');
         indicator.className = 'meter-indicator';
         indicator.style.display = 'block'; // Ensure it's visible
+        indicator.style.position = 'absolute'; // Ensure position is absolute
         indicator.style.zIndex = '100'; // Ensure it's on top
+        indicator.style.left = '0px'; // Start at the left edge
         this.indicator = indicator;
         
         // Create tap marker (initially hidden)
         const tapMarker = document.createElement('div');
         tapMarker.className = 'tap-marker';
         tapMarker.style.display = 'none';
+        tapMarker.style.position = 'absolute'; // Ensure position is absolute
         tapMarker.style.zIndex = '99'; // Ensure it's on top but below indicator
         this.tapMarker = tapMarker;
         
@@ -89,22 +103,6 @@ class SwingMeter {
         
         // Add click event to the meter
         meter.addEventListener('click', () => this.handleClick());
-        
-        // Wait for elements to be in the DOM and positioned
-        setTimeout(() => {
-            // Get the actual position of the meter background
-            const meterRect = meterBackground.getBoundingClientRect();
-            const meterLeft = meterRect.left;
-            
-            // Set initial position to the left edge of the first zone
-            this.startX = meterLeft;
-            this.position = meterLeft;
-            
-            // Position the indicator at the start
-            this.indicator.style.left = `${meterLeft}px`;
-            
-            console.log('Meter positioned at:', meterLeft);
-        }, 50);
     }
     
     handleClick() {
@@ -119,21 +117,15 @@ class SwingMeter {
             this.hasPlayerTapped = false;
             this.animationComplete = false;
             
-            // Get the current position of the meter background
+            // Get the meter background for positioning
             const meterBackground = this.meterElement.querySelector('.meter-background');
-            const meterRect = meterBackground.getBoundingClientRect();
-            const startX = meterRect.left;
-            
-            // Set the starting position
-            this.startX = startX;
-            this.position = startX;
             
             // Ensure indicator starts at the beginning and is visible
-            this.indicator.style.left = `${startX}px`;
+            this.indicator.style.left = '0px';
             this.indicator.style.display = 'block';
             this.tapMarker.style.display = 'none';
             
-            console.log('Starting animation from:', startX);
+            console.log('Starting animation');
             this.startAnimation();
         } else if (!this.hasPlayerTapped && !this.animationComplete) {
             // Player's tap - mark position
@@ -147,16 +139,19 @@ class SwingMeter {
     }
     
     startAnimation() {
-        // Get the current position of the meter background
-        const meterBackground = this.meterElement.querySelector('.meter-background');
-        const meterRect = meterBackground.getBoundingClientRect();
-        const startX = meterRect.left;
-        const endX = startX + this.totalWidth;
+        // Calculate the width of the meter from the total zone widths
+        const meterWidth = this.totalWidth;
         
-        console.log('Animation range:', startX, 'to', endX);
+        // We'll use relative positioning within the meter
+        const startX = 0; // Start at the left edge of the meter
+        const endX = meterWidth; // End at the right edge of the meter
         
-        // Make sure the indicator is visible
+        console.log('Animation range: 0 to', meterWidth, 'Width:', meterWidth);
+        
+        // Make sure the indicator is visible and properly positioned
         this.indicator.style.display = 'block';
+        this.indicator.style.position = 'absolute';
+        this.indicator.style.left = '0px';
         
         const animate = () => {
             if (!this.isMoving) return;
@@ -199,25 +194,20 @@ class SwingMeter {
     }
     
     evaluateResult() {
-        // Get the current position of the meter background
-        const meterBackground = this.meterElement.querySelector('.meter-background');
-        const meterRect = meterBackground.getBoundingClientRect();
-        const startX = meterRect.left;
+        // We're using relative positioning, so we can evaluate directly
+        const tapPosition = this.tapPosition;
         
-        // Adjust the tap position relative to the start of the meter
-        const adjustedTapPosition = this.tapPosition - startX;
-        
-        console.log('Evaluating result:', adjustedTapPosition, 'relative to start:', startX);
+        console.log('Evaluating result:', tapPosition);
         
         let currentPosition = 0;
         let result = 'fail'; // Default
         
-        // Use adjusted tapPosition for evaluation
+        // Evaluate which zone the tap position falls into
         for (let i = 0; i < this.config.zones.length; i++) {
             const zone = this.config.zones[i];
             const zoneEnd = currentPosition + zone.width;
             
-            if (adjustedTapPosition >= currentPosition && adjustedTapPosition < zoneEnd) {
+            if (tapPosition >= currentPosition && tapPosition < zoneEnd) {
                 // Determine result based on color
                 if (zone.color === '#2ecc71') { // Green
                     result = 'good';
@@ -233,7 +223,7 @@ class SwingMeter {
         }
         
         // If the position is at the very end (totalWidth), ensure it's a fail
-        if (adjustedTapPosition >= this.totalWidth) {
+        if (tapPosition >= this.totalWidth) {
             result = 'fail';
         }
         
@@ -414,7 +404,9 @@ function showSwingMeter(containerId, meterType, context, callback) {
                                         setTimeout(typeWriter, speed);
                                     } else {
                                         // Only show the next button after text is fully typed
-                                        nextButton.style.display = 'block';
+                                        setTimeout(() => {
+                                            nextButton.style.display = 'block';
+                                        }, 500); // Add a small delay after text is complete
                                     }
                                 }
                                 typeWriter();
