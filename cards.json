@@ -376,7 +376,7 @@
         }
       }
     },
-    "powerMeterTypes": {
+    "swingMeterTypes": {
       "standard": {
         "title": "STANDARD CHALLENGE",
         "narrative": "Balance is key. Find the right amount of effort without going too far.",

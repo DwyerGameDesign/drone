@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Create game instance
     const game = new DroneManGame();
-    window.gameInstance = game; // Make it globally accessible for power meter
+    window.gameInstance = game; // Make it globally accessible for swing meter
     
     // UI Elements
     const elements = {

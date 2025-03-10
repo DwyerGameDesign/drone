@@ -85,7 +85,7 @@ class DroneManGame {
         if (cardsData) {
             this.narratives = cardsData.narratives || [];
             this.passiveEffects = cardsData.passiveEffects || {};
-            this.swingMeterTypes = cardsData.powerMeterTypes || {}; // Still using powerMeterTypes from JSON for backward compatibility
+            this.swingMeterTypes = cardsData.swingMeterTypes || cardsData.powerMeterTypes || {}; // Support both naming conventions
         }
         
         // Process events data
@@ -530,12 +530,6 @@ class DroneManGame {
         return config;
     }
     
-    // For backward compatibility
-    getPowerMeterConfig(meterType) {
-        console.warn('getPowerMeterConfig is deprecated, use getSwingMeterConfig instead');
-        return this.getSwingMeterConfig(meterType);
-    }
-
     // Start the next round
     startNextRound() {
         console.log('Starting next round');

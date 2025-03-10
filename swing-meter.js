@@ -276,39 +276,5 @@ function showSwingMeter(containerId, meterType, context, callback) {
     }, 100);
 }
 
-// Function for backward compatibility - replacing the old showPowerMeter
-function showPowerMeter(meterType, callback) {
-    console.warn('showPowerMeter is deprecated, use showSwingMeter instead');
-    const context = "Test your skill and timing...";
-    let containerId = 'balance-meter-container';
-    
-    // Get container
-    let container = document.getElementById(containerId);
-    if (!container) {
-        // Fallback to swing meter container
-        containerId = 'swing-meter-container';
-        container = document.getElementById(containerId);
-        
-        if (!container) {
-            console.error('No suitable container found for swing meter!');
-            callback(null);
-            return;
-        }
-    }
-    
-    // Show container
-    container.style.display = 'block';
-    container.innerHTML = '';
-    
-    // Create meter container
-    const integratedContainer = document.createElement('div');
-    integratedContainer.id = 'integrated-meter-container';
-    container.appendChild(integratedContainer);
-    
-    // Show swing meter
-    showSwingMeter('integrated-meter-container', meterType, context, callback);
-}
-
 // Replace the old functions with improved ones
-window.showSwingMeter = showSwingMeter;
-window.showPowerMeter = showPowerMeter; 
+window.showSwingMeter = showSwingMeter; 

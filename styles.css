@@ -550,7 +550,7 @@ body {
     color: #e67e22;
 }
 
-/* Power Meter Styling */
+/* Swing Meter Styling */
 .swing-meter-overlay {
     position: fixed;
     top: 0;
@@ -748,7 +748,7 @@ body {
     }
 }
 
-/* Improved Power Meter Styles */
+/* Improved Swing Meter Styles */
 /* Add these to your existing styles.css file */
 
 .outcome-preview-list {
