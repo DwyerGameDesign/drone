@@ -137,7 +137,7 @@ class ImprovedPowerMeter {
                 this.evaluateResult();
             }
             
-            // Update indicator position
+            // Update indicator position - add 8px offset to center the triangle
             this.indicator.style.left = `${this.position}px`;
             
             // Continue animation
@@ -145,6 +145,10 @@ class ImprovedPowerMeter {
                 this.animationId = requestAnimationFrame(animate);
             }
         };
+        
+        // Start from position 0
+        this.position = 0;
+        this.indicator.style.left = '0px';
         
         this.animationId = requestAnimationFrame(animate);
     }

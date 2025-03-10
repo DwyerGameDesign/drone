@@ -34,6 +34,7 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
+    overflow: hidden;
 }
 
 .integrated-power-meter .meter-background {
@@ -642,6 +643,7 @@ h1 {
 
 .meter-zone {
     height: 100%;
+    flex-shrink: 0;
 }
 
 .indicator-triangle {
@@ -720,11 +722,26 @@ h1 {
 .tap-marker {
     position: absolute;
     top: 0;
-    width: 2px;
     height: 100%;
+    width: 2px;
     background-color: white;
-    box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
-    z-index: 2;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    transform: translateX(1px); /* Center the marker */
+}
+
+.tap-marker.good {
+    background-color: #2ecc71;
+    box-shadow: 0 0 8px rgba(46, 204, 113, 0.8);
+}
+
+.tap-marker.okay {
+    background-color: #ff9933;
+    box-shadow: 0 0 8px rgba(255, 153, 51, 0.8);
+}
+
+.tap-marker.fail {
+    background-color: #e74c3c;
+    box-shadow: 0 0 8px rgba(231, 76, 60, 0.8);
 }
 
 /* Round Complete Screen */
@@ -857,8 +874,8 @@ h1 {
     border-right: 8px solid transparent;
     border-bottom: 16px solid #ffcc00;
     top: 10px;
-    left: 8px;
-    transform: translateX(0);
+    left: 0;
+    transform: translateX(8px);
     z-index: 10;
     transition: left 0.05s linear;
 }
@@ -873,49 +890,6 @@ h1 {
 
 .meter-indicator.fail {
     border-bottom-color: #e74c3c;
-}
-
-.integrated-power-meter {
-    position: relative;
-    height: 80px;
-    margin: 0 auto;
-    width: 100%;
-    background-color: #1a1a1a;
-    border-radius: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    overflow: hidden;
-}
-
-.tap-marker {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    width: 2px;
-    background-color: white;
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
-}
-
-.tap-marker.good {
-    background-color: #2ecc71;
-    box-shadow: 0 0 8px rgba(46, 204, 113, 0.8);
-}
-
-.tap-marker.okay {
-    background-color: #ff9933;
-    box-shadow: 0 0 8px rgba(255, 153, 51, 0.8);
-}
-
-.tap-marker.fail {
-    background-color: #e74c3c;
-    box-shadow: 0 0 8px rgba(231, 76, 60, 0.8);
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
 }
 
 .integrated-meter-result {
