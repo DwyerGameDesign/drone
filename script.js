@@ -95,9 +95,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Clear existing content
         elements.narrativeCardText.textContent = '';
         
-        // Clear choices
-        elements.pathA.innerHTML = '<span class="choice-text"></span><span class="power-meter-icon">⚡</span>';
-        elements.pathB.innerHTML = '<span class="choice-text"></span><span class="power-meter-icon">⚡</span>';
+        // Hide all interaction elements initially
+        hideAllInteractions();
         
         // Start typewriter effect
         let index = 0;
@@ -110,7 +109,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 elements.narrativeCardText.textContent = narrative.narrative;
                 isTyping = false;
                 skipTyping = false;
-                displayChoices(narrative.choices);
+                displayInteraction(narrative);
                 return;
             }
             
@@ -120,11 +119,220 @@ document.addEventListener('DOMContentLoaded', async () => {
                 setTimeout(typeNextCharacter, typingSpeed);
             } else {
                 isTyping = false;
-                displayChoices(narrative.choices);
+                displayInteraction(narrative);
             }
         };
         
         typeNextCharacter();
+    }
+    
+    // Display a random event
+    function displayRandomEvent(event) {
+        // Store the current random event in the game instance
+        game.setCurrentRandomEvent(event);
+        
+        // Hide the normal narrative container
+        elements.narrativeCard.style.display = 'none';
+        elements.narrativeCardChoices.style.display = 'none';
+        
+        // Make sure the random event container exists
+        if (!elements.randomEventContainer) {
+            createRandomEventContainer();
+        }
+        
+        // Show and populate the random event container
+        elements.randomEventContainer.style.display = 'block';
+        elements.randomEventTitle.textContent = event.title;
+        
+        // Clear existing content
+        elements.randomEventText.textContent = '';
+        elements.randomEventOptions.innerHTML = '';
+        
+        // Start typewriter effect for the event text
+        let index = 0;
+        isTyping = true;
+        skipTyping = false;
+        
+        const typeNextCharacter = () => {
+            if (skipTyping) {
+                // If skipping, show the full text immediately
+                elements.randomEventText.textContent = event.narrative;
+                isTyping = false;
+                skipTyping = false;
+                displayRandomEventOptions(event);
+                return;
+            }
+            
+            if (index < event.narrative.length) {
+                elements.randomEventText.textContent += event.narrative.charAt(index);
+                index++;
+                setTimeout(typeNextCharacter, typingSpeed);
+            } else {
+                isTyping = false;
+                displayRandomEventOptions(event);
+            }
+        };
+        
+        typeNextCharacter();
+    }
+    
+    // Create the random event container if it doesn't exist
+    function createRandomEventContainer() {
+        const container = document.createElement('div');
+        container.id = 'random-event-container';
+        container.className = 'random-event-container';
+        
+        const title = document.createElement('div');
+        title.id = 'random-event-title';
+        title.className = 'random-event-title';
+        
+        const text = document.createElement('div');
+        text.id = 'random-event-text';
+        text.className = 'random-event-text';
+        
+        const options = document.createElement('div');
+        options.id = 'random-event-options';
+        options.className = 'random-event-options';
+        
+        container.appendChild(title);
+        container.appendChild(text);
+        container.appendChild(options);
+        
+        // Add to the game container before the narrative card
+        document.querySelector('.game-container').insertBefore(container, elements.narrativeCard);
+        
+        // Update the elements object
+        elements.randomEventContainer = container;
+        elements.randomEventTitle = title;
+        elements.randomEventText = text;
+        elements.randomEventOptions = options;
+        
+        // Add click listener to the text area to skip typewriter
+        text.addEventListener('click', () => {
+            if (isTyping) {
+                skipTyping = true;
+            }
+        });
+    }
+    
+    // Display options for a random event
+    function displayRandomEventOptions(event) {
+        elements.randomEventOptions.innerHTML = '';
+        
+        event.options.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.className = 'random-event-option';
+            
+            // Format text with cost
+            let text = option.text;
+            if (option.cost) {
+                text += ` ($${option.cost})`;
+                
+                // Disable if can't afford
+                if (option.cost > game.resources.money) {
+                    button.disabled = true;
+                    button.classList.add('disabled');
+                }
+            }
+            
+            button.textContent = text;
+            
+            // Add click handler
+            button.onclick = () => {
+                const result = game.handleRandomEvent(index);
+                handleInteractionResult(result);
+            };
+            
+            elements.randomEventOptions.appendChild(button);
+        });
+    }
+    
+    // Hide all interaction elements
+    function hideAllInteractions() {
+        // Choice buttons
+        elements.pathA.style.display = 'none';
+        elements.pathB.style.display = 'none';
+        
+        // Random event container
+        if (elements.randomEventContainer) {
+            elements.randomEventContainer.style.display = 'none';
+        }
+        
+        // Remove any existing swing meter container
+        const swingMeterContainer = document.getElementById('swing-meter-container');
+        if (swingMeterContainer) {
+            swingMeterContainer.innerHTML = '';
+            swingMeterContainer.style.display = 'none';
+        }
+        
+        // Show the narrative card
+        elements.narrativeCard.style.display = 'block';
+        elements.narrativeCardChoices.style.display = 'flex';
+    }
+    
+    // Display the appropriate interaction based on narrative type
+    function displayInteraction(narrative) {
+        switch (narrative.interactionType) {
+            case 'swingMeter':
+                displaySwingMeterButton(narrative);
+                break;
+            case 'choice':
+                displayChoices(narrative.choices);
+                break;
+            default:
+                console.error('Unknown interaction type:', narrative.interactionType);
+        }
+    }
+    
+    // Display swing meter button
+    function displaySwingMeterButton(narrative) {
+        // Create a container for the swing meter if it doesn't exist
+        const meterContainerId = 'swing-meter-container';
+        let meterContainer = document.getElementById(meterContainerId);
+        
+        if (!meterContainer) {
+            meterContainer = document.createElement('div');
+            meterContainer.id = meterContainerId;
+            meterContainer.className = 'swing-meter-container';
+            elements.narrativeCardChoices.appendChild(meterContainer);
+        } else {
+            // Clear any existing content
+            meterContainer.innerHTML = '';
+            meterContainer.style.display = 'block';
+        }
+        
+        // Create the swing meter button
+        const swingButton = document.createElement('button');
+        swingButton.id = 'swing-meter-button';
+        swingButton.className = 'choice-button swing-meter-button';
+        swingButton.textContent = 'TEST YOUR BALANCE';
+        
+        swingButton.onclick = () => {
+            // Create a new container for the integrated meter
+            const integratedMeterContainer = document.createElement('div');
+            integratedMeterContainer.id = 'integrated-meter-container';
+            integratedMeterContainer.className = 'integrated-meter-container';
+            
+            // Replace button with the meter container
+            meterContainer.innerHTML = '';
+            meterContainer.appendChild(integratedMeterContainer);
+            
+            // Show the integrated power meter
+            const meterType = narrative.meterType || 'standard';
+            const meterContext = narrative.meterContext || 'Test your balance and timing...';
+            
+            showIntegratedPowerMeter('integrated-meter-container', meterType, meterContext, (result) => {
+                if (result) {
+                    // Process the swing meter result
+                    const processedResult = game.handleSwingMeter(result);
+                    handleInteractionResult(processedResult);
+                } else {
+                    console.error('No result from power meter');
+                }
+            });
+        };
+        
+        meterContainer.appendChild(swingButton);
     }
     
     // Display choices
@@ -155,47 +363,40 @@ document.addEventListener('DOMContentLoaded', async () => {
                 text += ` (+$${choice.effects.money})`;
                 button.disabled = false;
                 button.classList.remove('disabled');
+            } else {
+                button.disabled = false;
+                button.classList.remove('disabled');
             }
             
             choiceText.textContent = text;
             
             // Show/hide power meter icon
             const meterIcon = button.querySelector('.power-meter-icon');
-            meterIcon.style.display = choice.powerMeter ? 'block' : 'none';
+            if (meterIcon) {
+                meterIcon.style.display = choice.powerMeter ? 'inline' : 'none';
+            }
+            
+            button.style.display = 'block';
             
             // Add click handler
-            button.onclick = () => makeChoice(index);
+            button.onclick = () => {
+                const result = game.handleInteraction({ choiceIndex: index });
+                handleInteractionResult(result);
+            };
         });
     }
     
-    // Make a choice
-    function makeChoice(choiceIndex) {
-        const result = game.makeChoice(choiceIndex);
-        
+    // Handle the result of any interaction
+    function handleInteractionResult(result) {
         if (!result.success) {
-            console.error('Error making choice:', result.reason);
+            console.error('Error processing interaction:', result.reason);
             return;
         }
         
-        // Check if this choice requires a power meter
-        if (result.requiresPowerMeter) {
-            // Show power meter
-            showPowerMeter(result.powerMeterType, (powerMeterResult) => {
-                // Process choice with power meter result
-                const processedResult = game.processChoiceResult(result.choiceIndex, powerMeterResult);
-                handleChoiceResult(processedResult);
-            });
-            return;
-        }
-        
-        // Handle regular choice result
-        handleChoiceResult(result);
-    }
-    
-    // Handle the result of a choice
-    function handleChoiceResult(result) {
         // Add to history
-        addToHistoryTrack(game.decisionHistory[game.decisionHistory.length - 1]);
+        if (game.decisionHistory && game.decisionHistory.length > 0) {
+            addToHistoryTrack(game.decisionHistory[game.decisionHistory.length - 1]);
+        }
         
         // Update UI
         updateUI();
@@ -212,8 +413,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         
+        // Handle random event
+        if (result.randomEvent) {
+            displayRandomEvent(result.randomEvent);
+            return;
+        }
+        
+        // Handle random event completion
+        if (result.randomEventComplete) {
+            // Hide random event container and show narrative card
+            if (elements.randomEventContainer) {
+                elements.randomEventContainer.style.display = 'none';
+            }
+            elements.narrativeCard.style.display = 'block';
+            elements.narrativeCardChoices.style.display = 'flex';
+        }
+        
         // Display next narrative
-        displayNarrative(result.nextNarrative);
+        if (result.nextNarrative) {
+            displayNarrative(result.nextNarrative);
+        }
     }
     
     // Add decision to history track
@@ -256,7 +475,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Add choice text
         const choice = document.createElement('div');
         choice.className = 'history-card-choice';
-        choice.textContent = decision.choiceText;
+        choice.textContent = decision.text || decision.choiceText;
         historyCard.appendChild(choice);
         
         // Add effects
@@ -310,7 +529,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         elements.roundSoulValue.textContent = game.resources.soul;
         elements.roundConnectionsValue.textContent = game.resources.connections;
         elements.roundMoneyValue.textContent = game.resources.money;
-        elements.roundSummaryText.textContent = game.getRoundSummary();
+        elements.roundSummaryText.textContent = game.getRoundSummaryText();
     }
     
     // Show game over screen

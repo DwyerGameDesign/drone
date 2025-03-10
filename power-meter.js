@@ -1,15 +1,16 @@
-// Drone Man: The Journey - Power Meter Module
-class PowerMeter {
-    constructor(container, config) {
+// Drone Man: The Journey - Integrated Power Meter Module
+class IntegratedPowerMeter {
+    constructor(container, config, context) {
         this.container = container;
         this.config = config;
+        this.context = context || "Test your skill and timing...";
         this.isMoving = false;
         this.position = 0;
         this.direction = 1;
         this.speed = config.speed || 5;
         this.animationId = null;
         this.result = null;
-        this.totalWidth = 400; // Fixed width for the meter
+        this.totalWidth = 300; // Width of the meter
         this.meterElement = null;
         this.topTriangle = null;
         this.bottomTriangle = null;
@@ -24,21 +25,18 @@ class PowerMeter {
         // Clear any existing content
         this.container.innerHTML = '';
         
-        // Create popup structure
-        const popup = document.createElement('div');
-        popup.className = 'power-meter-popup';
+        // Create meter structure
+        const meterContainer = document.createElement('div');
+        meterContainer.className = 'integrated-meter-container';
         
-        // Create narrative section
-        const narrativeSection = document.createElement('div');
-        narrativeSection.className = 'power-meter-narrative';
-        narrativeSection.innerHTML = `
-            <h3>${this.config.title}</h3>
-            <p>${this.config.narrative}</p>
-        `;
+        // Create context section
+        const contextSection = document.createElement('div');
+        contextSection.className = 'meter-context';
+        contextSection.textContent = this.context;
         
         // Create meter and zones
         const meter = document.createElement('div');
-        meter.className = 'power-meter';
+        meter.className = 'integrated-power-meter';
         this.meterElement = meter;
         
         // Add top triangle indicator (pointing down)
@@ -59,7 +57,7 @@ class PowerMeter {
         this.config.zones.forEach(zone => {
             const zoneElement = document.createElement('div');
             zoneElement.className = 'meter-zone';
-            zoneElement.style.width = `${zone.width}px`;
+            zoneElement.style.width = `${zone.width * 0.75}px`; // Scale down from popup version
             zoneElement.style.backgroundColor = zone.color;
             meterBackground.appendChild(zoneElement);
         });
@@ -78,19 +76,19 @@ class PowerMeter {
         
         // Add instructions
         const instructions = document.createElement('div');
-        instructions.className = 'power-meter-instructions';
+        instructions.className = 'meter-instructions';
         instructions.textContent = 'TAP TO START, TAP TO STOP';
         
-        // Assemble the popup
-        popup.appendChild(narrativeSection);
-        popup.appendChild(meter);
-        popup.appendChild(instructions);
+        // Assemble the container
+        meterContainer.appendChild(contextSection);
+        meterContainer.appendChild(meter);
+        meterContainer.appendChild(instructions);
         
-        // Add popup to container
-        this.container.appendChild(popup);
+        // Add container to the parent
+        this.container.appendChild(meterContainer);
         
-        // Add click event
-        popup.addEventListener('click', () => this.handleClick());
+        // Add click event to the meter
+        meter.addEventListener('click', () => this.handleClick());
     }
     
     handleClick() {
@@ -123,14 +121,11 @@ class PowerMeter {
             
             // Check boundaries
             if (this.position >= this.totalWidth) {
-                // Stop at the end and show results
+                // Reverse direction at the end
                 this.position = this.totalWidth;
-                this.isMoving = false;
-                this.stopAnimation();
-                if (this.hasPlayerTapped) {
-                    this.evaluateResult();
-                }
+                this.direction = -1;
             } else if (this.position <= 0) {
+                // Reverse direction at the start
                 this.position = 0;
                 this.direction = 1;
             }
@@ -139,8 +134,18 @@ class PowerMeter {
             this.topTriangle.style.left = `${this.position}px`;
             this.bottomTriangle.style.left = `${this.position}px`;
             
-            // Continue animation
-            this.animationId = requestAnimationFrame(animate);
+            // Continue animation or evaluate result if player has tapped
+            if (this.hasPlayerTapped && this.tapPosition !== null) {
+                // Stop animation after a brief delay to show the tap position
+                setTimeout(() => {
+                    this.isMoving = false;
+                    this.stopAnimation();
+                    this.evaluateResult();
+                }, 500);
+            } else {
+                // Continue animation
+                this.animationId = requestAnimationFrame(animate);
+            }
         };
         
         this.animationId = requestAnimationFrame(animate);
@@ -157,10 +162,10 @@ class PowerMeter {
         let currentPosition = 0;
         let result = 'fail'; // Default
         
-        // Use tapPosition instead of current position for evaluation
+        // Use tapPosition for evaluation
         for (let i = 0; i < this.config.zones.length; i++) {
             const zone = this.config.zones[i];
-            const zoneEnd = currentPosition + zone.width;
+            const zoneEnd = currentPosition + (zone.width * 0.75); // Scale down to match the visual size
             
             if (this.tapPosition >= currentPosition && this.tapPosition < zoneEnd) {
                 // Determine result based on color
@@ -174,7 +179,7 @@ class PowerMeter {
                 break;
             }
             
-            currentPosition += zone.width;
+            currentPosition += (zone.width * 0.75);
         }
         
         this.result = result;
@@ -184,7 +189,7 @@ class PowerMeter {
     showResult(result) {
         // Create result element
         const resultElement = document.createElement('div');
-        resultElement.className = `power-meter-result ${result}`;
+        resultElement.className = `integrated-meter-result ${result}`;
         
         // Get result text from config
         let resultText = '';
@@ -205,17 +210,18 @@ class PowerMeter {
     }
 }
 
-// Function to create and show a power meter
-function showPowerMeter(meterType, callback) {
-    // Get the game container
-    const gameContainer = document.querySelector('.game-container');
-    
-    // Create overlay
-    const overlay = document.createElement('div');
-    overlay.className = 'power-meter-overlay';
+// Function to show the integrated power meter
+function showIntegratedPowerMeter(containerId, meterType, context, callback) {
+    // Get the container
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error('Container not found:', containerId);
+        callback(null);
+        return;
+    }
     
     // Get meter config from game
-    const game = window.gameInstance; // Assuming the game instance is accessible globally
+    const game = window.gameInstance;
     const meterConfig = game.getPowerMeterConfig(meterType);
     
     if (!meterConfig) {
@@ -225,10 +231,7 @@ function showPowerMeter(meterType, callback) {
     }
     
     // Create power meter
-    const powerMeter = new PowerMeter(overlay, meterConfig);
-    
-    // Add to the game container
-    gameContainer.appendChild(overlay);
+    const powerMeter = new IntegratedPowerMeter(container, meterConfig, context);
     
     // Listen for result
     const checkInterval = setInterval(() => {
@@ -237,9 +240,44 @@ function showPowerMeter(meterType, callback) {
             
             // Return result after delay
             setTimeout(() => {
-                overlay.remove();
                 callback(powerMeter.getResult());
-            }, 2000);
+            }, 1500);
         }
     }, 100);
 }
+
+// Function for backward compatibility
+function showPowerMeter(meterType, callback) {
+    const context = "Test your skill and timing...";
+    let containerId = 'balance-meter-container';
+    
+    // Get container
+    let container = document.getElementById(containerId);
+    if (!container) {
+        // Fallback to swing meter container
+        containerId = 'swing-meter-container';
+        container = document.getElementById(containerId);
+        
+        if (!container) {
+            console.error('No suitable container found for power meter!');
+            callback(null);
+            return;
+        }
+    }
+    
+    // Show container
+    container.style.display = 'block';
+    container.innerHTML = '';
+    
+    // Create integrated meter container
+    const integratedContainer = document.createElement('div');
+    integratedContainer.id = 'integrated-meter-container';
+    container.appendChild(integratedContainer);
+    
+    // Show integrated meter
+    showIntegratedPowerMeter('integrated-meter-container', meterType, context, callback);
+}
+
+// Make functions globally available
+window.showIntegratedPowerMeter = showIntegratedPowerMeter;
+window.showPowerMeter = showPowerMeter;
