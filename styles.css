@@ -857,7 +857,7 @@ h1 {
     border-right: 8px solid transparent;
     border-bottom: 16px solid #ffcc00;
     top: 10px;
-    left: 0;
+    left: 8px;
     transform: translateX(0);
     z-index: 10;
     transition: left 0.05s linear;
@@ -916,15 +916,6 @@ h1 {
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
-}
-
-.integrated-meter-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 10px;
-    width: 100%;
-    animation: fadeIn 0.3s ease-in-out;
 }
 
 .integrated-meter-result {

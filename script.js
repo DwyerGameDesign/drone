@@ -278,23 +278,31 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.randomEventContainer.style.display = 'none';
         }
         
-        // Ensure swing meter container is hidden
+        // Ensure swing meter container is hidden and cleared
         const swingMeterContainer = document.getElementById('swing-meter-container');
         if (swingMeterContainer) {
             swingMeterContainer.innerHTML = '';
             swingMeterContainer.style.display = 'none';
         }
         
-        // Ensure balance meter container is hidden
+        // Ensure balance meter container is hidden and cleared
         const balanceMeterContainer = document.getElementById('balance-meter-container');
         if (balanceMeterContainer) {
             balanceMeterContainer.innerHTML = '';
             balanceMeterContainer.style.display = 'none';
         }
         
-        // Show the narrative card and choices
+        // Ensure integrated meter container is hidden and cleared
+        const integratedMeterContainer = document.getElementById('integrated-meter-container');
+        if (integratedMeterContainer) {
+            integratedMeterContainer.innerHTML = '';
+            integratedMeterContainer.style.display = 'none';
+        }
+        
+        // Show the narrative card and choices container
         elements.narrativeCard.style.display = 'block';
         elements.narrativeCardChoices.style.display = 'flex';
+        elements.narrativeCardChoices.innerHTML = ''; // Clear any existing choices
     }
     
     // Display the appropriate interaction based on narrative type
@@ -302,7 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Displaying interaction for narrative type:', narrative.interactionType);
         switch (narrative.interactionType) {
             case 'swingMeter':
-                displaySwingMeterButton(narrative);
+                displaySwingMeter(narrative);
                 break;
             case 'choice':
                 displayChoices(narrative.choices);
@@ -312,9 +320,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Display the swing meter button
-    function displaySwingMeterButton(narrative) {
-        console.log('Displaying swing meter button');
+    // Display the swing meter immediately
+    function displaySwingMeter(narrative) {
+        console.log('Displaying swing meter');
         // Create a container for the swing meter if it doesn't exist
         const meterContainerId = 'swing-meter-container';
         let meterContainer = document.getElementById(meterContainerId);
@@ -330,101 +338,65 @@ document.addEventListener('DOMContentLoaded', function() {
             meterContainer.style.display = 'block';
         }
         
-        // Create the swing meter button
-        const swingButton = document.createElement('button');
-        swingButton.id = 'swing-meter-button';
-        swingButton.className = 'choice-button swing-meter-button';
-        swingButton.textContent = 'TEST YOUR TIMING';
+        // Create container for the integrated meter
+        const integratedMeterContainer = document.createElement('div');
+        integratedMeterContainer.id = 'integrated-meter-container';
+        integratedMeterContainer.className = 'integrated-meter-container';
+        meterContainer.appendChild(integratedMeterContainer);
         
-        swingButton.onclick = function() {
-            console.log('Swing meter button clicked');
-            // Create a new container for the integrated meter
-            const integratedMeterContainer = document.createElement('div');
-            integratedMeterContainer.id = 'integrated-meter-container';
-            integratedMeterContainer.className = 'integrated-meter-container';
-            
-            // Replace button with the meter container
-            meterContainer.innerHTML = '';
-            meterContainer.appendChild(integratedMeterContainer);
-            
-            // Show the integrated power meter
-            const meterType = narrative.meterType || 'standard';
-            const meterContext = narrative.meterContext || 'Test your timing...';
-            
-            // Create outcome container but don't display it yet
-            let outcomeContainer;
-            if (narrative.outcomes && narrative.outcomes.length > 0) {
-                outcomeContainer = document.createElement('div');
-                outcomeContainer.className = 'outcomes-preview';
-                outcomeContainer.style.display = 'none'; // Hide initially
-                
-                narrative.outcomes.forEach(outcome => {
-                    const outcomePreview = document.createElement('div');
-                    outcomePreview.className = `outcome-preview ${outcome.result}`;
-                    outcomePreview.textContent = outcome.text;
-                    outcomeContainer.appendChild(outcomePreview);
-                });
-                
-                meterContainer.appendChild(outcomeContainer);
-            }
-            
-            // Check if the showImprovedPowerMeter function exists
-            if (typeof showImprovedPowerMeter === 'function') {
-                console.log('Using showImprovedPowerMeter with type:', meterType);
-                showImprovedPowerMeter('integrated-meter-container', meterType, meterContext, function(result) {
-                    if (result) {
-                        console.log('Power meter result:', result);
-                        // Process the swing meter result
-                        const processedResult = game.handleSwingMeter(result);
-                        
-                        // Show the outcome options now that the meter is complete
-                        if (outcomeContainer) {
-                            outcomeContainer.style.display = 'flex';
-                        }
-                        
-                        // Show the outcome text based on the result
-                        if (narrative.outcomes) {
-                            const outcome = narrative.outcomes.find(o => o.result === result);
-                            if (outcome) {
-                                const outcomeText = document.createElement('div');
-                                outcomeText.className = 'outcome-result';
-                                outcomeText.textContent = outcome.text;
-                                meterContainer.appendChild(outcomeText);
-                                
-                                // Add a short delay before proceeding
-                                setTimeout(function() {
-                                    handleInteractionResult(processedResult);
-                                }, 2000);
-                                return;
+        // Show the integrated power meter
+        const meterType = narrative.meterType || 'standard';
+        const meterContext = narrative.meterContext || 'Test your timing...';
+        
+        // Check if the showImprovedPowerMeter function exists
+        if (typeof showImprovedPowerMeter === 'function') {
+            console.log('Using showImprovedPowerMeter with type:', meterType);
+            showImprovedPowerMeter('integrated-meter-container', meterType, meterContext, function(result) {
+                if (result) {
+                    console.log('Power meter result:', result);
+                    // Process the swing meter result
+                    const processedResult = game.handleSwingMeter(result);
+                    
+                    // Show the outcome text with typewriter effect
+                    if (narrative.outcomes) {
+                        const outcome = narrative.outcomes.find(o => o.result === result);
+                        if (outcome) {
+                            const outcomeText = document.createElement('div');
+                            outcomeText.className = 'outcome-result';
+                            meterContainer.appendChild(outcomeText);
+                            
+                            // Typewriter effect for outcome text
+                            let i = 0;
+                            const speed = 50; // Adjust speed as needed
+                            function typeWriter() {
+                                if (i < outcome.text.length) {
+                                    outcomeText.textContent += outcome.text.charAt(i);
+                                    i++;
+                                    setTimeout(typeWriter, speed);
+                                } else {
+                                    // After text is complete, show the next button
+                                    const nextButton = document.createElement('button');
+                                    nextButton.className = 'choice-button';
+                                    nextButton.textContent = 'Next Stop';
+                                    nextButton.onclick = function() {
+                                        handleInteractionResult(processedResult);
+                                    };
+                                    meterContainer.appendChild(nextButton);
+                                }
                             }
+                            typeWriter();
+                            return;
                         }
-                        
-                        // Default handling if no outcome found
-                        handleInteractionResult(processedResult);
-                    } else {
-                        console.error('No result from power meter');
                     }
-                });
-            } else {
-                console.error('showImprovedPowerMeter function not found');
-            }
-        };
-        
-        meterContainer.appendChild(swingButton);
-        
-        // Add outcome preview below button
-        if (narrative.outcomes && narrative.outcomes.length > 0) {
-            const outcomePreview = document.createElement('div');
-            outcomePreview.className = 'outcome-preview-list';
-            
-            narrative.outcomes.forEach(outcome => {
-                const outcomeItem = document.createElement('div');
-                outcomeItem.className = `outcome-preview-item ${outcome.result}`;
-                outcomeItem.textContent = outcome.text;
-                outcomePreview.appendChild(outcomeItem);
+                    
+                    // Default handling if no outcome found
+                    handleInteractionResult(processedResult);
+                } else {
+                    console.error('No result from power meter');
+                }
             });
-            
-            meterContainer.appendChild(outcomePreview);
+        } else {
+            console.error('showImprovedPowerMeter function not found');
         }
     }
     
@@ -528,17 +500,23 @@ document.addEventListener('DOMContentLoaded', function() {
         // Display next narrative
         if (result.nextNarrative) {
             console.log('Displaying next narrative:', result.nextNarrative);
+            // Clear any existing content and hide interactions
+            hideAllInteractions();
+            // Display the next narrative with typewriter effect
             displayNarrative(result.nextNarrative);
         } else {
             console.warn('No next narrative found in result:', result);
             
-            // Fix: If nextNarrative is missing, try to get it manually from the game
+            // Try to get the next narrative manually
             const currentStop = game.currentStop;
             console.log('Current game stop:', currentStop);
             const manualNextNarrative = game.narratives.find(n => n.stop === currentStop);
             
             if (manualNextNarrative) {
                 console.log('Found manual next narrative:', manualNextNarrative);
+                // Clear any existing content and hide interactions
+                hideAllInteractions();
+                // Display the next narrative with typewriter effect
                 displayNarrative(manualNextNarrative);
             } else {
                 console.error('Cannot find next narrative for stop:', currentStop);
