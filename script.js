@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function() {
         choiceButtons.forEach(button => {
             const choiceText = button.querySelector('.choice-text');
             if (choiceText) choiceText.textContent = '';
-            const meterIcon = button.querySelector('.power-meter-icon');
+            const meterIcon = button.querySelector('.swing-meter-icon');
             if (meterIcon) meterIcon.style.display = 'none';
             button.disabled = false;
             button.classList.remove('disabled');
@@ -476,10 +476,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             choiceText.textContent = text;
             
-            // Show/hide power meter icon
-            const meterIcon = button.querySelector('.power-meter-icon');
+            // Show/hide swing meter icon
+            const meterIcon = button.querySelector('.swing-meter-icon');
             if (meterIcon) {
-                meterIcon.style.display = choice.powerMeter ? 'inline' : 'none';
+                meterIcon.style.display = choice.swingMeter ? 'inline' : 'none';
             }
             
             button.style.display = 'block';
@@ -585,9 +585,9 @@ document.addEventListener('DOMContentLoaded', function() {
             historyCard.classList.add('connections-negative');
         }
         
-        // Add power meter result indicator if applicable
-        if (decision.powerMeterResult) {
-            historyCard.classList.add(`power-meter-${decision.powerMeterResult}`);
+        // Add swing meter result indicator if applicable
+        if (decision.swingMeterResult) {
+            historyCard.classList.add(`swing-meter-${decision.swingMeterResult}`);
         }
         
         // Add decision number/counter

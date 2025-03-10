@@ -551,146 +551,81 @@ body {
 }
 
 /* Power Meter Styling */
-.power-meter-overlay {
+.swing-meter-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.8);
-    z-index: 1000;
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1000;
 }
 
-.power-meter-popup {
+.swing-meter-popup {
+    background-color: #222;
+    border-radius: 8px;
+    padding: 20px;
     width: 90%;
     max-width: 500px;
-    background-color: #1a1a1a;
-    border-radius: 10px;
-    padding: 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    gap: 15px;
 }
 
-.power-meter-narrative {
-    background-color: #252525;
-    width: 100%;
-    border-radius: 5px;
+.swing-meter-narrative {
+    background-color: #2a2a2a;
     padding: 15px;
-    margin-bottom: 30px;
-    text-align: center;
+    border-radius: 6px;
 }
 
-.power-meter-narrative h3 {
-    font-size: 1.1rem;
+.swing-meter-narrative h3 {
     margin-bottom: 10px;
     color: #fff;
 }
 
-.power-meter-narrative p {
-    font-size: 0.9rem;
+.swing-meter-narrative p {
     color: #ccc;
-    font-style: italic;
+    line-height: 1.4;
 }
 
-.power-meter {
-    width: 100%;
-    height: 100px;
+.swing-meter {
+    height: 60px;
     position: relative;
-    margin-bottom: 30px;
+    margin: 20px 0;
 }
 
-.meter-background {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    width: 100%;
-    height: 30px;
-    display: flex;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.meter-zone {
-    height: 100%;
-    flex-shrink: 0;
-}
-
-.indicator-triangle {
-    position: absolute;
-    width: 0;
-    height: 0;
-}
-
-.indicator-triangle.top {
-    top: 10px;
-    left: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 15px solid #ffcc00;
-    transform: translateX(-50%);
-}
-
-.indicator-triangle.bottom {
-    bottom: 10px;
-    left: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 15px solid #ffcc00;
-    transform: translateX(-50%);
-}
-
-.indicator-triangle.good {
-    border-top-color: #2ecc71;
-    border-bottom-color: #2ecc71;
-}
-
-.indicator-triangle.okay {
-    border-top-color: #ff9933;
-    border-bottom-color: #ff9933;
-}
-
-.indicator-triangle.fail {
-    border-top-color: #e74c3c;
-    border-bottom-color: #e74c3c;
-}
-
-.power-meter-instructions {
-    font-size: 1rem;
-    color: #fff;
+.swing-meter-instructions {
     text-align: center;
-    font-weight: bold;
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 10px;
 }
 
-.power-meter-result {
+.swing-meter-result {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-shadow: 0 0 10px #000;
-    text-align: center;
-    padding: 10px 20px;
-    border-radius: 5px;
     background-color: rgba(0, 0, 0, 0.7);
-    z-index: 10;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 18px;
+    font-weight: bold;
+    display: none;
 }
 
-.power-meter-result.good {
+.swing-meter-result.good {
     color: #2ecc71;
 }
 
-.power-meter-result.okay {
+.swing-meter-result.okay {
     color: #ff9933;
 }
 
-.power-meter-result.fail {
+.swing-meter-result.fail {
     color: #e74c3c;
 }
 

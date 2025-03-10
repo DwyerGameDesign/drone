@@ -23,7 +23,7 @@ class DroneManGame {
         this.activePassiveEffects = [];
         this.narratives = [];
         this.passiveEffects = {};
-        this.powerMeterTypes = {};
+        this.swingMeterTypes = {};
         this.currentNarrative = null;
         this.currentChoices = [];
         this.decisionHistory = [];
@@ -85,7 +85,7 @@ class DroneManGame {
         if (cardsData) {
             this.narratives = cardsData.narratives || [];
             this.passiveEffects = cardsData.passiveEffects || {};
-            this.powerMeterTypes = cardsData.powerMeterTypes || {};
+            this.swingMeterTypes = cardsData.powerMeterTypes || {}; // Still using powerMeterTypes from JSON for backward compatibility
         }
         
         // Process events data
@@ -100,7 +100,7 @@ class DroneManGame {
         
         console.log('Game data processed:', {
             narratives: this.narratives.length,
-            powerMeterTypes: Object.keys(this.powerMeterTypes).length,
+            swingMeterTypes: Object.keys(this.swingMeterTypes).length,
             purchaseEvents: this.purchaseEvents.length
         });
     }
@@ -520,14 +520,20 @@ class DroneManGame {
         }
     }
 
-    // Get a power meter configuration
-    getPowerMeterConfig(meterType) {
-        const config = this.powerMeterTypes[meterType] || null;
+    // Get a swing meter configuration
+    getSwingMeterConfig(meterType) {
+        const config = this.swingMeterTypes[meterType] || null;
         if (!config) {
-            console.warn(`Power meter type "${meterType}" not found, falling back to standard`);
-            return this.powerMeterTypes.standard || null;
+            console.warn(`Swing meter type "${meterType}" not found, falling back to standard`);
+            return this.swingMeterTypes.standard || null;
         }
         return config;
+    }
+    
+    // For backward compatibility
+    getPowerMeterConfig(meterType) {
+        console.warn('getPowerMeterConfig is deprecated, use getSwingMeterConfig instead');
+        return this.getSwingMeterConfig(meterType);
     }
 
     // Start the next round

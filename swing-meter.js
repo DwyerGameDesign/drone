@@ -252,7 +252,7 @@ function showSwingMeter(containerId, meterType, context, callback) {
         return;
     }
     
-    const meterConfig = game.getPowerMeterConfig(meterType);
+    const meterConfig = game.getSwingMeterConfig(meterType);
     
     if (!meterConfig) {
         console.error(`Meter type "${meterType}" not found!`);
@@ -278,6 +278,7 @@ function showSwingMeter(containerId, meterType, context, callback) {
 
 // Function for backward compatibility - replacing the old showPowerMeter
 function showPowerMeter(meterType, callback) {
+    console.warn('showPowerMeter is deprecated, use showSwingMeter instead');
     const context = "Test your skill and timing...";
     let containerId = 'balance-meter-container';
     
@@ -289,7 +290,7 @@ function showPowerMeter(meterType, callback) {
         container = document.getElementById(containerId);
         
         if (!container) {
-            console.error('No suitable container found for power meter!');
+            console.error('No suitable container found for swing meter!');
             callback(null);
             return;
         }
