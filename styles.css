@@ -23,6 +23,9 @@ body {
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
 }
 
 .game-header {
@@ -138,10 +141,16 @@ body {
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 20px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
 }
 
 .narrative-card {
     margin-bottom: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .narrative-card-title {
@@ -156,6 +165,9 @@ body {
     line-height: 1.5;
     color: #cccccc;
     margin-bottom: 20px;
+    flex-grow: 1;
+    min-height: 100px;
+    overflow-y: auto;
 }
 
 .narrative-card-choices {
@@ -359,8 +371,10 @@ body {
 .swing-meter-container {
     width: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     margin-top: 15px;
+    min-height: 150px;
 }
 
 .swing-meter-button {
@@ -779,13 +793,15 @@ body {
 }
 
 .outcome-result {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 5px;
     margin-top: 15px;
-    padding: 10px;
-    background-color: #222;
-    border-radius: 4px;
+    margin-bottom: 15px;
     font-weight: bold;
     text-align: center;
     animation: fadeIn 0.5s ease-in-out;
+    min-height: 50px;
 }
 
 .outcomes-preview {
@@ -813,4 +829,62 @@ body {
 
 .outcome-preview.fail {
     border-left: 3px solid #e74c3c;
+}
+
+/* Random Event Styling */
+.random-event-container {
+    background-color: #2c2c2c;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    animation: fadeIn 0.3s ease-in-out;
+    position: relative;
+    z-index: 10;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.random-event-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
+
+.random-event-text {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #cccccc;
+    margin-bottom: 20px;
+    flex-grow: 1;
+    min-height: 100px;
+    overflow-y: auto;
+}
+
+.random-event-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.random-event-option {
+    background-color: #3a3a3a;
+    border: none;
+    border-radius: 8px;
+    padding: 15px 20px;
+    color: #ffffff;
+    font-size: 1rem;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.random-event-option:hover {
+    background-color: #444444;
+}
+
+.random-event-option.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }

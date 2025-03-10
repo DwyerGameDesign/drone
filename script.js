@@ -156,15 +156,17 @@ document.addEventListener('DOMContentLoaded', function() {
         // Make sure the random event container exists
         if (!elements.randomEventContainer) {
             createRandomEventContainer();
+        } else {
+            // If it exists, make sure it's visible and clear its content
+            elements.randomEventContainer.style.display = 'block';
+            elements.randomEventTitle.textContent = '';
+            elements.randomEventText.textContent = '';
+            elements.randomEventOptions.innerHTML = '';
         }
         
         // Show and populate the random event container
         elements.randomEventContainer.style.display = 'block';
         elements.randomEventTitle.textContent = event.title;
-        
-        // Clear existing content
-        elements.randomEventText.textContent = '';
-        elements.randomEventOptions.innerHTML = '';
         
         // Start typewriter effect for the event text
         let index = 0;
@@ -197,7 +199,41 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create the random event container if it doesn't exist
     function createRandomEventContainer() {
         console.log('Creating random event container');
-        const container = document.createElement('div');
+        
+        // First, check if the container already exists
+        let container = document.getElementById('random-event-container');
+        if (container) {
+            // If it exists, just clear its contents
+            container.innerHTML = '';
+            
+            // Create the inner elements
+            const title = document.createElement('div');
+            title.id = 'random-event-title';
+            title.className = 'random-event-title';
+            
+            const text = document.createElement('div');
+            text.id = 'random-event-text';
+            text.className = 'random-event-text';
+            
+            const options = document.createElement('div');
+            options.id = 'random-event-options';
+            options.className = 'random-event-options';
+            
+            container.appendChild(title);
+            container.appendChild(text);
+            container.appendChild(options);
+            
+            // Update the elements object
+            elements.randomEventContainer = container;
+            elements.randomEventTitle = title;
+            elements.randomEventText = text;
+            elements.randomEventOptions = options;
+            
+            return;
+        }
+        
+        // If it doesn't exist, create it
+        container = document.createElement('div');
         container.id = 'random-event-container';
         container.className = 'random-event-container';
         
@@ -217,17 +253,12 @@ document.addEventListener('DOMContentLoaded', function() {
         container.appendChild(text);
         container.appendChild(options);
         
-        // Find the game container and narrative card
+        // Find the game container
         const gameContainer = document.querySelector('.game-container');
-        const narrativeCard = document.getElementById('narrative-card');
         
         if (gameContainer) {
-            // If narrative card exists, insert before it, otherwise append to game container
-            if (narrativeCard) {
-                gameContainer.insertBefore(container, narrativeCard);
-            } else {
-                gameContainer.appendChild(container);
-            }
+            // Append to the game container
+            gameContainer.appendChild(container);
             
             // Update the elements object
             elements.randomEventContainer = container;
