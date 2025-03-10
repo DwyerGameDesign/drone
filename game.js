@@ -323,7 +323,7 @@ class DroneManGame {
             // Check if all rounds are complete
             if (this.currentRound >= this.maxRounds) {
                 // Game completed
-                this.gameOver = true;
+            this.gameOver = true;
                 return { 
                     success: true, 
                     gameOver: true, 
