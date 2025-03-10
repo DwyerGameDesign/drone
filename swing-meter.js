@@ -56,6 +56,7 @@ class SwingMeter {
         // Add indicator (single triangle that moves)
         const indicator = document.createElement('div');
         indicator.className = 'meter-indicator';
+        indicator.style.display = 'block'; // Ensure it's visible
         this.indicator = indicator;
         
         // Create tap marker (initially hidden)
@@ -123,8 +124,9 @@ class SwingMeter {
             this.startX = startX;
             this.position = startX;
             
-            // Ensure indicator starts at the beginning
+            // Ensure indicator starts at the beginning and is visible
             this.indicator.style.left = `${startX}px`;
+            this.indicator.style.display = 'block';
             this.tapMarker.style.display = 'none';
             
             console.log('Starting animation from:', startX);
@@ -148,6 +150,9 @@ class SwingMeter {
         const endX = startX + this.totalWidth;
         
         console.log('Animation range:', startX, 'to', endX);
+        
+        // Make sure the indicator is visible
+        this.indicator.style.display = 'block';
         
         const animate = () => {
             if (!this.isMoving) return;
@@ -281,6 +286,9 @@ class SwingMeter {
         resultElement.textContent = resultText;
         this.meterElement.appendChild(resultElement);
         
+        // Store the context text to preserve it
+        const contextText = this.context;
+        
         // Wait a moment to show the result, then transition to outcome display
         setTimeout(() => {
             // Find the parent container (integrated-meter-container)
@@ -288,6 +296,12 @@ class SwingMeter {
             
             // Clear the container
             meterContainer.innerHTML = '';
+            
+            // Create context container to preserve the context
+            const contextContainer = document.createElement('div');
+            contextContainer.className = 'meter-context';
+            contextContainer.textContent = contextText;
+            meterContainer.appendChild(contextContainer);
             
             // Create outcome container
             const outcomeContainer = document.createElement('div');

@@ -220,13 +220,20 @@ body {
 }
 
 .meter-context {
-    background-color: #252525;
-    padding: 12px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-style: italic;
-    color: #cccccc;
+    font-size: 1.1rem;
+    color: #fff;
     text-align: center;
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.meter-context:not(:last-child) {
+    margin-bottom: 5px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .integrated-swing-meter {
@@ -329,6 +336,7 @@ body {
     z-index: 10;
     transition: left 0.05s linear;
     pointer-events: none;
+    display: block !important;
 }
 
 .meter-indicator.good {
@@ -797,13 +805,19 @@ body {
     font-size: 1.2rem;
     color: #fff;
     text-align: center;
-    margin: 20px 0;
+    margin: 10px 0;
     padding: 15px;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.4);
     border-radius: 8px;
     animation: fadeIn 0.5s ease-in-out;
     line-height: 1.5;
     max-width: 100%;
+}
+
+.meter-context + .outcome-result {
+    margin-top: 5px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 .outcomes-preview {
