@@ -1,22 +1,21 @@
-// Drone Man: The Journey - Integrated Power Meter Module
-class IntegratedPowerMeter {
+// Drone Man: The Journey - Improved Power Meter Module
+class ImprovedPowerMeter {
     constructor(container, config, context) {
         this.container = container;
         this.config = config;
         this.context = context || "Test your skill and timing...";
         this.isMoving = false;
         this.position = 0;
-        this.direction = 1;
         this.speed = config.speed || 5;
         this.animationId = null;
         this.result = null;
         this.totalWidth = 300; // Width of the meter
         this.meterElement = null;
-        this.topTriangle = null;
-        this.bottomTriangle = null;
+        this.indicator = null;
         this.tapMarker = null;
         this.tapPosition = null;
         this.hasPlayerTapped = false;
+        this.animationComplete = false;
         
         this.render();
     }
@@ -39,15 +38,10 @@ class IntegratedPowerMeter {
         meter.className = 'integrated-power-meter';
         this.meterElement = meter;
         
-        // Add top triangle indicator (pointing down)
-        const topTriangle = document.createElement('div');
-        topTriangle.className = 'indicator-triangle top';
-        this.topTriangle = topTriangle;
-        
-        // Add bottom triangle indicator (pointing up)
-        const bottomTriangle = document.createElement('div');
-        bottomTriangle.className = 'indicator-triangle bottom';
-        this.bottomTriangle = bottomTriangle;
+        // Add indicator (single triangle that moves)
+        const indicator = document.createElement('div');
+        indicator.className = 'meter-indicator';
+        this.indicator = indicator;
         
         // Create meter background
         const meterBackground = document.createElement('div');
@@ -57,7 +51,7 @@ class IntegratedPowerMeter {
         this.config.zones.forEach(zone => {
             const zoneElement = document.createElement('div');
             zoneElement.className = 'meter-zone';
-            zoneElement.style.width = `${zone.width * 0.75}px`; // Scale down from popup version
+            zoneElement.style.width = `${zone.width}px`;
             zoneElement.style.backgroundColor = zone.color;
             meterBackground.appendChild(zoneElement);
         });
@@ -69,15 +63,14 @@ class IntegratedPowerMeter {
         this.tapMarker = tapMarker;
         
         // Add elements to meter
-        meter.appendChild(topTriangle);
         meter.appendChild(meterBackground);
-        meter.appendChild(bottomTriangle);
+        meter.appendChild(indicator);
         meter.appendChild(tapMarker);
         
         // Add instructions
         const instructions = document.createElement('div');
         instructions.className = 'meter-instructions';
-        instructions.textContent = 'TAP TO START, TAP TO STOP';
+        instructions.textContent = 'TAP TO START, TAP AGAIN TO STOP';
         
         // Assemble the container
         meterContainer.appendChild(contextSection);
@@ -89,6 +82,9 @@ class IntegratedPowerMeter {
         
         // Add click event to the meter
         meter.addEventListener('click', () => this.handleClick());
+        
+        // Set initial position
+        this.indicator.style.left = '0px';
     }
     
     handleClick() {
@@ -96,9 +92,13 @@ class IntegratedPowerMeter {
             // First click - start the meter
             this.isMoving = true;
             this.hasPlayerTapped = false;
+            this.animationComplete = false;
+            this.position = 0;
+            this.indicator.style.left = '0px';
+            this.tapMarker.style.display = 'none';
             this.startAnimation();
-        } else if (!this.hasPlayerTapped) {
-            // Player's tap - mark position but continue moving
+        } else if (!this.hasPlayerTapped && !this.animationComplete) {
+            // Player's tap - mark position
             this.hasPlayerTapped = true;
             this.tapPosition = this.position;
             this.tapMarker.style.display = 'block';
@@ -107,55 +107,38 @@ class IntegratedPowerMeter {
     }
     
     startAnimation() {
-        // Reset position and markers
-        this.position = 0;
-        this.direction = 1;
-        this.tapMarker.style.display = 'none';
-        this.tapPosition = null;
-        
         const animate = () => {
             if (!this.isMoving) return;
             
-            // Update position
-            this.position += this.speed * this.direction;
+            // Update position - only move right
+            this.position += this.speed;
             
-            // Check boundaries
+            // Check if we've reached the end
             if (this.position >= this.totalWidth) {
-                // Reverse direction at the end
                 this.position = this.totalWidth;
-                this.direction = -1;
-            } else if (this.position <= 0) {
-                // Reverse direction at the start
-                this.position = 0;
-                this.direction = 1;
+                this.animationComplete = true;
+                
+                // If player hasn't tapped, it's a fail
+                if (!this.hasPlayerTapped) {
+                    this.tapPosition = this.totalWidth;
+                    this.hasPlayerTapped = true;
+                }
+                
+                // Stop animation and evaluate result
+                this.isMoving = false;
+                this.evaluateResult();
             }
             
-            // Update triangle positions
-            this.topTriangle.style.left = `${this.position}px`;
-            this.bottomTriangle.style.left = `${this.position}px`;
+            // Update indicator position
+            this.indicator.style.left = `${this.position}px`;
             
-            // Continue animation or evaluate result if player has tapped
-            if (this.hasPlayerTapped && this.tapPosition !== null) {
-                // Stop animation after a brief delay to show the tap position
-                setTimeout(() => {
-                    this.isMoving = false;
-                    this.stopAnimation();
-                    this.evaluateResult();
-                }, 500);
-            } else {
-                // Continue animation
+            // Continue animation
+            if (this.isMoving) {
                 this.animationId = requestAnimationFrame(animate);
             }
         };
         
         this.animationId = requestAnimationFrame(animate);
-    }
-    
-    stopAnimation() {
-        if (this.animationId) {
-            cancelAnimationFrame(this.animationId);
-            this.animationId = null;
-        }
     }
     
     evaluateResult() {
@@ -165,7 +148,7 @@ class IntegratedPowerMeter {
         // Use tapPosition for evaluation
         for (let i = 0; i < this.config.zones.length; i++) {
             const zone = this.config.zones[i];
-            const zoneEnd = currentPosition + (zone.width * 0.75); // Scale down to match the visual size
+            const zoneEnd = currentPosition + zone.width;
             
             if (this.tapPosition >= currentPosition && this.tapPosition < zoneEnd) {
                 // Determine result based on color
@@ -179,7 +162,7 @@ class IntegratedPowerMeter {
                 break;
             }
             
-            currentPosition += (zone.width * 0.75);
+            currentPosition += zone.width;
         }
         
         this.result = result;
@@ -200,9 +183,9 @@ class IntegratedPowerMeter {
         resultElement.textContent = resultText;
         this.meterElement.appendChild(resultElement);
         
-        // Highlight the indicator
-        this.topTriangle.classList.add(result);
-        this.bottomTriangle.classList.add(result);
+        // Highlight the indicator and tap marker
+        this.indicator.classList.add(result);
+        this.tapMarker.classList.add(result);
     }
     
     getResult() {
@@ -210,8 +193,8 @@ class IntegratedPowerMeter {
     }
 }
 
-// Function to show the integrated power meter
-function showIntegratedPowerMeter(containerId, meterType, context, callback) {
+// Function to show the improved power meter
+function showImprovedPowerMeter(containerId, meterType, context, callback) {
     // Get the container
     const container = document.getElementById(containerId);
     if (!container) {
@@ -231,7 +214,7 @@ function showIntegratedPowerMeter(containerId, meterType, context, callback) {
     }
     
     // Create power meter
-    const powerMeter = new IntegratedPowerMeter(container, meterConfig, context);
+    const powerMeter = new ImprovedPowerMeter(container, meterConfig, context);
     
     // Listen for result
     const checkInterval = setInterval(() => {
@@ -246,7 +229,7 @@ function showIntegratedPowerMeter(containerId, meterType, context, callback) {
     }, 100);
 }
 
-// Function for backward compatibility
+// Function for backward compatibility - replacing the old showPowerMeter
 function showPowerMeter(meterType, callback) {
     const context = "Test your skill and timing...";
     let containerId = 'balance-meter-container';
@@ -269,15 +252,15 @@ function showPowerMeter(meterType, callback) {
     container.style.display = 'block';
     container.innerHTML = '';
     
-    // Create integrated meter container
+    // Create meter container
     const integratedContainer = document.createElement('div');
     integratedContainer.id = 'integrated-meter-container';
     container.appendChild(integratedContainer);
     
-    // Show integrated meter
-    showIntegratedPowerMeter('integrated-meter-container', meterType, context, callback);
+    // Show improved meter
+    showImprovedPowerMeter('integrated-meter-container', meterType, context, callback);
 }
 
-// Make functions globally available
-window.showIntegratedPowerMeter = showIntegratedPowerMeter;
+// Replace the old functions with improved ones
+window.showIntegratedPowerMeter = showImprovedPowerMeter;
 window.showPowerMeter = showPowerMeter;

@@ -322,7 +322,7 @@ class DroneManGame {
         
         // Check for passive effect unlock
         if (option.unlockPassive && !this.hasPassiveEffect(option.unlockPassive)) {
-            this.addPassiveEffect(option.unlockPassive);
+            this.activePassiveEffects.push(option.unlockPassive);
         }
         
         // Apply passive effects

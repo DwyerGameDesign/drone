@@ -283,8 +283,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.error('Unknown interaction type:', narrative.interactionType);
         }
     }
-    
-    // Display swing meter button
+
+    // Display the swing meter button
     function displaySwingMeterButton(narrative) {
         // Create a container for the swing meter if it doesn't exist
         const meterContainerId = 'swing-meter-container';
@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const swingButton = document.createElement('button');
         swingButton.id = 'swing-meter-button';
         swingButton.className = 'choice-button swing-meter-button';
-        swingButton.textContent = 'TEST YOUR BALANCE';
+        swingButton.textContent = 'TEST YOUR TIMING';
         
         swingButton.onclick = () => {
             // Create a new container for the integrated meter
@@ -319,12 +319,46 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             // Show the integrated power meter
             const meterType = narrative.meterType || 'standard';
-            const meterContext = narrative.meterContext || 'Test your balance and timing...';
+            const meterContext = narrative.meterContext || 'Test your timing...';
             
-            showIntegratedPowerMeter('integrated-meter-container', meterType, meterContext, (result) => {
+            // Add outcome preview if available
+            if (narrative.outcomes && narrative.outcomes.length > 0) {
+                const outcomeContainer = document.createElement('div');
+                outcomeContainer.className = 'outcomes-preview';
+                
+                narrative.outcomes.forEach(outcome => {
+                    const outcomePreview = document.createElement('div');
+                    outcomePreview.className = `outcome-preview ${outcome.result}`;
+                    outcomePreview.textContent = outcome.text;
+                    outcomeContainer.appendChild(outcomePreview);
+                });
+                
+                meterContainer.appendChild(outcomeContainer);
+            }
+            
+            showImprovedPowerMeter('integrated-meter-container', meterType, meterContext, (result) => {
                 if (result) {
                     // Process the swing meter result
                     const processedResult = game.handleSwingMeter(result);
+                    
+                    // Show the outcome text based on the result
+                    if (narrative.outcomes) {
+                        const outcome = narrative.outcomes.find(o => o.result === result);
+                        if (outcome) {
+                            const outcomeText = document.createElement('div');
+                            outcomeText.className = 'outcome-result';
+                            outcomeText.textContent = outcome.text;
+                            meterContainer.appendChild(outcomeText);
+                            
+                            // Add a short delay before proceeding
+                            setTimeout(() => {
+                                handleInteractionResult(processedResult);
+                            }, 2000);
+                            return;
+                        }
+                    }
+                    
+                    // Default handling if no outcome found
                     handleInteractionResult(processedResult);
                 } else {
                     console.error('No result from power meter');
@@ -333,6 +367,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
         
         meterContainer.appendChild(swingButton);
+        
+        // Add outcome preview below button
+        if (narrative.outcomes && narrative.outcomes.length > 0) {
+            const outcomePreview = document.createElement('div');
+            outcomePreview.className = 'outcome-preview-list';
+            
+            narrative.outcomes.forEach(outcome => {
+                const outcomeItem = document.createElement('div');
+                outcomeItem.className = `outcome-preview-item ${outcome.result}`;
+                outcomeItem.textContent = outcome.text;
+                outcomePreview.appendChild(outcomeItem);
+            });
+            
+            meterContainer.appendChild(outcomePreview);
+        }
     }
     
     // Display choices
