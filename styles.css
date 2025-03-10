@@ -874,8 +874,8 @@ h1 {
     border-right: 8px solid transparent;
     border-bottom: 16px solid #ffcc00;
     top: 10px;
-    left: 0;
-    transform: translateX(8px);
+    left: -8px;
+    transform: translateX(0);
     z-index: 10;
     transition: left 0.05s linear;
 }
