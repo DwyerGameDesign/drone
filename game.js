@@ -6,14 +6,13 @@ class DroneManGame {
             soul: 10,
             connections: 10
         };
-        this.startingResources = {
-            soul: 5,
-            connections: 5,
-            money: 3
-        };
+        this.failureThreshold = -5;
+        this.performanceScore = 0;
         
         // Initialize game state
         this.resources = { ...this.startingResources };
+        this.decisionTypes = [];
+        this.performanceResults = [];
         this.currentRound = 1;
         this.currentStop = 1;
         this.maxRounds = 3;
@@ -263,7 +262,24 @@ class DroneManGame {
         
         this.decisionHistory.push(decision);
         
-        // Apply effects of the choice
+        // Track the decision type
+        if (outcome.decisionType) {
+            this.decisionTypes[this.currentStop - 1] = outcome.decisionType;
+        }
+        
+        // Track the performance result
+        if (outcome.result) {
+            this.performanceResults[this.currentStop - 1] = outcome.result;
+        }
+        
+        // Update performance score based on result
+        if (outcome.result === "fail") {
+            this.performanceScore -= 2;
+        } else if (outcome.result === "okay") {
+            this.performanceScore -= 1;
+        }
+        
+        // For compatibility, still update resources but don't display them
         this.resources.soul = Math.max(0, Math.min(this.maxResources.soul, this.resources.soul + (outcome.effects.soul || 0)));
         this.resources.connections = Math.max(0, Math.min(this.maxResources.connections, this.resources.connections + (outcome.effects.connections || 0)));
         this.resources.money = Math.max(0, this.resources.money + (outcome.effects.money || 0));
@@ -277,27 +293,18 @@ class DroneManGame {
         this.applyPassiveEffects();
         
         // Check game over conditions
-        if (this.resources.soul <= 0) {
+        if (this.performanceScore <= this.failureThreshold) {
             this.gameOver = true;
-            this.gameOverReason = "Your soul has been crushed by the corporate machine.";
+            this.gameOverReason = "You've lost focus on what really matters. The daily grind has worn you down completely.";
             return { 
                 success: true, 
                 gameOver: true, 
                 reason: this.gameOverReason,
                 roundComplete: false,
                 nextNarrative: null,
-                resources: { ...this.resources }
-            };
-        } else if (this.resources.connections <= 0) {
-            this.gameOver = true;
-            this.gameOverReason = "You've become completely isolated from everyone who matters to you.";
-            return { 
-                success: true, 
-                gameOver: true, 
-                reason: this.gameOverReason,
-                roundComplete: false,
-                nextNarrative: null,
-                resources: { ...this.resources }
+                resources: { ...this.resources },
+                decisionTypes: [...this.decisionTypes],
+                performanceResults: [...this.performanceResults]
             };
         }
         
@@ -393,18 +400,9 @@ class DroneManGame {
         this.applyPassiveEffects();
         
         // Check game over conditions
-        if (this.resources.soul <= 0) {
+        if (this.performanceScore <= this.failureThreshold) {
             this.gameOver = true;
-            this.gameOverReason = "Your soul has been crushed by the corporate machine.";
-            return { 
-                success: true, 
-                gameOver: true, 
-                reason: this.gameOverReason,
-                resources: { ...this.resources }
-            };
-        } else if (this.resources.connections <= 0) {
-            this.gameOver = true;
-            this.gameOverReason = "You've become completely isolated from everyone who matters to you.";
+            this.gameOverReason = "You've lost focus on what really matters. The daily grind has worn you down completely.";
             return { 
                 success: true, 
                 gameOver: true, 
@@ -430,56 +428,6 @@ class DroneManGame {
         // DISABLED: Random events are temporarily disabled
         console.log('Random events are disabled');
         return null;
-        
-        /* Original implementation:
-        // Check if we should trigger a random event
-        if (Math.random() * 100 < this.randomEventProbability) {
-            // Get eligible random events
-            const eligibleEvents = this.purchaseEvents.filter(event => {
-                // Skip if we've already seen this event
-                if (event.id === this.lastRandomEventId) return false;
-                
-                // Check if player has enough money
-                if (event.requiredMoney && this.resources.money < event.requiredMoney) return false;
-                
-                // Check conditions
-                if (event.conditions) {
-                    if (event.conditions.minStop && this.currentStop < event.conditions.minStop) return false;
-                    if (event.conditions.minSoul && this.resources.soul < event.conditions.minSoul) return false;
-                    if (event.conditions.maxSoul && this.resources.soul > event.conditions.maxSoul) return false;
-                    if (event.conditions.minConnections && this.resources.connections < event.conditions.minConnections) return false;
-                    if (event.conditions.minMoney && this.resources.money < event.conditions.minMoney) return false;
-                }
-                
-                return true;
-            });
-            
-            // If we have eligible events, choose one based on probability
-            if (eligibleEvents.length > 0) {
-                // Sort events by probability (higher = more likely)
-                const sortedEvents = [...eligibleEvents].sort((a, b) => (b.probability || 3) - (a.probability || 3));
-                
-                // Calculate total probability
-                const totalProb = sortedEvents.reduce((sum, event) => sum + (event.probability || 3), 0);
-                
-                // Choose a random event based on probability
-                let rnd = Math.random() * totalProb;
-                let cumulativeProb = 0;
-                
-                for (const event of sortedEvents) {
-                    cumulativeProb += (event.probability || 3);
-                    if (rnd <= cumulativeProb) {
-                        return event;
-                    }
-                }
-                
-                // Fallback to first event if something went wrong
-                return sortedEvents[0];
-            }
-        }
-        
-        return null;
-        */
     }
 
     // Set the current random event
@@ -566,21 +514,6 @@ class DroneManGame {
             "You're in the final stretch of your journey. The decisions you've made have shaped who you're becoming."
         ];
         
-        // If soul is low
-        if (this.resources.soul <= 3) {
-            return "Your spirit feels weary. The corporate world has taken its toll, but there's still time to find yourself.";
-        }
-        
-        // If connections are low
-        if (this.resources.connections <= 3) {
-            return "You feel increasingly isolated. Perhaps it's time to reach out and rebuild those human connections.";
-        }
-        
-        // If soul is high
-        if (this.resources.soul >= 8) {
-            return "You feel increasingly alive and connected to your true self. The path ahead seems full of possibility.";
-        }
-        
         // Default based on current round
         return summaries[this.currentRound - 1] || "Your journey continues. Each choice shapes who you are becoming.";
     }
@@ -591,13 +524,30 @@ class DroneManGame {
             return this.gameOverReason;
         }
         
-        // Success endings based on final soul and connections values
-        if (this.resources.soul >= 8 && this.resources.connections >= 8) {
-            return "You've found balance in your life. Your soul is full, your connections meaningful, and your journey has just begun. The train has carried you to a place where you can truly live, not just exist.";
-        } else if (this.resources.soul >= 8) {
+        // Count the decision types to determine the dominant path
+        const counts = {
+            soul: this.decisionTypes.filter(type => type === "soul").length,
+            connections: this.decisionTypes.filter(type => type === "connections").length,
+            success: this.decisionTypes.filter(type => type === "success").length
+        };
+        
+        // Determine the dominant path
+        let dominant = "mixed";
+        if (counts.soul > counts.connections && counts.soul > counts.success) {
+            dominant = "soul";
+        } else if (counts.connections > counts.soul && counts.connections > counts.success) {
+            dominant = "connections";
+        } else if (counts.success > counts.soul && counts.success > counts.connections) {
+            dominant = "success";
+        }
+        
+        // Return ending based on dominant path
+        if (dominant === "soul") {
             return "You've reconnected with your authentic self. Perhaps some relationships were left behind, but your inner light burns bright. As you step off the train for the last time, you know you'll never be a drone again.";
-        } else if (this.resources.connections >= 8) {
+        } else if (dominant === "connections") {
             return "You've built a network of meaningful relationships that sustain you. Though personal struggles remain, you're never alone in facing them. The journey continues, but now with companions who make the ride worthwhile.";
+        } else if (dominant === "success") {
+            return "You've achieved the success you always wanted, though at times it came at a personal cost. Your journey has brought you material comfort and professional recognition, and now you stand at the threshold of new opportunities.";
         } else {
             return "Your journey has changed you in subtle but significant ways. The corporate drone is gone, replaced by someone more aware, more alive. It's not perfect, but it's progress, and that's enough.";
         }

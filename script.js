@@ -9,16 +9,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // UI Elements
     const elements = {
         roundNumber: document.getElementById('round-number'),
-        soulBar: document.getElementById('soul-bar'),
-        connectionsBar: document.getElementById('connections-bar'),
-        soulValue: document.getElementById('soul-value'),
-        connectionsValue: document.getElementById('connections-value'),
-        moneyValue: document.getElementById('money-value'),
+        performanceFill: document.getElementById('performance-fill'),
         narrativeCard: document.getElementById('narrative-card'),
         narrativeCardTitle: document.querySelector('.narrative-card-title'),
         narrativeCardText: document.querySelector('.narrative-card-text'),
-        narrativeCardChoices: document.querySelector('.narrative-card-choices'),
-        historyTrack: document.getElementById('history-track'),
+        decisionTrack: document.getElementById('decision-track'),
+        choiceContainer: document.getElementById('choice-container'),
+        swingMeterContainer: document.getElementById('swing-meter-container'),
+        choiceType: document.getElementById('choice-type'),
+        choiceTitle: document.getElementById('choice-title'),
+        choiceDescription: document.getElementById('choice-description'),
+        swingMeterTitle: document.getElementById('swing-meter-title'),
+        tapButton: document.getElementById('tap-button'),
+        resultScreen: document.getElementById('result-screen'),
+        resultStatus: document.getElementById('result-status'),
+        resultTitle: document.getElementById('result-title'),
+        resultText: document.getElementById('result-text'),
+        continueButton: document.getElementById('continue-button'),
         roundComplete: document.getElementById('round-complete'),
         completedRound: document.getElementById('completed-round'),
         roundSoulValue: document.getElementById('round-soul-value'),
@@ -28,18 +35,20 @@ document.addEventListener('DOMContentLoaded', function() {
         nextRoundButton: document.getElementById('next-round-button'),
         gameOver: document.getElementById('game-over'),
         gameOverMessage: document.getElementById('game-over-message'),
-        restartButton: document.getElementById('restart-button'),
-        pathA: document.getElementById('path-a'),
-        pathB: document.getElementById('path-b')
+        restartButton: document.getElementById('restart-button')
     };
-    
-    // Debug check if all elements are available
-    console.log('UI Elements initialized: ', elements);
     
     // Typewriter effect variables
     let isTyping = false;
     let skipTyping = false;
     const typingSpeed = 30; // ms per character
+    
+    // Swing meter variables
+    let isSwingMeterMoving = false;
+    let swingPosition = 0;
+    let swingSpeed = 1;
+    let swingDirection = 1;
+    let currentSelectedOutcome = null;
     
     // Add event listeners
     elements.narrativeCard.addEventListener('click', function() {
@@ -58,14 +67,38 @@ document.addEventListener('DOMContentLoaded', function() {
     elements.restartButton.addEventListener('click', function() {
         game.restart();
         elements.gameOver.style.display = 'none';
-        elements.historyTrack.innerHTML = '';
+        elements.decisionTrack.innerHTML = '';
+        initDecisionTrack();
         const narrative = game.getCurrentNarrative();
         displayNarrative(narrative);
         updateUI();
     });
     
+    // Initialize the decision track with empty cards
+    function initDecisionTrack() {
+        elements.decisionTrack.innerHTML = '';
+        const totalStops = game.narratives.length;
+        
+        for (let i = 1; i <= totalStops; i++) {
+            const card = document.createElement('div');
+            card.className = 'decision-card';
+            if (i === game.currentStop) {
+                card.classList.add('active');
+            }
+            
+            const number = document.createElement('div');
+            number.className = 'decision-card-number';
+            number.textContent = i;
+            
+            card.appendChild(number);
+            elements.decisionTrack.appendChild(card);
+        }
+    }
+    
     // Wait for game data to load
     waitForGameData(game).then(() => {
+        // Initialize decision track
+        initDecisionTrack();
         console.log('Game data loaded successfully');
         // Start the game
         const narrative = game.getCurrentNarrative();
@@ -142,355 +175,267 @@ document.addEventListener('DOMContentLoaded', function() {
         typeNextCharacter();
     }
     
-    // Display a random event
-    function displayRandomEvent(event) {
-        console.log('Displaying random event:', event);
-        
-        // Store the current random event in the game instance
-        game.setCurrentRandomEvent(event);
-        
-        // Hide the normal narrative container
-        elements.narrativeCard.style.display = 'none';
-        elements.narrativeCardChoices.style.display = 'none';
-        
-        // Make sure the random event container exists
-        if (!elements.randomEventContainer) {
-            createRandomEventContainer();
-        } else {
-            // If it exists, make sure it's visible and clear its content
-            elements.randomEventContainer.style.display = 'block';
-            elements.randomEventTitle.textContent = '';
-            elements.randomEventText.textContent = '';
-            elements.randomEventOptions.innerHTML = '';
-        }
-        
-        // Show and populate the random event container
-        elements.randomEventContainer.style.display = 'block';
-        elements.randomEventTitle.textContent = event.title;
-        
-        // Start typewriter effect for the event text
-        let index = 0;
-        isTyping = true;
-        skipTyping = false;
-        
-        const typeNextCharacter = () => {
-            if (skipTyping) {
-                // If skipping, show the full text immediately
-                elements.randomEventText.textContent = event.narrative;
-                isTyping = false;
-                skipTyping = false;
-                displayRandomEventOptions(event);
-                return;
-            }
-            
-            if (index < event.narrative.length) {
-                elements.randomEventText.textContent += event.narrative.charAt(index);
-                index++;
-                setTimeout(typeNextCharacter, typingSpeed);
-            } else {
-                isTyping = false;
-                displayRandomEventOptions(event);
-            }
-        };
-        
-        typeNextCharacter();
-    }
-    
-    // Create the random event container if it doesn't exist
-    function createRandomEventContainer() {
-        console.log('Creating random event container');
-        
-        // First, check if the container already exists
-        let container = document.getElementById('random-event-container');
-        if (container) {
-            // If it exists, just clear its contents
-            container.innerHTML = '';
-            
-            // Create the inner elements
-            const title = document.createElement('div');
-            title.id = 'random-event-title';
-            title.className = 'random-event-title';
-            
-            const text = document.createElement('div');
-            text.id = 'random-event-text';
-            text.className = 'random-event-text';
-            
-            const options = document.createElement('div');
-            options.id = 'random-event-options';
-            options.className = 'random-event-options';
-            
-            container.appendChild(title);
-            container.appendChild(text);
-            container.appendChild(options);
-            
-            // Update the elements object
-            elements.randomEventContainer = container;
-            elements.randomEventTitle = title;
-            elements.randomEventText = text;
-            elements.randomEventOptions = options;
-            
-            return;
-        }
-        
-        // If it doesn't exist, create it
-        container = document.createElement('div');
-        container.id = 'random-event-container';
-        container.className = 'random-event-container';
-        
-        const title = document.createElement('div');
-        title.id = 'random-event-title';
-        title.className = 'random-event-title';
-        
-        const text = document.createElement('div');
-        text.id = 'random-event-text';
-        text.className = 'random-event-text';
-        
-        const options = document.createElement('div');
-        options.id = 'random-event-options';
-        options.className = 'random-event-options';
-        
-        container.appendChild(title);
-        container.appendChild(text);
-        container.appendChild(options);
-        
-        // Find the game container
-        const gameContainer = document.querySelector('.game-container');
-        
-        if (gameContainer) {
-            // Append to the game container
-            gameContainer.appendChild(container);
-            
-            // Update the elements object
-            elements.randomEventContainer = container;
-            elements.randomEventTitle = title;
-            elements.randomEventText = text;
-            elements.randomEventOptions = options;
-            
-            // Add click listener to the text area to skip typewriter
-            text.addEventListener('click', function() {
-                if (isTyping) {
-                    skipTyping = true;
-                }
-            });
-        } else {
-            console.error('Game container not found');
-        }
-    }
-    
-    // Display options for a random event
-    function displayRandomEventOptions(event) {
-        elements.randomEventOptions.innerHTML = '';
-        
-        event.options.forEach((option, index) => {
-            const button = document.createElement('button');
-            button.className = 'random-event-option';
-            
-            // Format text with cost
-            let text = option.text;
-            if (option.cost) {
-                text += ` ($${option.cost})`;
-                
-                // Disable if can't afford
-                if (option.cost > game.resources.money) {
-                    button.disabled = true;
-                    button.classList.add('disabled');
-                }
-            }
-            
-            button.textContent = text;
-            
-            // Add click handler
-            button.onclick = function() {
-                const result = game.handleRandomEvent(index);
-                handleInteractionResult(result);
-            };
-            
-            elements.randomEventOptions.appendChild(button);
-        });
-    }
-    
     // Hide all interaction elements
     function hideAllInteractions() {
         console.log('Hiding all interactions');
-        // Choice buttons
-        elements.pathA.style.display = 'none';
-        elements.pathB.style.display = 'none';
         
-        // Random event container
-        if (elements.randomEventContainer) {
-            elements.randomEventContainer.style.display = 'none';
-        }
+        // Hide choice container
+        elements.choiceContainer.style.display = 'none';
         
-        // Ensure swing meter container is hidden and cleared
-        const swingMeterContainer = document.getElementById('swing-meter-container');
-        if (swingMeterContainer) {
-            swingMeterContainer.innerHTML = '';
-            swingMeterContainer.style.display = 'none';
-        }
+        // Hide swing meter container
+        elements.swingMeterContainer.style.display = 'none';
         
-        // Ensure balance meter container is hidden and cleared
-        const balanceMeterContainer = document.getElementById('balance-meter-container');
-        if (balanceMeterContainer) {
-            balanceMeterContainer.innerHTML = '';
-            balanceMeterContainer.style.display = 'none';
-        }
-        
-        // Ensure integrated meter container is hidden and cleared
-        const integratedMeterContainer = document.getElementById('integrated-meter-container');
-        if (integratedMeterContainer) {
-            integratedMeterContainer.innerHTML = '';
-            integratedMeterContainer.style.display = 'none';
-        }
-        
-        // Show the narrative card and choices container
-        elements.narrativeCard.style.display = 'block';
-        elements.narrativeCardChoices.style.display = 'flex';
-        
-        // Reset choice buttons text and state
-        const choiceButtons = [elements.pathA, elements.pathB];
-        choiceButtons.forEach(button => {
-            const choiceText = button.querySelector('.choice-text');
-            if (choiceText) choiceText.textContent = '';
-            const meterIcon = button.querySelector('.swing-meter-icon');
-            if (meterIcon) meterIcon.style.display = 'none';
-            button.disabled = false;
-            button.classList.remove('disabled');
-        });
+        // Hide result screen
+        elements.resultScreen.style.display = 'none';
     }
     
     // Display the appropriate interaction based on narrative type
     function displayInteraction(narrative) {
         console.log('Displaying interaction for narrative type:', narrative.interactionType);
-        switch (narrative.interactionType) {
-            case 'swingMeter':
-                displaySwingMeter(narrative);
-                break;
-            case 'choice':
-                displayChoices(narrative.choices);
-                break;
-            default:
-                console.error('Unknown interaction type:', narrative.interactionType);
-        }
-    }
-
-    // Display the swing meter immediately
-    function displaySwingMeter(narrative) {
-        console.log('Displaying swing meter');
         
-        // Check if this swing meter has already been completed in the game state
-        if (narrative.id && game.isSwingMeterCompleted(narrative.id)) {
-            console.log(`Swing meter for narrative ${narrative.id} already completed, skipping display`);
-            
-            // Process the last result again or use a default result
-            const defaultResult = 'okay'; // Default to 'okay' if no previous result
-            const processedResult = game.handleSwingMeter(defaultResult);
-            handleInteractionResult(processedResult);
-            return;
-        }
-        
-        // Create a container for the swing meter if it doesn't exist
-        const meterContainerId = 'swing-meter-container';
-        let meterContainer = document.getElementById(meterContainerId);
-        
-        // Check if there's already a completed swing meter in the DOM
-        if (meterContainer && meterContainer.querySelector('.integrated-swing-meter.completed')) {
-            console.log('Swing meter already completed in DOM, skipping display');
-            return;
-        }
-        
-        if (!meterContainer) {
-            meterContainer = document.createElement('div');
-            meterContainer.id = meterContainerId;
-            meterContainer.className = 'swing-meter-container';
-            elements.narrativeCardChoices.appendChild(meterContainer);
+        if (narrative.interactionType === 'swingMeter') {
+            displayChoiceCards(narrative.outcomes);
         } else {
-            // Clear any existing content
-            meterContainer.innerHTML = '';
-            meterContainer.style.display = 'block';
-        }
-        
-        // Create container for the integrated meter
-        const integratedMeterContainer = document.createElement('div');
-        integratedMeterContainer.id = 'integrated-meter-container';
-        integratedMeterContainer.className = 'integrated-meter-container';
-        meterContainer.appendChild(integratedMeterContainer);
-        
-        // Show the swing meter
-        const meterType = narrative.meterType || 'standard';
-        const meterContext = narrative.meterContext || 'Test your timing...';
-        
-        // Check if the showSwingMeter function exists
-        if (typeof showSwingMeter === 'function') {
-            console.log('Using swing meter with type:', meterType);
-            showSwingMeter('integrated-meter-container', meterType, meterContext, function(result) {
-                if (result) {
-                    console.log('Swing meter result:', result);
-                    // Process the swing meter result
-                    const processedResult = game.handleSwingMeter(result);
-                    
-                    // Handle the interaction result after the player clicks the Next Stop button
-                    // The outcome text is now displayed by the swing meter itself
-                    handleInteractionResult(processedResult);
-                } else {
-                    console.error('No result from swing meter');
-                }
-            });
-        } else {
-            console.error('showSwingMeter function not found');
+            console.error('Unknown interaction type:', narrative.interactionType);
         }
     }
     
-    // Display choices
-    function displayChoices(choices) {
-        console.log('Displaying choices:', choices);
-        const buttons = [elements.pathA, elements.pathB];
+    // Display decision cards for the player to choose from
+    function displayChoiceCards(outcomes) {
+        // Clear existing cards
+        elements.choiceContainer.innerHTML = '';
         
-        choices.forEach((choice, index) => {
-            if (index >= buttons.length) return;
+        // Add a card for each outcome
+        outcomes.forEach((outcome, index) => {
+            const decisionType = outcome.decisionType || (index === 0 ? 'soul' : index === 1 ? 'connections' : 'success');
             
-            const button = buttons[index];
-            const choiceText = button.querySelector('.choice-text');
+            const card = document.createElement('div');
+            card.className = 'choice-card ' + decisionType;
             
-            // Set choice text
-            let text = choice.text;
+            const header = document.createElement('div');
+            header.className = 'card-header';
             
-            // Add cost/reward indicator
-            if (choice.effects.money < 0) {
-                text += ` ($${Math.abs(choice.effects.money)})`;
-                // Disable if can't afford
-                if (Math.abs(choice.effects.money) > game.resources.money) {
-                    button.disabled = true;
-                    button.classList.add('disabled');
-                } else {
-                    button.disabled = false;
-                    button.classList.remove('disabled');
-                }
-            } else if (choice.effects.money > 0) {
-                text += ` (+$${choice.effects.money})`;
-                button.disabled = false;
-                button.classList.remove('disabled');
-            } else {
-                button.disabled = false;
-                button.classList.remove('disabled');
-            }
+            const title = document.createElement('div');
+            title.className = 'card-title';
+            title.textContent = outcome.title || 'Option ' + (index + 1);
             
-            choiceText.textContent = text;
+            const content = document.createElement('div');
+            content.className = 'card-content';
+            content.textContent = outcome.text;
             
-            // Show/hide swing meter icon
-            const meterIcon = button.querySelector('.swing-meter-icon');
-            if (meterIcon) {
-                meterIcon.style.display = choice.swingMeter ? 'inline' : 'none';
-            }
+            header.appendChild(title);
+            card.appendChild(header);
+            card.appendChild(content);
             
-            button.style.display = 'block';
+            // Store outcome data
+            card.dataset.index = index;
+            card.dataset.type = decisionType;
+            card.dataset.result = outcome.result;
             
             // Add click handler
-            button.onclick = function() {
-                console.log('Choice button clicked:', index);
-                const result = game.handleInteraction({ choiceIndex: index });
-                handleInteractionResult(result);
-            };
+            card.addEventListener('click', function() {
+                handleCardSelection(outcome, decisionType);
+            });
+            
+            elements.choiceContainer.appendChild(card);
         });
+    }
+    
+    // Handle card selection
+    function handleCardSelection(outcome, decisionType) {
+        console.log('Card selected:', outcome, decisionType);
+        
+        // Hide the choice container
+        elements.choiceContainer.style.display = 'none';
+        
+        // Show the swing meter container
+        elements.swingMeterContainer.style.display = 'block';
+        
+        // Update choice summary
+        elements.choiceType.textContent = decisionType.toUpperCase();
+        elements.choiceType.className = 'choice-type ' + decisionType;
+        elements.choiceTitle.textContent = outcome.title || 'Your Choice';
+        elements.choiceDescription.textContent = 'You\'ve chosen to ' + outcome.text.toLowerCase() + '. How committed will you be to this path?';
+        
+        // Set up the swing meter title
+        elements.swingMeterTitle.textContent = 'How intensely will you pursue this?';
+        
+        // Store the selected outcome for later
+        currentSelectedOutcome = outcome;
+        
+        // Set up the tap button
+        elements.tapButton.textContent = 'TAP TO START';
+        elements.tapButton.onclick = startSwingMeter;
+    }
+    
+    // Start the swing meter
+    function startSwingMeter() {
+        console.log('Starting swing meter');
+        
+        // Change button text
+        elements.tapButton.textContent = 'TAP TO STOP';
+        
+        // Reset the indicators
+        const indicator = document.querySelector('.meter-indicator');
+        const bottomIndicator = document.querySelector('.meter-indicator-bottom');
+        
+        indicator.style.left = '0%';
+        bottomIndicator.style.left = '0%';
+        
+        // Start the animation
+        isSwingMeterMoving = true;
+        swingPosition = 0;
+        
+        // Change button function
+        elements.tapButton.onclick = stopSwingMeter;
+        
+        // Start the animation
+        requestAnimationFrame(animateSwingMeter);
+    }
+    
+    // Animate the swing meter
+    function animateSwingMeter() {
+        if (!isSwingMeterMoving) return;
+        
+        // Update position
+        swingPosition += swingSpeed;
+        
+        // If at or past the end, reverse direction
+        if (swingPosition >= 100) {
+            swingDirection = -1;
+        } else if (swingPosition <= 0) {
+            swingDirection = 1;
+        }
+        
+        swingPosition += swingSpeed * swingDirection;
+        
+        // Make sure position stays in bounds
+        swingPosition = Math.max(0, Math.min(100, swingPosition));
+        
+        // Update indicator positions
+        const indicator = document.querySelector('.meter-indicator');
+        const bottomIndicator = document.querySelector('.meter-indicator-bottom');
+        
+        indicator.style.left = swingPosition + '%';
+        bottomIndicator.style.left = swingPosition + '%';
+        
+        // Continue animation
+        requestAnimationFrame(animateSwingMeter);
+    }
+    
+    // Stop the swing meter
+    function stopSwingMeter() {
+        console.log('Stopping swing meter at position:', swingPosition);
+        
+        // Stop the animation
+        isSwingMeterMoving = false;
+        
+        // Determine the result based on position
+        let result;
+        if (swingPosition >= 60 && swingPosition < 80) {
+            result = 'good';
+        } else if ((swingPosition >= 40 && swingPosition < 60) || (swingPosition >= 80 && swingPosition < 100)) {
+            result = 'okay';
+        } else {
+            result = 'poor';
+        }
+        
+        console.log('Swing meter result:', result);
+        
+        // Change button function
+        elements.tapButton.textContent = 'CONTINUE';
+        elements.tapButton.onclick = () => showResult(result);
+    }
+    
+    // Show the result of the swing meter
+    function showResult(result) {
+        console.log('Showing result:', result);
+        
+        // Hide the swing meter container
+        elements.swingMeterContainer.style.display = 'none';
+        
+        // Show the result screen
+        elements.resultScreen.style.display = 'block';
+        
+        // Update result status
+        elements.resultStatus.textContent = result.toUpperCase();
+        elements.resultStatus.className = 'result-status ' + result;
+        
+        // Update result title
+        elements.resultTitle.textContent = currentSelectedOutcome.title || 'Your Choice';
+        
+        // Update result text based on the outcome and performance
+        let resultText;
+        if (result === 'good') {
+            resultText = "You fully commit to your choice. " + currentSelectedOutcome.text;
+        } else if (result === 'okay') {
+            resultText = "You make a partial effort. " + currentSelectedOutcome.text + ", but your focus wavers.";
+        } else {
+            resultText = "You struggle to follow through. Despite your intentions, you fail to " + currentSelectedOutcome.text.toLowerCase() + ".";
+        }
+        
+        elements.resultText.textContent = resultText;
+        
+        // Set up continue button
+        elements.continueButton.onclick = () => {
+            // Hide result screen
+            elements.resultScreen.style.display = 'none';
+            
+            // Process the result with the game
+            const processedResult = game.handleSwingMeter(result);
+            handleInteractionResult(processedResult);
+        };
+    }
+    
+    // Update the decision track based on the game state
+    function updateDecisionTrack() {
+        // Get all cards in the track
+        const cards = elements.decisionTrack.querySelectorAll('.decision-card');
+        
+        // Update each card based on the game's decision types and performance results
+        for (let i = 0; i < cards.length; i++) {
+            const decisionType = game.decisionTypes[i];
+            const performanceResult = game.performanceResults[i];
+            
+            // Remove existing classes
+            cards[i].classList.remove('active', 'soul', 'connections', 'success', 'poor');
+            
+            // Add current position class
+            if (i + 1 === game.currentStop) {
+                cards[i].classList.add('active');
+            }
+            
+            // Add decision type class if available
+            if (decisionType) {
+                // If performance was poor, show gray
+                if (performanceResult === 'poor') {
+                    cards[i].classList.add('poor');
+                } else {
+                    cards[i].classList.add(decisionType);
+                }
+            }
+        }
+    }
+    
+    // Update the performance meter
+    function updatePerformanceMeter() {
+        // Calculate percentage based on the failure threshold
+        const percentage = Math.min(100, Math.max(0, (game.performanceScore * -1) / game.failureThreshold * 100));
+        elements.performanceFill.style.width = percentage + '%';
+    }
+    
+    // Update UI elements
+    function updateUI() {
+        console.log('Updating UI with game state:', game.currentStop, game.performanceScore);
+        
+        // Update the round number
+        elements.roundNumber.textContent = game.currentRound;
+        
+        // Update the decision track
+        updateDecisionTrack();
+        
+        // Update the performance meter
+        updatePerformanceMeter();
     }
     
     // Handle the result of any interaction
@@ -500,11 +445,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!result.success) {
             console.error('Error processing interaction:', result.reason);
             return;
-        }
-        
-        // Add to history
-        if (game.decisionHistory && game.decisionHistory.length > 0) {
-            addToHistoryTrack(game.decisionHistory[game.decisionHistory.length - 1]);
         }
         
         // Update UI
@@ -534,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 elements.randomEventContainer.style.display = 'none';
             }
             elements.narrativeCard.style.display = 'block';
-            elements.narrativeCardChoices.style.display = 'flex';
+            elements.choiceContainer.style.display = 'flex';
         }
         
         // Display next narrative
@@ -562,95 +502,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Cannot find next narrative for stop:', currentStop);
             }
         }
-    }
-    
-    // Add decision to history track
-    function addToHistoryTrack(decision) {
-        console.log('Adding decision to history track:', decision);
-        if (!decision) return;
-        
-        // Create history card
-        const historyCard = document.createElement('div');
-        
-        // Set class based on primary effect
-        historyCard.className = 'history-card';
-        
-        if (decision.effects.soul > 0) {
-            historyCard.classList.add('soul-positive');
-        } else if (decision.effects.soul < 0) {
-            historyCard.classList.add('soul-negative');
-        } else if (decision.effects.connections > 0) {
-            historyCard.classList.add('connections-positive');
-        } else if (decision.effects.connections < 0) {
-            historyCard.classList.add('connections-negative');
-        }
-        
-        // Add swing meter result indicator if applicable
-        if (decision.swingMeterResult) {
-            historyCard.classList.add(`swing-meter-${decision.swingMeterResult}`);
-        }
-        
-        // Add decision number/counter
-        const counter = document.createElement('div');
-        counter.className = 'history-card-counter';
-        counter.textContent = game.decisionHistory.length;
-        historyCard.appendChild(counter);
-        
-        // Add title
-        const title = document.createElement('div');
-        title.className = 'history-card-title';
-        title.textContent = decision.title;
-        historyCard.appendChild(title);
-        
-        // Add choice text
-        const choice = document.createElement('div');
-        choice.className = 'history-card-choice';
-        choice.textContent = decision.text || decision.choiceText;
-        historyCard.appendChild(choice);
-        
-        // Add effects
-        const effects = document.createElement('div');
-        effects.className = 'history-card-effects';
-        
-        // Soul effect
-        if (decision.effects.soul !== 0) {
-            const soulEffect = document.createElement('div');
-            soulEffect.className = `history-card-effect ${decision.effects.soul > 0 ? 'soul-positive' : 'soul-negative'}`;
-            soulEffect.textContent = `${decision.effects.soul > 0 ? '+' : ''}${decision.effects.soul}S`;
-            effects.appendChild(soulEffect);
-        }
-        
-        // Connections effect
-        if (decision.effects.connections !== 0) {
-            const connectionsEffect = document.createElement('div');
-            connectionsEffect.className = `history-card-effect ${decision.effects.connections > 0 ? 'connections-positive' : 'connections-negative'}`;
-            connectionsEffect.textContent = `${decision.effects.connections > 0 ? '+' : ''}${decision.effects.connections}C`;
-            effects.appendChild(connectionsEffect);
-        }
-        
-        // Money effect
-        if (decision.effects.money !== 0) {
-            const moneyEffect = document.createElement('div');
-            moneyEffect.className = `history-card-effect ${decision.effects.money > 0 ? 'money-positive' : 'money-negative'}`;
-            moneyEffect.textContent = `${decision.effects.money > 0 ? '+' : ''}$${decision.effects.money}`;
-            effects.appendChild(moneyEffect);
-        }
-        
-        historyCard.appendChild(effects);
-        elements.historyTrack.appendChild(historyCard);
-        elements.historyTrack.scrollLeft = elements.historyTrack.scrollWidth;
-    }
-    
-    // Update UI elements
-    function updateUI() {
-        console.log('Updating UI with resources:', game.resources);
-        // Update resource bars and values
-        elements.soulBar.style.width = `${(game.resources.soul / game.maxResources.soul) * 100}%`;
-        elements.connectionsBar.style.width = `${(game.resources.connections / game.maxResources.connections) * 100}%`;
-        elements.soulValue.textContent = game.resources.soul;
-        elements.connectionsValue.textContent = game.resources.connections;
-        elements.moneyValue.textContent = game.resources.money;
-        elements.roundNumber.textContent = game.currentRound;
     }
     
     // Show round complete screen

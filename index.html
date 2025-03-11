@@ -16,79 +16,99 @@
             <div class="round-indicator">Round <span id="round-number">1</span></div>
         </div>
 
-        <div class="hud-container">
-            <div class="resources-container">
-                <div class="resource">
-                    <div class="resource-icon soul-icon">S</div>
-                    <div class="resource-bar"><div id="soul-bar" class="bar-fill"></div></div>
-                    <div id="soul-value" class="resource-value">5</div>
-                </div>
-                <div class="resource">
-                    <div class="resource-icon connections-icon">C</div>
-                    <div class="resource-bar"><div id="connections-bar" class="bar-fill"></div></div>
-                    <div id="connections-value" class="resource-value">5</div>
-                </div>
-            </div>
-            <div class="wallet">
-                <span class="wallet-icon">$</span>
-                <span id="money-value" class="wallet-amount">3</span>
+        <div class="decision-track-container">
+            <div class="track-label">YOUR JOURNEY</div>
+            <div id="decision-track" class="decision-track"></div>
+        </div>
+        
+        <div class="performance-container">
+            <div class="performance-label">FOCUS</div>
+            <div class="performance-meter">
+                <div id="performance-fill" class="meter-fill"></div>
             </div>
         </div>
-
-        <div class="section-title">YOUR JOURNEY</div>
-        <div id="history-track" class="history-track"></div>
 
         <div class="narrative-card-container">
             <div id="narrative-card" class="narrative-card">
                 <div class="narrative-card-title"></div>
                 <div class="narrative-card-text"></div>
             </div>
-            <div class="narrative-card-choices">
-                <button id="path-a" class="choice-button">
-                    <span class="choice-text"></span>
-                    <span class="swing-meter-icon">⚡</span>
-                </button>
-                <button id="path-b" class="choice-button">
-                    <span class="choice-text"></span>
-                    <span class="swing-meter-icon">⚡</span>
-                </button>
-                <div id="swing-meter-container" class="swing-meter-container" style="display: none;"></div>
-                <div id="balance-meter-container" class="balance-meter-container" style="display: none;"></div>
+            
+            <div id="choice-container" class="choice-container">
+                <!-- Choice cards will be dynamically added here -->
             </div>
+            
+            <div id="swing-meter-container" class="swing-meter-container" style="display: none;">
+                <div class="choice-summary">
+                    <div id="choice-type" class="choice-type"></div>
+                    <div id="choice-title" class="choice-title"></div>
+                    <div id="choice-description" class="choice-description"></div>
+                </div>
+                
+                <div id="swing-meter-title" class="swing-meter-title">How will you approach this?</div>
+                
+                <div id="swing-meter" class="swing-meter">
+                    <div class="meter-background">
+                        <div class="meter-zone poor-start"></div>
+                        <div class="meter-zone okay"></div>
+                        <div class="meter-zone good"></div>
+                        <div class="meter-zone poor-end"></div>
+                    </div>
+                    <div class="<div class="meter-zone poor-start"></div>
+                    <div class="meter-zone okay"></div>
+                    <div class="meter-zone good"></div>
+                    <div class="meter-zone poor-end"></div>
+                </div>
+                <div class="meter-indicator"></div>
+                <div class="meter-indicator-bottom"></div>
+            </div>
+            
+            <div class="meter-instructions">TAP AT THE RIGHT MOMENT TO DETERMINE YOUR FOCUS</div>
+            
+            <button id="tap-button" class="tap-button">TAP TO START</button>
+        </div>
+        
+        <div id="result-screen" class="result-screen" style="display: none;">
+            <div id="result-status" class="result-status">GOOD</div>
+            <div id="result-title" class="result-title"></div>
+            <div id="result-text" class="result-text"></div>
+            
+            <button id="continue-button" class="continue-button">CONTINUE JOURNEY</button>
         </div>
     </div>
+</div>
 
-    <div id="round-complete" class="round-complete-screen">
-        <h2>Round <span id="completed-round">1</span> Complete</h2>
-        <div class="round-summary">
-            <div class="summary-stats">
-                <div class="summary-stat">
-                    <div class="summary-icon soul-icon">S</div>
-                    <div class="summary-value"><span id="round-soul-value">5</span>/10</div>
-                </div>
-                <div class="summary-stat">
-                    <div class="summary-icon connections-icon">C</div>
-                    <div class="summary-value"><span id="round-connections-value">5</span>/10</div>
-                </div>
-                <div class="summary-stat">
-                    <div class="summary-icon money-icon">$</div>
-                    <div class="summary-value"><span id="round-money-value">3</span></div>
-                </div>
+<div id="round-complete" class="round-complete-screen">
+    <h2>Round <span id="completed-round">1</span> Complete</h2>
+    <div class="round-summary">
+        <div class="summary-stats">
+            <div class="summary-stat">
+                <div class="summary-icon soul-icon">S</div>
+                <div class="summary-value"><span id="round-soul-value">5</span>/10</div>
             </div>
-            <p id="round-summary-text">You've completed the first leg of your journey. Your soul is stirring, but challenges lie ahead.</p>
+            <div class="summary-stat">
+                <div class="summary-icon connections-icon">C</div>
+                <div class="summary-value"><span id="round-connections-value">5</span>/10</div>
+            </div>
+            <div class="summary-stat">
+                <div class="summary-icon money-icon">$</div>
+                <div class="summary-value"><span id="round-money-value">3</span></div>
+            </div>
         </div>
-        <button id="next-round-button">Continue Journey</button>
+        <p id="round-summary-text">You've completed the first leg of your journey. Your soul is stirring, but challenges lie ahead.</p>
     </div>
+    <button id="next-round-button">Continue Journey</button>
+</div>
 
-    <div id="game-over" class="game-over-screen">
-        <h2>Journey's End</h2>
-        <p id="game-over-message"></p>
-        <button id="restart-button">Start New Journey</button>
-    </div>
-    
-    <!-- Ensure scripts are loaded in the right order -->
-    <script src="game.js"></script>
-    <script src="swing-meter.js"></script>
-    <script src="script.js"></script>
+<div id="game-over" class="game-over-screen">
+    <h2>Journey's End</h2>
+    <p id="game-over-message"></p>
+    <button id="restart-button">Start New Journey</button>
+</div>
+
+<!-- Ensure scripts are loaded in the right order -->
+<script src="game.js"></script>
+<script src="swing-meter.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

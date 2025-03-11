@@ -1,427 +1,814 @@
 {
-    "narratives": [
-      {
-        "stop": 1,
-        "title": "Inbound",
-        "narrative": "6:40 AM. The platform is cold and quiet as you wait for the train. The same train you've taken every weekday for years. You pull your beige trenchcoat tighter around your shoulders as you scan the empty platform. A distant rumble signals the approaching train. Just like yesterday, and the day before, and all the days stretching back through the calendar of your memory.",
-        "interactionType": "swingMeter",
-        "meterType": "standard",
-        "meterContext": "As the train approaches, your mind begins to...",
-        "outcomes": [
-          {
-            "result": "fail",
-            "text": "Review your upcoming work presentation",
-            "effects": { "soul": -1, "connections": 0, "money": 1 }
+  "narratives": [
+    {
+      "stop": 1,
+      "title": "Inbound",
+      "narrative": "6:40 AM. The platform is cold and quiet as you wait for the train. The same train you've taken every weekday for years. You pull your beige trenchcoat tighter around your shoulders as you scan the empty platform. A distant rumble signals the approaching train. Just like yesterday, and the day before, and all the days stretching back through the calendar of your memory.",
+      "interactionType": "swingMeter",
+      "meterType": "standard",
+      "meterContext": "As the train approaches, your mind begins to...",
+      "outcomes": [
+        {
+          "result": "good",
+          "text": "Think about the life you once dreamed of",
+          "effects": {
+            "soul": 1,
+            "connections": 0,
+            "money": 0
           },
-          {
-            "result": "okay",
-            "text": "Observe the world around you",
-            "effects": { "soul": 0, "connections": 0, "money": 0 }
+          "decisionType": "soul",
+          "title": "Inner Reflection"
+        },
+        {
+          "result": "okay",
+          "text": "Observe the world around you",
+          "effects": {
+            "soul": 0,
+            "connections": 1,
+            "money": 0
           },
-          {
-            "result": "good",
-            "text": "Think about the life you once dreamed of",
-            "effects": { "soul": 1, "connections": 0, "money": 0 }
-          }
-        ]
-      },
-      {
-        "stop": 2,
-        "title": "Drone",
-        "narrative": "The train lurches forward as you settle into your usual seat. Through the window, the suburbs slide by in a blur of sameness. You're halfway through the commute when your phone buzzes. It's your boss: \"I need that report finished by noon.\" You were planning to take lunch with an old friend today, someone you've been meaning to reconnect with for months.",
-        "interactionType": "choice",
-        "choices": [
-          {
-            "text": "Cancel lunch, finish the report",
-            "effects": { "soul": -1, "connections": -1, "money": 2 },
-            "unlockPassive": "for_me"
+          "decisionType": "connections",
+          "title": "Social Awareness"
+        },
+        {
+          "result": "fail",
+          "text": "Review your upcoming work presentation",
+          "effects": {
+            "soul": -1,
+            "connections": 0,
+            "money": 1
           },
-          {
-            "text": "Keep the lunch date, rush the report later",
-            "effects": { "soul": 1, "connections": 2, "money": -1 }
-          }
-        ]
-      },
-      {
-        "stop": 3,
-        "title": "Write Along The Way",
-        "narrative": "Your college journal sits on your nightstand, gathering dust. Inside are fragments of stories you once wanted to write, dreams you once planned to chase. Tonight, you find yourself flipping through its pages, feeling a strange spark that hasn't flickered in years. The blank page calls to you.",
-        "interactionType": "swingMeter",
-        "meterType": "standard",
-        "meterContext": "As your fingers hover over the empty page, you decide to...",
-        "outcomes": [
-          {
-            "result": "fail",
-            "text": "Close the journal, there's no time for fantasies",
-            "effects": { "soul": -1, "connections": 0, "money": 0 }
-          },
-          {
-            "result": "okay",
-            "text": "Write a few lines before getting distracted",
-            "effects": { "soul": 1, "connections": 0, "money": 0 }
-          },
-          {
-            "result": "good",
-            "text": "Start writing again, even if just for yourself",
-            "effects": { "soul": 2, "connections": 0, "money": 0 },
-            "unlockPassive": "write_along"
-          }
-        ]
-      },
-      {
-        "stop": 4,
-        "title": "Last Life",
-        "narrative": "It's 2AM. The blue light of your monitor is the only illumination in your apartment. \"Just one more level,\" you told yourself three hours ago. Your friends have invited you out countless times, but the digital world feels safer, more controllable. Your character stands victorious on screen, but the victory feels hollow.",
-        "interactionType": "swingMeter",
-        "meterType": "noOvershot",
-        "meterContext": "As the victory screen fades, you find yourself...",
-        "outcomes": [
-          {
-            "result": "fail",
-            "text": "Start a new game, you're on a roll tonight",
-            "effects": { "soul": -1, "connections": -1, "money": 0 },
-            "unlockPassive": "last_life"
-          },
-          {
-            "result": "okay",
-            "text": "Go to bed, you'll text friends tomorrow maybe",
-            "effects": { "soul": 0, "connections": 0, "money": 0 }
-          },
-          {
-            "result": "good",
-            "text": "Log off and text your friends about weekend plans",
-            "effects": { "soul": 1, "connections": 2, "money": -1 }
-          }
-        ]
-      },
-      {
-        "stop": 5,
-        "title": "Strange Passenger",
-        "narrative": "A stranger sits beside you on today's commute - something that never happens in your carefully regulated routine. They're reading a book you loved years ago. Your eyes meet, and there's a strange pull, an unexpected connection. They smile, and for a moment, the train seems less gray.",
-        "interactionType": "swingMeter",
-        "meterType": "critical",
-        "meterContext": "The book in their hands sparks a memory, and you...",
-        "outcomes": [
-          {
-            "result": "fail",
-            "text": "Look away, relationships are too complicated",
-            "effects": { "soul": -2, "connections": -1, "money": 0 },
-            "unlockPassive": "strange_passenger"
-          },
-          {
-            "result": "good",
-            "text": "Strike up a conversation about the book",
-            "effects": { "soul": 1, "connections": 2, "money": 0 }
-          }
-        ]
-      },
-      {
-        "stop": 6,
-        "title": "For Me",
-        "narrative": "Your neighbor just bought a new car - sleek, expensive, turning heads. Your reliable old vehicle suddenly seems inadequate. The showroom downtown is having a sale. You don't need a new car, but the thought of rolling up to work in something impressive plants itself in your mind.",
-        "interactionType": "choice",
-        "choices": [
-          {
-            "text": "Visit the dealership, get what you deserve",
-            "effects": { "soul": -1, "connections": 0, "money": -4 }
-          },
-          {
-            "text": "Your current car is fine, save your money",
-            "effects": { "soul": 1, "connections": 0, "money": 1 }
-          }
-        ]
-      },
-      {
-        "stop": 7,
-        "title": "Bioavailable",
-        "narrative": "Your doctor mentions your blood pressure during your annual checkup. \"Stress,\" he says. \"You need to find ways to relax.\" But the constant emails, the deadlines, the mortgage payments - they create an addictive cycle of pressure. The adrenaline rush of solving one crisis after another has become your normal.",
-        "interactionType": "swingMeter",
-        "meterType": "noOvershot",
-        "meterContext": "Leaving the doctor's office, you consider his advice and decide to...",
-        "outcomes": [
-          {
-            "result": "fail",
-            "text": "You thrive under pressure, it's fine",
-            "effects": { "soul": -2, "connections": 0, "money": 1 }
-          },
-          {
-            "result": "okay",
-            "text": "Make minor adjustments to your routine",
-            "effects": { "soul": 1, "connections": 0, "money": 0 }
-          },
-          {
-            "result": "good",
-            "text": "Take prescribed medication, make lifestyle changes",
-            "effects": { "soul": 2, "connections": 0, "money": -1 }
-          }
-        ]
-      },
-      {
-        "stop": 8,
-        "title": "Outbound",
-        "narrative": "A work conference in another city. As the return train pulls away from the station, you realize you didn't check your email once today. The world didn't end. For the first time in years, you watch the scenery without your mind racing ahead to the next task. Something is shifting inside you.",
-        "interactionType": "choice",
-        "choices": [
-          {
-            "text": "Enjoy the moment, stay disconnected",
-            "effects": { "soul": 2, "connections": 0, "money": 0 }
-          },
-          {
-            "text": "Check your phone, you've been irresponsible",
-            "effects": { "soul": -1, "connections": 0, "money": 1 }
-          }
-        ]
-      },
-      {
-        "stop": 9,
-        "title": "Life Between Life",
-        "narrative": "A former colleague has died suddenly. At the funeral, people speak of his achievements, his career. But no one mentions joy, passion, or love. You recognize yourself in the tributes - a life measured in promotions and acquisitions. The thought follows you home like a shadow.",
-        "interactionType": "swingMeter",
-        "meterType": "critical",
-        "meterContext": "As you reflect on what you've heard today, you feel compelled to...",
-        "outcomes": [
-          {
-            "result": "fail",
-            "text": "Double down on your career, legacy matters",
-            "effects": { "soul": -1, "connections": -1, "money": 2 }
-          },
-          {
-            "result": "good",
-            "text": "Start a bucket list of experiences, not achievements",
-            "effects": { "soul": 2, "connections": 1, "money": -1 }
-          }
-        ]
-      },
-      {
-        "stop": 10,
-        "title": "Squares",
-        "narrative": "The pandemic has transformed your dining room into an office. Your world has contracted into Zoom squares, each one a tiny window into other lives similarly confined. The boundaries between work and home have dissolved. You haven't left your apartment in three days.",
-        "interactionType": "swingMeter",
-        "meterType": "noOvershot",
-        "meterContext": "As another meeting invitation appears on your screen, you find yourself...",
-        "outcomes": [
-          {
-            "result": "fail",
-            "text": "Work longer hours, show your dedication",
-            "effects": { "soul": -2, "connections": -1, "money": 2 }
-          },
-          {
-            "result": "okay",
-            "text": "Maintain current schedule but take small breaks",
-            "effects": { "soul": 0, "connections": 0, "money": 1 }
-          },
-          {
-            "result": "good",
-            "text": "Set strict work boundaries, reclaim your space",
-            "effects": { "soul": 2, "connections": 0, "money": -1 }
-          }
-        ]
-      },
-      {
-        "stop": 11,
-        "title": "Star Light",
-        "narrative": "3:17 AM. You stare at the ceiling, watching the star-shaped chandelier cast shadows as cars pass by outside. Sleep eludes you night after night. Your mind races with everything you've done and everything you've failed to do. The star seems to pulse with each anxious thought.",
-        "interactionType": "swingMeter",
-        "meterType": "standard",
-        "meterContext": "Realizing sleep won't come easily tonight, you reluctantly...",
-        "outcomes": [
-          {
-            "result": "fail",
-            "text": "Check work emails to distract yourself",
-            "effects": { "soul": -1, "connections": 0, "money": 1 }
-          },
-          {
-            "result": "okay",
-            "text": "Try some breathing exercises",
-            "effects": { "soul": 1, "connections": 0, "money": 0 }
-          },
-          {
-            "result": "good",
-            "text": "Get up and write down your thoughts",
-            "effects": { "soul": 2, "connections": 0, "money": 0 }
-          }
-        ]
-      },
-      {
-        "stop": 12,
-        "title": "Sick of Home",
-        "narrative": "You notice the crack in your living room wall for the first time, though it's probably been there for years. Looking around, you see the faded furniture, the dusty shelves, the life you've been sleepwalking through. This place doesn't feel like home anymore - or perhaps it never really did.",
-        "interactionType": "choice",
-        "choices": [
-          {
-            "text": "It's time for a major change in your life",
-            "effects": { "soul": 2, "connections": 1, "money": -2 }
-          },
-          {
-            "text": "Make small improvements, one step at a time",
-            "effects": { "soul": 1, "connections": 0, "money": -1 }
-          }
-        ]
-      },
-      {
-        "stop": 13,
-        "title": "Contact High",
-        "narrative": "You find yourself on a train platform, but not your usual one. You don't remember deciding to come here. The departures board shows destinations you've never visited. A sense of liberation washes over you - the realization that you could go anywhere, be anyone. For the first time in years, possibilities feel endless.",
-        "interactionType": "swingMeter",
-        "meterType": "standard",
-        "meterContext": "Standing before the departures board, you find yourself ready to...",
-        "outcomes": [
-          {
-            "result": "fail",
-            "text": "Return to your usual routine",
-            "effects": { "soul": -1, "connections": 0, "money": 0 }
-          },
-          {
-            "result": "okay",
-            "text": "Call a friend to meet you in the city",
-            "effects": { "soul": 1, "connections": 2, "money": -1 }
-          },
-          {
-            "result": "good",
-            "text": "Board a train to somewhere new",
-            "effects": { "soul": 2, "connections": -1, "money": -1 }
-          }
-        ]
-      },
-      {
-        "stop": 14,
-        "title": "The Letter",
-        "narrative": "In your hands is a resignation letter. You've written and deleted it a dozen times over the years, but this version feels different. Final. Your boss would be shocked - you've always been the reliable one, the steady worker, the company drone. But something has changed inside you.",
-        "interactionType": "choice",
-        "choices": [
-          {
-            "text": "Submit the resignation letter",
-            "effects": { "soul": 3, "connections": -1, "money": -3 }
-          },
-          {
-            "text": "Save it as a draft, reconsider later",
-            "effects": { "soul": -1, "connections": 0, "money": 1 }
-          }
-        ]
-      },
-      {
-        "stop": 15,
-        "title": "The Feel",
-        "narrative": "The train slows as it approaches your station - the same one you've departed from and arrived at thousands of times. But today, you don't automatically rise from your seat. The doors open. Other passengers file past. You remain seated, watching the familiar platform. The same platform that will be there tomorrow, and the next day. Unless...",
-        "interactionType": "swingMeter",
-        "meterType": "critical",
-        "meterContext": "As the conductor announces the final call, you make your decision to...",
-        "outcomes": [
-          {
-            "result": "fail",
-            "text": "This is your stop, you have responsibilities",
-            "effects": { "soul": -1, "connections": 1, "money": 1 }
-          },
-          {
-            "result": "good",
-            "text": "Stay on the train, see where it takes you",
-            "effects": { "soul": 3, "connections": -1, "money": -1 }
-          }
-        ]
-      }
-    ],
-    "passiveEffects": {
-      "strange_passenger": {
-        "id": "strange_passenger",
-        "name": "Strange Passenger",
-        "description": "-1 Soul each stop",
-        "type": "soul-negative",
-        "effect": {
-          "soul": -1
+          "decisionType": "success",
+          "title": "Career Focus"
         }
-      },
-      "last_life": {
-        "id": "last_life",
-        "name": "Last Life",
-        "description": "-1 Soul each stop",
-        "type": "soul-negative",
-        "effect": {
-          "soul": -1
+      ]
+    },
+    {
+      "stop": 2,
+      "title": "Drone",
+      "narrative": "The train lurches forward as you settle into your usual seat. Through the window, the suburbs slide by in a blur of sameness. You're halfway through the commute when your phone buzzes. It's your boss: \"I need that report finished by noon.\" You were planning to take lunch with an old friend today, someone you've been meaning to reconnect with for months.",
+      "interactionType": "swingMeter",
+      "meterType": "standard",
+      "meterContext": "How will you respond to this conflict?",
+      "outcomes": [
+        {
+          "result": "good",
+          "text": "Keep the lunch date, rush the report later",
+          "effects": {
+            "soul": 1,
+            "connections": 2,
+            "money": -1
+          },
+          "decisionType": "connections",
+          "title": "Value Relationships"
+        },
+        {
+          "result": "okay",
+          "text": "Reschedule lunch for another day",
+          "effects": {
+            "soul": 0,
+            "connections": 0,
+            "money": 0
+          },
+          "decisionType": "soul",
+          "title": "Find Balance"
+        },
+        {
+          "result": "fail",
+          "text": "Cancel lunch, finish the report",
+          "effects": {
+            "soul": -1,
+            "connections": -1,
+            "money": 2
+          },
+          "unlockPassive": "for_me",
+          "decisionType": "success",
+          "title": "Prioritize Work"
         }
-      },
-      "for_me": {
-        "id": "for_me",
-        "name": "For Me",
-        "description": "+1 Money each stop",
-        "type": "money-positive",
-        "effect": {
-          "money": 1
+      ]
+    },
+    {
+      "stop": 3,
+      "title": "Write Along The Way",
+      "narrative": "Your college journal sits on your nightstand, gathering dust. Inside are fragments of stories you once wanted to write, dreams you once planned to chase. Tonight, you find yourself flipping through its pages, feeling a strange spark that hasn't flickered in years. The blank page calls to you.",
+      "interactionType": "swingMeter",
+      "meterType": "standard",
+      "meterContext": "As your fingers hover over the empty page, you decide to...",
+      "outcomes": [
+        {
+          "result": "good",
+          "text": "Start writing again, even if just for yourself",
+          "effects": {
+            "soul": 2,
+            "connections": 0,
+            "money": 0
+          },
+          "unlockPassive": "write_along",
+          "decisionType": "soul",
+          "title": "Self-Expression"
+        },
+        {
+          "result": "okay",
+          "text": "Write a letter to reconnect with an old friend",
+          "effects": {
+            "soul": 0,
+            "connections": 2,
+            "money": 0
+          },
+          "decisionType": "connections",
+          "title": "Reach Out"
+        },
+        {
+          "result": "fail",
+          "text": "Draft ideas for your work presentation instead",
+          "effects": {
+            "soul": -1,
+            "connections": 0,
+            "money": 1
+          },
+          "decisionType": "success",
+          "title": "Get Ahead"
         }
-      },
-      "write_along": {
-        "id": "write_along",
-        "name": "Write Along The Way",
-        "description": "+1 Connection each stop",
-        "type": "connections-positive",
-        "effect": {
-          "connections": 1
+      ]
+    },
+    {
+      "stop": 4,
+      "title": "Last Life",
+      "narrative": "It's 2AM. The blue light of your monitor is the only illumination in your apartment. \"Just one more level,\" you told yourself three hours ago. Your friends have invited you out countless times, but the digital world feels safer, more controllable. Your character stands victorious on screen, but the victory feels hollow.",
+      "interactionType": "swingMeter",
+      "meterType": "noOvershot",
+      "meterContext": "As the victory screen fades, you find yourself...",
+      "outcomes": [
+        {
+          "result": "good",
+          "text": "Log off and text your friends about weekend plans",
+          "effects": {
+            "soul": 1,
+            "connections": 2,
+            "money": -1
+          },
+          "decisionType": "connections",
+          "title": "Reconnect"
+        },
+        {
+          "result": "okay",
+          "text": "Go to bed, you'll text friends tomorrow maybe",
+          "effects": {
+            "soul": 0,
+            "connections": 0,
+            "money": 0
+          },
+          "decisionType": "soul",
+          "title": "Self-Care"
+        },
+        {
+          "result": "fail",
+          "text": "Start a new game, you're on a roll tonight",
+          "effects": {
+            "soul": -1,
+            "connections": -1,
+            "money": 0
+          },
+          "unlockPassive": "last_life",
+          "decisionType": "success",
+          "title": "Achievement"
         }
-      },
-      "career_investment": {
-        "id": "career_investment",
-        "name": "Career Investment",
-        "description": "+1 Money each stop",
-        "type": "money-positive",
-        "effect": {
-          "money": 1
+      ]
+    },
+    {
+      "stop": 5,
+      "title": "Strange Passenger",
+      "narrative": "A stranger sits beside you on today's commute - something that never happens in your carefully regulated routine. They're reading a book you loved years ago. Your eyes meet, and there's a strange pull, an unexpected connection. They smile, and for a moment, the train seems less gray.",
+      "interactionType": "swingMeter",
+      "meterType": "critical",
+      "meterContext": "The book in their hands sparks a memory, and you...",
+      "outcomes": [
+        {
+          "result": "good",
+          "text": "Strike up a conversation about the book",
+          "effects": {
+            "soul": 1,
+            "connections": 2,
+            "money": 0
+          },
+          "decisionType": "connections",
+          "title": "Open Up"
+        },
+        {
+          "result": "okay",
+          "text": "Smile politely and return to your thoughts",
+          "effects": {
+            "soul": 1,
+            "connections": 0,
+            "money": 0
+          },
+          "decisionType": "soul",
+          "title": "Gentle Acknowledgment"
+        },
+        {
+          "result": "fail",
+          "text": "Look away, relationships are too complicated",
+          "effects": {
+            "soul": -2,
+            "connections": -1,
+            "money": 0
+          },
+          "unlockPassive": "strange_passenger",
+          "decisionType": "success",
+          "title": "Stay Focused"
         }
-      },
-      "creative_outlet": {
-        "id": "creative_outlet",
-        "name": "Creative Outlet",
-        "description": "+1 Soul each stop",
-        "type": "soul-positive",
-        "effect": {
-          "soul": 1
+      ]
+    },
+    {
+      "stop": 6,
+      "title": "For Me",
+      "narrative": "Your neighbor just bought a new car - sleek, expensive, turning heads. Your reliable old vehicle suddenly seems inadequate. The showroom downtown is having a sale. You don't need a new car, but the thought of rolling up to work in something impressive plants itself in your mind.",
+      "interactionType": "swingMeter",
+      "meterType": "standard",
+      "meterContext": "As you consider your options, you decide to...",
+      "outcomes": [
+        {
+          "result": "good",
+          "text": "Your current car is fine, save your money",
+          "effects": {
+            "soul": 1,
+            "connections": 0,
+            "money": 1
+          },
+          "decisionType": "soul",
+          "title": "Inner Satisfaction"
+        },
+        {
+          "result": "okay",
+          "text": "Look at used cars that balance practicality and image",
+          "effects": {
+            "soul": 0,
+            "connections": 1,
+            "money": -2
+          },
+          "decisionType": "connections",
+          "title": "Social Impression"
+        },
+        {
+          "result": "fail",
+          "text": "Visit the dealership, get what you deserve",
+          "effects": {
+            "soul": -1,
+            "connections": 0,
+            "money": -4
+          },
+          "decisionType": "success",
+          "title": "Status Symbol"
         }
+      ]
+    },
+    {
+      "stop": 7,
+      "title": "Bioavailable",
+      "narrative": "Your doctor mentions your blood pressure during your annual checkup. \"Stress,\" he says. \"You need to find ways to relax.\" But the constant emails, the deadlines, the mortgage payments - they create an addictive cycle of pressure. The adrenaline rush of solving one crisis after another has become your normal.",
+      "interactionType": "swingMeter",
+      "meterType": "noOvershot",
+      "meterContext": "Leaving the doctor's office, you consider his advice and decide to...",
+      "outcomes": [
+        {
+          "result": "good",
+          "text": "Take prescribed medication, make lifestyle changes",
+          "effects": {
+            "soul": 2,
+            "connections": 0,
+            "money": -1
+          },
+          "decisionType": "soul",
+          "title": "Self-Healing"
+        },
+        {
+          "result": "okay",
+          "text": "Make minor adjustments to your routine",
+          "effects": {
+            "soul": 1,
+            "connections": 0,
+            "money": 0
+          },
+          "decisionType": "connections",
+          "title": "Ask for Support"
+        },
+        {
+          "result": "fail",
+          "text": "You thrive under pressure, it's fine",
+          "effects": {
+            "soul": -2,
+            "connections": 0,
+            "money": 1
+          },
+          "decisionType": "success",
+          "title": "Power Through"
+        }
+      ]
+    },
+    {
+      "stop": 8,
+      "title": "Outbound",
+      "narrative": "A work conference in another city. As the return train pulls away from the station, you realize you didn't check your email once today. The world didn't end. For the first time in years, you watch the scenery without your mind racing ahead to the next task. Something is shifting inside you.",
+      "interactionType": "swingMeter",
+      "meterType": "standard",
+      "meterContext": "As you consider this moment of peace, you decide to...",
+      "outcomes": [
+        {
+          "result": "good",
+          "text": "Enjoy the moment, stay disconnected",
+          "effects": {
+            "soul": 2,
+            "connections": 0,
+            "money": 0
+          },
+          "decisionType": "soul",
+          "title": "Present Awareness"
+        },
+        {
+          "result": "okay",
+          "text": "Share your realization with a friend",
+          "effects": {
+            "soul": 1,
+            "connections": 1,
+            "money": 0
+          },
+          "decisionType": "connections",
+          "title": "Shared Insight"
+        },
+        {
+          "result": "fail",
+          "text": "Check your phone, you've been irresponsible",
+          "effects": {
+            "soul": -1,
+            "connections": 0,
+            "money": 1
+          },
+          "decisionType": "success",
+          "title": "Duty First"
+        }
+      ]
+    },
+    {
+      "stop": 9,
+      "title": "Life Between Life",
+      "narrative": "A former colleague has died suddenly. At the funeral, people speak of his achievements, his career. But no one mentions joy, passion, or love. You recognize yourself in the tributes - a life measured in promotions and acquisitions. The thought follows you home like a shadow.",
+      "interactionType": "swingMeter",
+      "meterType": "critical",
+      "meterContext": "As you reflect on what you've heard today, you feel compelled to...",
+      "outcomes": [
+        {
+          "result": "good",
+          "text": "Start a bucket list of experiences, not achievements",
+          "effects": {
+            "soul": 2,
+            "connections": 1,
+            "money": -1
+          },
+          "decisionType": "soul",
+          "title": "Life's Meaning"
+        },
+        {
+          "result": "okay",
+          "text": "Reach out to old friends you've lost touch with",
+          "effects": {
+            "soul": 1,
+            "connections": 2,
+            "money": -1
+          },
+          "decisionType": "connections",
+          "title": "Restore Bonds"
+        },
+        {
+          "result": "fail",
+          "text": "Double down on your career, legacy matters",
+          "effects": {
+            "soul": -1,
+            "connections": -1,
+            "money": 2
+          },
+          "decisionType": "success",
+          "title": "Double Down"
+        }
+      ]
+    },
+    {
+      "stop": 10,
+      "title": "Squares",
+      "narrative": "The pandemic has transformed your dining room into an office. Your world has contracted into Zoom squares, each one a tiny window into other lives similarly confined. The boundaries between work and home have dissolved. You haven't left your apartment in three days.",
+      "interactionType": "swingMeter",
+      "meterType": "noOvershot",
+      "meterContext": "As another meeting invitation appears on your screen, you find yourself...",
+      "outcomes": [
+        {
+          "result": "good",
+          "text": "Set strict work boundaries, reclaim your space",
+          "effects": {
+            "soul": 2,
+            "connections": 0,
+            "money": -1
+          },
+          "decisionType": "soul",
+          "title": "Reclaim Control"
+        },
+        {
+          "result": "okay",
+          "text": "Organize a virtual social event with colleagues",
+          "effects": {
+            "soul": 0,
+            "connections": 2,
+            "money": 0
+          },
+          "decisionType": "connections",
+          "title": "Digital Connection"
+        },
+        {
+          "result": "fail",
+          "text": "Work longer hours, show your dedication",
+          "effects": {
+            "soul": -2,
+            "connections": -1,
+            "money": 2
+          },
+          "decisionType": "success",
+          "title": "Career Opportunity"
+        }
+      ]
+    },
+    {
+      "stop": 11,
+      "title": "Star Light",
+      "narrative": "3:17 AM. You stare at the ceiling, watching the star-shaped chandelier cast shadows as cars pass by outside. Sleep eludes you night after night. Your mind races with everything you've done and everything you've failed to do. The star seems to pulse with each anxious thought.",
+      "interactionType": "swingMeter",
+      "meterType": "standard",
+      "meterContext": "Realizing sleep won't come easily tonight, you reluctantly...",
+      "outcomes": [
+        {
+          "result": "good",
+          "text": "Get up and write down your thoughts",
+          "effects": {
+            "soul": 2,
+            "connections": 0,
+            "money": 0
+          },
+          "decisionType": "soul",
+          "title": "Emotional Release"
+        },
+        {
+          "result": "okay",
+          "text": "Text a friend who might also be awake",
+          "effects": {
+            "soul": 0,
+            "connections": 2,
+            "money": 0
+          },
+          "decisionType": "connections",
+          "title": "Midnight Confidant"
+        },
+        {
+          "result": "fail",
+          "text": "Check work emails to distract yourself",
+          "effects": {
+            "soul": -1,
+            "connections": 0,
+            "money": 1
+          },
+          "decisionType": "success",
+          "title": "Productive Insomnia"
+        }
+      ]
+    },
+    {
+      "stop": 12,
+      "title": "Sick of Home",
+      "narrative": "You notice the crack in your living room wall for the first time, though it's probably been there for years. Looking around, you see the faded furniture, the dusty shelves, the life you've been sleepwalking through. This place doesn't feel like home anymore - or perhaps it never really did.",
+      "interactionType": "swingMeter",
+      "meterType": "standard",
+      "meterContext": "The realization weighs on you, and you decide to...",
+      "outcomes": [
+        {
+          "result": "good",
+          "text": "It's time for a major change in your life",
+          "effects": {
+            "soul": 2,
+            "connections": 1,
+            "money": -2
+          },
+          "decisionType": "soul",
+          "title": "Radical Change"
+        },
+        {
+          "result": "okay",
+          "text": "Invite friends over to help redecorate",
+          "effects": {
+            "soul": 0,
+            "connections": 2,
+            "money": -1
+          },
+          "decisionType": "connections",
+          "title": "Community Project"
+        },
+        {
+          "result": "fail",
+          "text": "Focus on work so you can afford a better place",
+          "effects": {
+            "soul": -1,
+            "connections": 0,
+            "money": 2
+          },
+          "decisionType": "success",
+          "title": "Future Investment"
+        }
+      ]
+    },
+    {
+      "stop": 13,
+      "title": "Contact High",
+      "narrative": "You find yourself on a train platform, but not your usual one. You don't remember deciding to come here. The departures board shows destinations you've never visited. A sense of liberation washes over you - the realization that you could go anywhere, be anyone. For the first time in years, possibilities feel endless.",
+      "interactionType": "swingMeter",
+      "meterType": "standard",
+      "meterContext": "Standing before the departures board, you find yourself ready to...",
+      "outcomes": [
+        {
+          "result": "good",
+          "text": "Board a train to somewhere new",
+          "effects": {
+            "soul": 2,
+            "connections": -1,
+            "money": -1
+          },
+          "decisionType": "soul",
+          "title": "Spontaneous Adventure"
+        },
+        {
+          "result": "okay",
+          "text": "Call a friend to meet you in the city",
+          "effects": {
+            "soul": 1,
+            "connections": 2,
+            "money": -1
+          },
+          "decisionType": "connections",
+          "title": "Shared Experience"
+        },
+        {
+          "result": "fail",
+          "text": "Return to your usual routine",
+          "effects": {
+            "soul": -1,
+            "connections": 0,
+            "money": 0
+          },
+          "decisionType": "success",
+          "title": "Practical Choice"
+        }
+      ]
+    },
+    {
+      "stop": 14,
+      "title": "The Letter",
+      "narrative": "In your hands is a resignation letter. You've written and deleted it a dozen times over the years, but this version feels different. Final. Your boss would be shocked - you've always been the reliable one, the steady worker, the company drone. But something has changed inside you.",
+      "interactionType": "swingMeter",
+      "meterType": "critical",
+      "meterContext": "With the letter completed, you must decide to...",
+      "outcomes": [
+        {
+          "result": "good",
+          "text": "Submit the resignation letter",
+          "effects": {
+            "soul": 3,
+            "connections": -1,
+            "money": -3
+          },
+          "decisionType": "soul",
+          "title": "Liberation"
+        },
+        {
+          "result": "okay",
+          "text": "Talk to colleagues about new opportunities",
+          "effects": {
+            "soul": 1,
+            "connections": 2,
+            "money": -1
+          },
+          "decisionType": "connections",
+          "title": "Network Change"
+        },
+        {
+          "result": "fail",
+          "text": "Save it as a draft, reconsider later",
+          "effects": {
+            "soul": -1,
+            "connections": 0,
+            "money": 1
+          },
+          "decisionType": "success",
+          "title": "Security First"
+        }
+      ]
+    },
+    {
+      "stop": 15,
+      "title": "The Feel",
+      "narrative": "The train slows as it approaches your station - the same one you've departed from and arrived at thousands of times. But today, you don't automatically rise from your seat. The doors open. Other passengers file past. You remain seated, watching the familiar platform. The same platform that will be there tomorrow, and the next day. Unless...",
+      "interactionType": "swingMeter",
+      "meterType": "critical",
+      "meterContext": "As the conductor announces the final call, you make your decision to...",
+      "outcomes": [
+        {
+          "result": "good",
+          "text": "Stay on the train, see where it takes you",
+          "effects": {
+            "soul": 3,
+            "connections": -1,
+            "money": -1
+          },
+          "decisionType": "soul",
+          "title": "New Beginning"
+        },
+        {
+          "result": "okay",
+          "text": "Get off, but call someone important to you",
+          "effects": {
+            "soul": 1,
+            "connections": 2,
+            "money": 0
+          },
+          "decisionType": "connections",
+          "title": "Meaningful Connection"
+        },
+        {
+          "result": "fail",
+          "text": "This is your stop, you have responsibilities",
+          "effects": {
+            "soul": -1,
+            "connections": 1,
+            "money": 1
+          },
+          "decisionType": "success",
+          "title": "Steadfast Reliability"
+        }
+      ]
+    }
+  ],
+  "passiveEffects": {
+    "strange_passenger": {
+      "id": "strange_passenger",
+      "name": "Strange Passenger",
+      "description": "-1 Soul each stop",
+      "type": "soul-negative",
+      "effect": {
+        "soul": -1
       }
     },
-    "swingMeterTypes": {
-      "standard": {
-        "title": "STANDARD CHALLENGE",
-        "narrative": "Balance is key. Find the right amount of effort without going too far.",
-        "zones": [
-          { "width": 200, "color": "#e74c3c" }, 
-          { "width": 50, "color": "#ff9933" },
-          { "width": 100, "color": "#2ecc71" },
-          { "width": 50, "color": "#ff9933" }
-        ],
-        "results": {
-          "fail": {"text": "TOO WEAK", "modifier": -1},
-          "okay": {"text": "ADEQUATE", "modifier": 0},
-          "good": {"text": "PERFECT", "modifier": 1}
-        },
-        "speed": 5
-      },
-      "critical": {
-        "title": "CRITICAL MOMENT",
-        "narrative": "Perfect timing required. This is your one chance - a single moment will define everything.",
-        "zones": [
-          { "width": 280, "color": "#e74c3c" },
-          { "width": 40, "color": "#2ecc71" },
-          { "width": 80, "color": "#e74c3c" }
-        ],
-        "results": {
-          "fail": {"text": "FAILURE", "modifier": -2},
-          "good": {"text": "SUCCESS", "modifier": 2}
-        },
-        "speed": 6
-      },
-      "noOvershot": {
-        "title": "MEASURED RESPONSE",
-        "narrative": "Finding balance is crucial. Neither too little nor too much will serve you here.",
-        "zones": [
-          { "width": 240, "color": "#e74c3c" },
-          { "width": 60, "color": "#ff9933" },
-          { "width": 60, "color": "#2ecc71" },
-          { "width": 40, "color": "#e74c3c" }
-        ],
-        "results": {
-          "fail": {"text": "MISSED THE MARK", "modifier": -1},
-          "okay": {"text": "CLOSE ENOUGH", "modifier": 0},
-          "good": {"text": "BALANCED", "modifier": 1}
-        },
-        "speed": 5
+    "last_life": {
+      "id": "last_life",
+      "name": "Last Life",
+      "description": "-1 Soul each stop",
+      "type": "soul-negative",
+      "effect": {
+        "soul": -1
+      }
+    },
+    "for_me": {
+      "id": "for_me",
+      "name": "For Me",
+      "description": "+1 Money each stop",
+      "type": "money-positive",
+      "effect": {
+        "money": 1
+      }
+    },
+    "write_along": {
+      "id": "write_along",
+      "name": "Write Along The Way",
+      "description": "+1 Connection each stop",
+      "type": "connections-positive",
+      "effect": {
+        "connections": 1
+      }
+    },
+    "career_investment": {
+      "id": "career_investment",
+      "name": "Career Investment",
+      "description": "+1 Money each stop",
+      "type": "money-positive",
+      "effect": {
+        "money": 1
+      }
+    },
+    "creative_outlet": {
+      "id": "creative_outlet",
+      "name": "Creative Outlet",
+      "description": "+1 Soul each stop",
+      "type": "soul-positive",
+      "effect": {
+        "soul": 1
       }
     }
+  },
+  "swingMeterTypes": {
+    "standard": {
+      "title": "STANDARD CHALLENGE",
+      "narrative": "Balance is key. Find the right amount of effort without going too far.",
+      "zones": [
+        {
+          "width": 200,
+          "color": "#e74c3c"
+        },
+        {
+          "width": 50,
+          "color": "#ff9933"
+        },
+        {
+          "width": 100,
+          "color": "#2ecc71"
+        },
+        {
+          "width": 50,
+          "color": "#ff9933"
+        }
+      ],
+      "results": {
+        "fail": {
+          "text": "TOO WEAK",
+          "modifier": -2
+        },
+        "okay": {
+          "text": "ADEQUATE",
+          "modifier": -1
+        },
+        "good": {
+          "text": "PERFECT",
+          "modifier": 0
+        }
+      },
+      "speed": 5
+    },
+    "critical": {
+      "title": "CRITICAL MOMENT",
+      "narrative": "Perfect timing required. This is your one chance - a single moment will define everything.",
+      "zones": [
+        {
+          "width": 280,
+          "color": "#e74c3c"
+        },
+        {
+          "width": 40,
+          "color": "#2ecc71"
+        },
+        {
+          "width": 80,
+          "color": "#e74c3c"
+        }
+      ],
+      "results": {
+        "fail": {
+          "text": "FAILURE",
+          "modifier": -2
+        },
+        "good": {
+          "text": "SUCCESS",
+          "modifier": 0
+        }
+      },
+      "speed": 6
+    },
+    "noOvershot": {
+      "title": "MEASURED RESPONSE",
+      "narrative": "Finding balance is crucial. Neither too little nor too much will serve you here.",
+      "zones": [
+        {
+          "width": 240,
+          "color": "#e74c3c"
+        },
+        {
+          "width": 60,
+          "color": "#ff9933"
+        },
+        {
+          "width": 60,
+          "color": "#2ecc71"
+        },
+        {
+          "width": 40,
+          "color": "#e74c3c"
+        }
+      ],
+      "results": {
+        "fail": {
+          "text": "MISSED THE MARK",
+          "modifier": -2
+        },
+        "okay": {
+          "text": "CLOSE ENOUGH",
+          "modifier": -1
+        },
+        "good": {
+          "text": "BALANCED",
+          "modifier": 0
+        }
+      },
+      "speed": 5
+    }
   }
+}
