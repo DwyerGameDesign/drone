@@ -26,8 +26,9 @@ class SwingMeter {
     render() {
         // We're using the pre-rendered HTML in index.html now
         this.meterElement = document.querySelector('.swing-meter');
-        this.indicator = document.querySelector('.meter-indicator');
+        this.indicator = document.querySelector('.meter-indicator-top');
         this.bottomIndicator = document.querySelector('.meter-indicator-bottom');
+        this.tapMarker = document.querySelector('.tap-marker');
         
         // We'll handle clicks in script.js now
     }
@@ -63,6 +64,23 @@ function showSwingMeter(containerId, meterType, context, callback) {
         callback(null);
         return;
     }
+    
+    // Create context element
+    const contextElement = document.createElement('div');
+    contextElement.className = 'meter-context';
+    contextElement.textContent = context;
+    container.appendChild(contextElement);
+    
+    // Create meter container
+    const meterContainer = document.createElement('div');
+    meterContainer.className = 'integrated-swing-meter';
+    container.appendChild(meterContainer);
+    
+    // Add meter instructions
+    const instructions = document.createElement('div');
+    instructions.className = 'meter-instructions';
+    instructions.textContent = 'TAP AT THE RIGHT MOMENT TO DETERMINE YOUR FOCUS';
+    meterContainer.appendChild(instructions);
     
     // We're using our own implementation in script.js now
     // We'll just return a hook for backward compatibility

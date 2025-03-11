@@ -4,42 +4,51 @@
       "stop": 1,
       "title": "Inbound",
       "narrative": "6:40 AM. The platform is cold and quiet as you wait for the train. The same train you've taken every weekday for years. You pull your beige trenchcoat tighter around your shoulders as you scan the empty platform. A distant rumble signals the approaching train. Just like yesterday, and the day before, and all the days stretching back through the calendar of your memory.",
-      "interactionType": "swingMeter",
-      "meterType": "standard",
-      "meterContext": "As the train approaches, your mind begins to...",
-      "outcomes": [
+      "choices": [
         {
-          "result": "good",
           "text": "Think about the life you once dreamed of",
+          "decisionType": "soul",
+          "title": "Inner Reflection",
+          "swingMeterType": "standard",
+          "meterContext": "As the train approaches, your mind begins to drift to forgotten dreams...",
+          "resultGood": "You close your eyes and let yourself remember. The art you used to create, the places you wanted to see. For a moment, you feel something stir within you that's been dormant for too long.",
+          "resultOkay": "You try to recall your old aspirations, but the details are fuzzy. Still, there's comfort in remembering you once had dreams beyond the daily commute.",
+          "resultFail": "The memories feel distant and childish now. Reality has a way of grinding down such fanciful notions. Better to focus on the present.",
           "effects": {
             "soul": 1,
             "connections": 0,
             "money": 0
-          },
-          "decisionType": "soul",
-          "title": "Inner Reflection"
+          }
         },
         {
-          "result": "okay",
           "text": "Observe the world around you",
+          "decisionType": "connections",
+          "title": "Social Awareness",
+          "swingMeterType": "standard",
+          "meterContext": "You look around at the other commuters gathering on the platform...",
+          "resultGood": "You notice details you've overlooked for years - an elderly woman with kind eyes, a young man nervously checking his watch. Everyone has a story, you realize. Including you.",
+          "resultOkay": "The faces around you seem less anonymous today. You make brief eye contact with another commuter and share a knowing nod about the morning routine.",
+          "resultFail": "Everyone looks as tired as you feel. Just more drones heading to their hives. Nothing worth noting.",
           "effects": {
             "soul": 0,
             "connections": 1,
             "money": 0
-          },
-          "decisionType": "connections",
-          "title": "Social Awareness"
+          }
         },
         {
-          "result": "fail",
           "text": "Review your upcoming work presentation",
+          "decisionType": "success",
+          "title": "Career Focus",
+          "swingMeterType": "standard",
+          "meterContext": "You mentally rehearse the key points of today's presentation...",
+          "resultGood": "The structure crystallizes in your mind. You've got this. Your preparation will pay off, and maybe this is the presentation that finally gets you noticed.",
+          "resultOkay": "You go through the main points, though some details remain fuzzy. It should be adequate, which has always been enough before.",
+          "resultFail": "Your thoughts are scattered, and anxiety creeps in. Another day of just trying to keep your head above water.",
           "effects": {
             "soul": -1,
             "connections": 0,
             "money": 1
-          },
-          "decisionType": "success",
-          "title": "Career Focus"
+          }
         }
       ]
     },
@@ -47,43 +56,36 @@
       "stop": 2,
       "title": "Drone",
       "narrative": "The train lurches forward as you settle into your usual seat. Through the window, the suburbs slide by in a blur of sameness. You're halfway through the commute when your phone buzzes. It's your boss: \"I need that report finished by noon.\" You were planning to take lunch with an old friend today, someone you've been meaning to reconnect with for months.",
-      "interactionType": "swingMeter",
-      "meterType": "standard",
-      "meterContext": "How will you respond to this conflict?",
-      "outcomes": [
+      "choices": [
         {
-          "result": "good",
-          "text": "Keep the lunch date, rush the report later",
-          "effects": {
-            "soul": 1,
-            "connections": 2,
-            "money": -1
-          },
-          "decisionType": "connections",
-          "title": "Value Relationships"
-        },
-        {
-          "result": "okay",
-          "text": "Reschedule lunch for another day",
-          "effects": {
-            "soul": 0,
-            "connections": 0,
-            "money": 0
-          },
-          "decisionType": "soul",
-          "title": "Find Balance"
-        },
-        {
-          "result": "fail",
-          "text": "Cancel lunch, finish the report",
+          "text": "Prioritize the report",
+          "decisionType": "success",
+          "title": "Work First",
+          "swingMeterType": "standard",
+          "meterContext": "You consider how to handle the urgent work request...",
+          "resultGood": "You immediately text your friend to reschedule and mentally organize your morning to complete the report efficiently. Your boss will notice your reliability.",
+          "resultOkay": "With a sigh, you cancel lunch. The report will get done, though it won't be your best work. But it will be enough to keep things moving.",
+          "resultFail": "You stare at your phone, feeling trapped. Another personal sacrifice for a job that takes and takes. You'll cancel lunch, but resentment builds.",
           "effects": {
             "soul": -1,
             "connections": -1,
             "money": 2
-          },
-          "unlockPassive": "for_me",
-          "decisionType": "success",
-          "title": "Prioritize Work"
+          }
+        },
+        {
+          "text": "Try to do both",
+          "decisionType": "connections",
+          "title": "Balance",
+          "swingMeterType": "quick",
+          "meterContext": "You think about how to manage both commitments...",
+          "resultGood": "You text your friend to meet near your office for a shorter lunch. You'll work intensely before and after. It's a compromise, but one that honors both commitments.",
+          "resultOkay": "You decide to meet your friend for a quick coffee instead of lunch. Not ideal, but at least you're making an effort to maintain the connection.",
+          "resultFail": "You try to plan a way to do both, but realize it's impossible. You'll end up disappointing someone - probably yourself.",
+          "effects": {
+            "soul": 0,
+            "connections": 1,
+            "money": 0
+          }
         }
       ]
     },
@@ -91,43 +93,52 @@
       "stop": 3,
       "title": "Write Along The Way",
       "narrative": "Your college journal sits on your nightstand, gathering dust. Inside are fragments of stories you once wanted to write, dreams you once planned to chase. Tonight, you find yourself flipping through its pages, feeling a strange spark that hasn't flickered in years. The blank page calls to you.",
-      "interactionType": "swingMeter",
-      "meterType": "standard",
-      "meterContext": "As your fingers hover over the empty page, you decide to...",
-      "outcomes": [
+      "choices": [
         {
-          "result": "good",
           "text": "Start writing again, even if just for yourself",
+          "decisionType": "soul",
+          "title": "Self-Expression",
+          "swingMeterType": "standard",
+          "meterContext": "As your fingers hover over the empty page, you decide to...",
+          "resultGood": "The words flow surprisingly easily. You write about your day, your thoughts, your forgotten dreams. It feels like reconnecting with an old friend - yourself.",
+          "resultOkay": "You manage to write a few paragraphs. It's not Shakespeare, but it feels good to express yourself again, even in small ways.",
+          "resultFail": "You stare at the blank page, pen hovering. The words don't come. Maybe you've lost that part of yourself for good.",
           "effects": {
             "soul": 2,
             "connections": 0,
             "money": 0
           },
-          "unlockPassive": "write_along",
-          "decisionType": "soul",
-          "title": "Self-Expression"
+          "unlockPassive": "write_along"
         },
         {
-          "result": "okay",
           "text": "Write a letter to reconnect with an old friend",
+          "decisionType": "connections",
+          "title": "Reach Out",
+          "swingMeterType": "standard",
+          "meterContext": "As your fingers hover over the empty page, you think of someone you've lost touch with...",
+          "resultGood": "The letter becomes a bridge across time. You pour your heart out, remembering shared moments and expressing hope for reconnection.",
+          "resultOkay": "You write a friendly note, keeping it light but sincere. It's a small step toward rebuilding a connection that once mattered.",
+          "resultFail": "You start several times but can't find the right words. What would you even say after all this time?",
           "effects": {
             "soul": 0,
             "connections": 2,
             "money": 0
-          },
-          "decisionType": "connections",
-          "title": "Reach Out"
+          }
         },
         {
-          "result": "fail",
           "text": "Draft ideas for your work presentation instead",
+          "decisionType": "success",
+          "title": "Get Ahead",
+          "swingMeterType": "standard",
+          "meterContext": "As your fingers hover over the empty page, your thoughts turn to work...",
+          "resultGood": "You outline a brilliant presentation that could impress your boss. This extra effort might finally get you the recognition you deserve.",
+          "resultOkay": "You jot down some decent ideas for your next presentation. It's not inspired, but it's practical.",
+          "resultFail": "You try to focus on work, but your heart isn't in it. The ideas feel forced and uninspired.",
           "effects": {
             "soul": -1,
             "connections": 0,
             "money": 1
-          },
-          "decisionType": "success",
-          "title": "Get Ahead"
+          }
         }
       ]
     },
@@ -711,22 +722,11 @@
       "title": "STANDARD CHALLENGE",
       "narrative": "Balance is key. Find the right amount of effort without going too far.",
       "zones": [
-        {
-          "width": 200,
-          "color": "#e74c3c"
-        },
-        {
-          "width": 50,
-          "color": "#ff9933"
-        },
-        {
-          "width": 100,
-          "color": "#2ecc71"
-        },
-        {
-          "width": 50,
-          "color": "#ff9933"
-        }
+        {"type": "poor", "width": 50},
+        {"type": "okay", "width": 50},
+        {"type": "good", "width": 100},
+        {"type": "okay", "width": 50},
+        {"type": "poor", "width": 150}
       ],
       "results": {
         "fail": {
@@ -748,18 +748,9 @@
       "title": "CRITICAL MOMENT",
       "narrative": "Perfect timing required. This is your one chance - a single moment will define everything.",
       "zones": [
-        {
-          "width": 280,
-          "color": "#e74c3c"
-        },
-        {
-          "width": 40,
-          "color": "#2ecc71"
-        },
-        {
-          "width": 80,
-          "color": "#e74c3c"
-        }
+        {"type": "poor", "width": 280},
+        {"type": "okay", "width": 40},
+        {"type": "good", "width": 80}
       ],
       "results": {
         "fail": {
@@ -777,22 +768,10 @@
       "title": "MEASURED RESPONSE",
       "narrative": "Finding balance is crucial. Neither too little nor too much will serve you here.",
       "zones": [
-        {
-          "width": 240,
-          "color": "#e74c3c"
-        },
-        {
-          "width": 60,
-          "color": "#ff9933"
-        },
-        {
-          "width": 60,
-          "color": "#2ecc71"
-        },
-        {
-          "width": 40,
-          "color": "#e74c3c"
-        }
+        {"type": "poor", "width": 240},
+        {"type": "okay", "width": 60},
+        {"type": "good", "width": 60},
+        {"type": "poor", "width": 40}
       ],
       "results": {
         "fail": {
@@ -809,6 +788,50 @@
         }
       },
       "speed": 5
+    },
+    "quick": {
+      "title": "QUICK DECISION",
+      "narrative": "Quick decision required. This is your one chance - a single moment will define everything.",
+      "zones": [
+        {"type": "poor", "width": 50},
+        {"type": "okay", "width": 50},
+        {"type": "good", "width": 80},
+        {"type": "okay", "width": 50},
+        {"type": "poor", "width": 170}
+      ],
+      "results": {
+        "fail": {
+          "text": "FAILURE",
+          "modifier": -2
+        },
+        "good": {
+          "text": "SUCCESS",
+          "modifier": 0
+        }
+      },
+      "speed": 8
+    },
+    "difficult": {
+      "title": "DIFFICULT DECISION",
+      "narrative": "Difficult decision required. This is your one chance - a single moment will define everything.",
+      "zones": [
+        {"type": "poor", "width": 100},
+        {"type": "okay", "width": 50},
+        {"type": "good", "width": 50},
+        {"type": "okay", "width": 50},
+        {"type": "poor", "width": 150}
+      ],
+      "results": {
+        "fail": {
+          "text": "FAILURE",
+          "modifier": -2
+        },
+        "good": {
+          "text": "SUCCESS",
+          "modifier": 0
+        }
+      },
+      "speed": 7
     }
   }
 }

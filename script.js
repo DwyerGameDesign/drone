@@ -48,7 +48,25 @@ document.addEventListener('DOMContentLoaded', function() {
     let swingPosition = 0;
     let swingSpeed = 1;
     let swingDirection = 1;
-    let currentSelectedOutcome = null;
+    let currentSelectedChoice = null;
+    
+    // Initialize the game
+    function initGame() {
+        console.log('Initializing game...');
+        
+        // Start the game
+        const result = game.startGame();
+        
+        // Display the first narrative
+        if (result.success && result.narrative) {
+            displayNarrative(result.narrative);
+        } else {
+            console.error('Failed to start game:', result);
+        }
+        
+        // Update the game state UI
+        updateGameState();
+    }
     
     // Add event listeners
     elements.narrativeCard.addEventListener('click', function() {
@@ -101,10 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
         initDecisionTrack();
         console.log('Game data loaded successfully');
         // Start the game
-        const narrative = game.getCurrentNarrative();
-        console.log('Current narrative:', narrative);
-        displayNarrative(narrative);
-        updateUI();
+        initGame();
     }).catch(error => {
         console.error('Failed to load game data:', error);
     });
@@ -191,23 +206,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Display the appropriate interaction based on narrative type
     function displayInteraction(narrative) {
-        console.log('Displaying interaction for narrative type:', narrative.interactionType);
+        console.log('Displaying interaction for narrative:', narrative.title);
         
-        if (narrative.interactionType === 'swingMeter') {
-            displayChoiceCards(narrative.outcomes);
-        } else {
-            console.error('Unknown interaction type:', narrative.interactionType);
-        }
+        // Display choice cards for the player to choose from
+        displayChoiceCards(narrative.choices);
     }
     
     // Display decision cards for the player to choose from
-    function displayChoiceCards(outcomes) {
+    function displayChoiceCards(choices) {
         // Clear existing cards
         elements.choiceContainer.innerHTML = '';
+        elements.choiceContainer.style.display = 'block';
         
-        // Add a card for each outcome
-        outcomes.forEach((outcome, index) => {
-            const decisionType = outcome.decisionType || (index === 0 ? 'soul' : index === 1 ? 'connections' : 'success');
+        // Add a card for each choice
+        choices.forEach((choice, index) => {
+            const decisionType = choice.decisionType || (index === 0 ? 'soul' : index === 1 ? 'connections' : 'success');
             
             const card = document.createElement('div');
             card.className = 'choice-card ' + decisionType;
@@ -217,24 +230,23 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const title = document.createElement('div');
             title.className = 'card-title';
-            title.textContent = outcome.title || 'Option ' + (index + 1);
+            title.textContent = choice.title || 'Option ' + (index + 1);
             
             const content = document.createElement('div');
             content.className = 'card-content';
-            content.textContent = outcome.text;
+            content.textContent = choice.text;
             
             header.appendChild(title);
             card.appendChild(header);
             card.appendChild(content);
             
-            // Store outcome data
+            // Store choice data
             card.dataset.index = index;
             card.dataset.type = decisionType;
-            card.dataset.result = outcome.result;
             
             // Add click handler
             card.addEventListener('click', function() {
-                handleCardSelection(outcome, decisionType);
+                handleCardSelection(choice, decisionType);
             });
             
             elements.choiceContainer.appendChild(card);
@@ -242,8 +254,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Handle card selection
-    function handleCardSelection(outcome, decisionType) {
-        console.log('Card selected:', outcome, decisionType);
+    function handleCardSelection(choice, decisionType) {
+        console.log('Card selected:', choice, decisionType);
         
         // Hide the choice container
         elements.choiceContainer.style.display = 'none';
@@ -254,14 +266,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update choice summary
         elements.choiceType.textContent = decisionType.toUpperCase();
         elements.choiceType.className = 'choice-type ' + decisionType;
-        elements.choiceTitle.textContent = outcome.title || 'Your Choice';
-        elements.choiceDescription.textContent = 'You\'ve chosen to ' + outcome.text.toLowerCase() + '. How committed will you be to this path?';
+        elements.choiceTitle.textContent = choice.title || 'Your Choice';
+        elements.choiceDescription.textContent = choice.text;
         
         // Set up the swing meter title
-        elements.swingMeterTitle.textContent = 'How intensely will you pursue this?';
+        elements.swingMeterTitle.textContent = choice.meterContext || 'How will you approach this?';
         
-        // Store the selected outcome for later
-        currentSelectedOutcome = outcome;
+        // Store the selected choice for later
+        currentSelectedChoice = choice;
         
         // Set up the tap button
         elements.tapButton.textContent = 'TAP TO START';
@@ -331,97 +343,163 @@ document.addEventListener('DOMContentLoaded', function() {
         isSwingMeterMoving = false;
         
         // Determine the result based on position
-        let result;
+        let result = 'fail';
         if (swingPosition >= 60 && swingPosition < 80) {
             result = 'good';
         } else if ((swingPosition >= 40 && swingPosition < 60) || (swingPosition >= 80 && swingPosition < 100)) {
             result = 'okay';
-        } else {
-            result = 'poor';
         }
         
         console.log('Swing meter result:', result);
         
-        // Change button function
-        elements.tapButton.textContent = 'CONTINUE';
-        elements.tapButton.onclick = () => showResult(result);
+        // Show the tap marker
+        const tapMarker = document.querySelector('.tap-marker');
+        tapMarker.style.left = swingPosition + '%';
+        tapMarker.style.display = 'block';
+        tapMarker.classList.add(result);
+        
+        // Show the result of the swing meter
+        showSwingMeterResult(result);
     }
     
     // Show the result of the swing meter
-    function showResult(result) {
-        console.log('Showing result:', result);
+    function showSwingMeterResult(result) {
+        // Hide the tap button
+        elements.tapButton.style.display = 'none';
         
-        // Hide the swing meter container
-        elements.swingMeterContainer.style.display = 'none';
-        
-        // Show the result screen
-        elements.resultScreen.style.display = 'block';
-        
-        // Update result status
-        elements.resultStatus.textContent = result.toUpperCase();
-        elements.resultStatus.className = 'result-status ' + result;
-        
-        // Update result title
-        elements.resultTitle.textContent = currentSelectedOutcome.title || 'Your Choice';
-        
-        // Update result text based on the outcome and performance
-        let resultText;
-        if (result === 'good') {
-            resultText = "You fully commit to your choice. " + currentSelectedOutcome.text;
-        } else if (result === 'okay') {
-            resultText = "You make a partial effort. " + currentSelectedOutcome.text + ", but your focus wavers.";
-        } else {
-            resultText = "You struggle to follow through. Despite your intentions, you fail to " + currentSelectedOutcome.text.toLowerCase() + ".";
+        // Get the result text based on the result
+        let resultText = '';
+        if (result === 'good' && currentSelectedChoice.resultGood) {
+            resultText = currentSelectedChoice.resultGood;
+        } else if (result === 'okay' && currentSelectedChoice.resultOkay) {
+            resultText = currentSelectedChoice.resultOkay;
+        } else if (result === 'fail' && currentSelectedChoice.resultFail) {
+            resultText = currentSelectedChoice.resultFail;
         }
         
-        elements.resultText.textContent = resultText;
+        // Create result element
+        const resultElement = document.createElement('div');
+        resultElement.className = `integrated-meter-result ${result}`;
+        resultElement.textContent = resultText;
         
-        // Set up continue button
-        elements.continueButton.onclick = () => {
-            // Hide result screen
-            elements.resultScreen.style.display = 'none';
+        // Add the result to the swing meter
+        const swingMeter = document.querySelector('.swing-meter');
+        swingMeter.appendChild(resultElement);
+        
+        // Add a "Next Stop" button
+        const nextButton = document.createElement('button');
+        nextButton.className = 'next-stop-button';
+        nextButton.textContent = 'Next Stop';
+        nextButton.onclick = function() {
+            // Process the result
+            const processedResult = game.handleSwingMeter(result, currentSelectedChoice);
             
-            // Process the result with the game
-            const processedResult = game.handleSwingMeter(result);
-            handleInteractionResult(processedResult);
+            // Hide the swing meter container
+            elements.swingMeterContainer.style.display = 'none';
+            
+            // Remove the result element
+            if (resultElement.parentNode) {
+                resultElement.parentNode.removeChild(resultElement);
+            }
+            
+            // Remove the next button
+            if (nextButton.parentNode) {
+                nextButton.parentNode.removeChild(nextButton);
+            }
+            
+            // Show the tap button again for next time
+            elements.tapButton.style.display = 'block';
+            
+            // Reset the tap marker
+            const tapMarker = document.querySelector('.tap-marker');
+            tapMarker.style.display = 'none';
+            tapMarker.classList.remove('good', 'okay', 'fail');
+            
+            // Update the game state
+            updateGameState();
+            
+            // Move to the next narrative if available
+            if (processedResult && processedResult.nextNarrative) {
+                displayNarrative(processedResult.nextNarrative);
+            }
         };
+        
+        // Add the button to the swing meter container
+        elements.swingMeterContainer.appendChild(nextButton);
     }
     
-    // Update the decision track based on the game state
+    // Update the decision track
     function updateDecisionTrack() {
-        // Get all cards in the track
-        const cards = elements.decisionTrack.querySelectorAll('.decision-card');
+        console.log('Updating decision track');
         
-        // Update each card based on the game's decision types and performance results
-        for (let i = 0; i < cards.length; i++) {
-            const decisionType = game.decisionTypes[i];
-            const performanceResult = game.performanceResults[i];
+        // Clear the decision track
+        elements.decisionTrack.innerHTML = '';
+        
+        // Get the decision history
+        const decisions = game.decisionHistory;
+        const decisionTypes = game.decisionTypes;
+        
+        // Add a card for each decision
+        for (let i = 0; i < game.currentStop - 1; i++) {
+            const card = document.createElement('div');
+            const decisionType = decisionTypes[i] || 'unknown';
             
-            // Remove existing classes
-            cards[i].classList.remove('active', 'soul', 'connections', 'success', 'poor');
+            // Find the corresponding decision in history
+            const decision = decisions.find(d => d.stop === i + 1);
             
-            // Add current position class
-            if (i + 1 === game.currentStop) {
-                cards[i].classList.add('active');
+            // Determine if the performance was successful
+            const performanceSuccess = decision ? decision.performanceSuccess : true;
+            
+            // Set the card class based on decision type and performance
+            if (performanceSuccess) {
+                card.className = `decision-card ${decisionType}`;
+            } else {
+                card.className = 'decision-card poor';
             }
             
-            // Add decision type class if available
-            if (decisionType) {
-                // If performance was poor, show gray
-                if (performanceResult === 'poor') {
-                    cards[i].classList.add('poor');
-                } else {
-                    cards[i].classList.add(decisionType);
-                }
-            }
+            // Add the stop number
+            const number = document.createElement('div');
+            number.className = 'decision-card-number';
+            number.textContent = i + 1;
+            card.appendChild(number);
+            
+            // Add the card to the track
+            elements.decisionTrack.appendChild(card);
         }
+        
+        // Add the current stop
+        if (game.currentStop <= game.maxRounds * game.stopsPerRound) {
+            const currentCard = document.createElement('div');
+            currentCard.className = 'decision-card active';
+            
+            const number = document.createElement('div');
+            number.className = 'decision-card-number';
+            number.textContent = game.currentStop;
+            currentCard.appendChild(number);
+            
+            elements.decisionTrack.appendChild(currentCard);
+        }
+        
+        // Scroll to the end of the track
+        elements.decisionTrack.scrollLeft = elements.decisionTrack.scrollWidth;
     }
     
     // Update the performance meter
     function updatePerformanceMeter() {
-        // Calculate percentage based on the failure threshold
+        // Calculate the percentage based on performance score and failure threshold
         const percentage = Math.min(100, Math.max(0, (game.performanceScore * -1) / game.failureThreshold * 100));
+        
+        // Update the fill width
         elements.performanceFill.style.width = percentage + '%';
+        
+        // Update the color based on percentage
+        if (percentage > 75) {
+            elements.performanceFill.style.backgroundColor = '#e74c3c'; // Red for danger
+        } else if (percentage > 50) {
+            elements.performanceFill.style.backgroundColor = '#f39c12'; // Orange for warning
+        } else {
+            elements.performanceFill.style.backgroundColor = '#2ecc71'; // Green for good
+        }
     }
     
     // Update UI elements

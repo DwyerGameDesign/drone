@@ -123,11 +123,7 @@ class DroneManGame {
     
     // Get the current narrative
     getCurrentNarrative() {
-        const narrative = this.narratives.find(n => n.stop === this.currentStop) || null;
-        if (!narrative) {
-            console.warn(`No narrative found for stop ${this.currentStop}`);
-        }
-        return narrative;
+        return this.currentNarrative;
     }
     
     // Handle interaction based on narrative type
@@ -138,7 +134,7 @@ class DroneManGame {
         
         switch (narrative.interactionType) {
             case 'swingMeter':
-                return this.handleSwingMeter(params.result);
+                return this.handleSwingMeter(params.result, params.choice);
             case 'choice':
                 return this.handleChoice(params.choiceIndex);
             case 'randomEvent':
@@ -149,21 +145,28 @@ class DroneManGame {
     }
     
     // Handle swing meter interaction
-    handleSwingMeter(result) {
+    handleSwingMeter(result, choice) {
         console.log('Handling swing meter result:', result);
-        const narrative = this.getCurrentNarrative();
-        if (!narrative || narrative.interactionType !== 'swingMeter') {
-            return { success: false, reason: 'Not a swing meter narrative' };
+        
+        // Get the current narrative
+        const narrative = this.currentNarrative;
+        if (!narrative || !narrative.choices) {
+            return { success: false, reason: 'Not a valid narrative with choices' };
         }
         
-        // Find the matching outcome for this result
-        const outcome = narrative.outcomes.find(o => o.result === result);
-        if (!outcome) {
+        // Validate the result
+        if (!['good', 'okay', 'fail'].includes(result)) {
+            console.error('Invalid swing meter result:', result);
             return { success: false, reason: 'Invalid swing meter result' };
         }
         
-        // Process the outcome with special handling
-        const processedResult = this.processOutcome(outcome);
+        // Create a processed result object
+        const processedResult = {
+            success: true,
+            narrative: narrative,
+            choice: choice,
+            decisionType: choice.decisionType
+        };
         
         // Add swing meter result to the processed result
         processedResult.swingMeterResult = result;
@@ -173,7 +176,109 @@ class DroneManGame {
             this.markSwingMeterCompleted(narrative.id);
         }
         
-        return processedResult;
+        // Update performance score based on result
+        if (result === 'fail') {
+            this.performanceScore -= 2;
+        } else if (result === 'okay') {
+            this.performanceScore -= 1;
+        }
+        
+        // Apply resource effects if the swing meter was successful (not a fail)
+        if (choice.effects && result !== 'fail') {
+            if (choice.effects.soul) {
+                this.resources.soul = Math.max(0, Math.min(this.maxResources.soul, this.resources.soul + choice.effects.soul));
+            }
+            if (choice.effects.connections) {
+                this.resources.connections = Math.max(0, Math.min(this.maxResources.connections, this.resources.connections + choice.effects.connections));
+            }
+            if (choice.effects.money) {
+                this.resources.money = Math.max(0, this.resources.money + choice.effects.money);
+            }
+            
+            // Unlock passive effect if applicable and the result is good
+            if (choice.unlockPassive && result === 'good') {
+                this.addPassiveEffect(choice.unlockPassive);
+            }
+        }
+        
+        // Add the decision to history with result and effects
+        const decision = {
+            stop: this.currentStop,
+            narrative: narrative.title,
+            choice: choice.text,
+            result: result,
+            decisionType: choice.decisionType,
+            effects: choice.effects,
+            performanceSuccess: result !== 'fail'
+        };
+        
+        this.decisionHistory.push(decision);
+        
+        // Update the decision type for this stop
+        this.decisionTypes[this.currentStop - 1] = choice.decisionType;
+        
+        // Check if the player has failed due to poor performance
+        if (this.performanceScore <= this.failureThreshold) {
+            this.gameOver = true;
+            this.gameOverReason = "You've lost focus on what really matters. The daily grind has worn you down completely.";
+            
+            return {
+                success: true,
+                gameOver: true,
+                reason: this.gameOverReason,
+                narrative: narrative,
+                choice: choice,
+                result: result
+            };
+        }
+        
+        // Move to the next stop
+        this.currentStop++;
+        
+        // Check if we've completed all stops in the current round
+        if (this.currentStop > this.stopsPerRound) {
+            // Move to the next round
+            this.currentRound++;
+            this.currentStop = 1;
+            
+            // Check if we've completed all rounds
+            if (this.currentRound > this.maxRounds) {
+                // Game completed successfully
+                this.gameOver = true;
+                this.gameOverReason = "success";
+                
+                return {
+                    success: true,
+                    gameOver: true,
+                    reason: "success",
+                    narrative: narrative,
+                    choice: choice,
+                    result: result
+                };
+            }
+            
+            // Return round complete result
+            return {
+                success: true,
+                roundComplete: true,
+                nextRound: this.currentRound,
+                narrative: narrative,
+                choice: choice,
+                result: result
+            };
+        }
+        
+        // Get the next narrative
+        const nextNarrative = this.getNarrativeForStop(this.currentStop);
+        
+        // Set the current narrative to the next one
+        this.currentNarrative = nextNarrative;
+        
+        // Return the processed result with the next narrative
+        return {
+            ...processedResult,
+            nextNarrative: nextNarrative
+        };
     }
     
     // Mark a swing meter as completed to prevent replaying
@@ -477,7 +582,7 @@ class DroneManGame {
     // Get a swing meter configuration
     getSwingMeterConfig(meterType) {
         const config = this.swingMeterTypes[meterType] || null;
-        if (!config) {
+        if (!config && meterType !== 'standard') {
             console.warn(`Swing meter type "${meterType}" not found, falling back to standard`);
             return this.swingMeterTypes.standard || null;
         }
@@ -562,6 +667,37 @@ class DroneManGame {
         console.log('Decision History:', this.decisionHistory.length, 'decisions');
         console.log('Current Narrative:', this.getCurrentNarrative()?.title);
         console.log('=================');
+    }
+
+    // Get a narrative for a specific stop
+    getNarrativeForStop(stop) {
+        return this.narratives.find(n => n.stop === stop) || null;
+    }
+
+    // Start a new game
+    startGame() {
+        console.log('Starting new game...');
+        
+        // Reset game state
+        this.resources = { ...this.startingResources };
+        this.decisionTypes = [];
+        this.performanceResults = [];
+        this.currentRound = 1;
+        this.currentStop = 1;
+        this.gameOver = false;
+        this.gameOverReason = "";
+        this.activePassiveEffects = [];
+        this.decisionHistory = [];
+        this.completedSwingMeters = [];
+        this.performanceScore = 0;
+        
+        // Set the current narrative
+        this.currentNarrative = this.getNarrativeForStop(this.currentStop);
+        
+        return {
+            success: true,
+            narrative: this.currentNarrative
+        };
     }
 }
 
