@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
         narrativeCardText: document.querySelector('.narrative-card-text'),
         decisionTrack: document.getElementById('decision-track'),
         choiceContainer: document.getElementById('choice-container'),
+        choiceCards: document.getElementById('choice-cards'),
         swingMeterContainer: document.getElementById('swing-meter-container'),
         choiceType: document.getElementById('choice-type'),
         choiceTitle: document.getElementById('choice-title'),
@@ -35,7 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
         nextRoundButton: document.getElementById('next-round-button'),
         gameOver: document.getElementById('game-over'),
         gameOverMessage: document.getElementById('game-over-message'),
-        restartButton: document.getElementById('restart-button')
+        restartButton: document.getElementById('restart-button'),
+        meterInstructions: document.querySelector('.meter-instructions')
     };
     
     // Typewriter effect variables
@@ -259,7 +261,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Add click handler
             card.addEventListener('click', function() {
-                handleCardSelection(choice, decisionType);
+                handleCardSelection(card);
             });
             
             elements.choiceContainer.appendChild(card);
@@ -273,49 +275,91 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Handle card selection
-    function handleCardSelection(choice, decisionType) {
-        console.log('Card selected:', choice, decisionType);
+    function handleCardSelection(card) {
+        console.log('Card selected:', card);
         
         // Hide the choice container
         elements.choiceContainer.style.display = 'none';
         
         // Show the swing meter container
         elements.swingMeterContainer.style.display = 'block';
+        console.log('Setting swing meter container display to block');
+        console.log('Swing meter container element:', elements.swingMeterContainer);
+        console.log('Swing meter container display after setting:', elements.swingMeterContainer.style.display);
         
-        // Update choice summary
-        elements.choiceType.textContent = decisionType.toUpperCase();
-        elements.choiceType.className = 'choice-type ' + decisionType;
-        elements.choiceTitle.textContent = choice.title || 'Your Choice';
-        elements.choiceDescription.textContent = choice.text;
+        // Get choice data from the card
+        const choiceText = card.querySelector('.choice-text').textContent;
+        const decisionType = card.dataset.type || 'standard';
+        
+        // Update the choice summary
+        if (elements.choiceType) {
+            elements.choiceType.textContent = decisionType.toUpperCase();
+            elements.choiceType.className = 'choice-type ' + decisionType;
+        }
+        
+        if (elements.choiceTitle) {
+            elements.choiceTitle.textContent = 'Your Choice';
+        }
+        
+        if (elements.choiceDescription) {
+            elements.choiceDescription.textContent = choiceText;
+        }
         
         // Set up the swing meter title
-        elements.swingMeterTitle.textContent = choice.meterContext || 'How will you approach this?';
+        elements.swingMeterTitle.textContent = 'How will you approach this?';
         
-        // Store the selected choice for later
-        currentSelectedChoice = choice;
+        // Store the selected choice
+        currentSelectedChoice = {
+            text: choiceText,
+            type: decisionType,
+            index: parseInt(card.dataset.index || '0')
+        };
         
-        // Show the meter instructions and tap button now that a choice has been made
-        const meterInstructions = document.querySelector('.meter-instructions');
-        if (meterInstructions) {
-            meterInstructions.style.display = 'block';
+        // Show the meter instructions and tap button
+        if (elements.meterInstructions) {
+            elements.meterInstructions.style.display = 'block';
         }
         
         // Set up the tap button
-        elements.tapButton.style.display = 'block';
-        elements.tapButton.textContent = 'TAP TO START';
-        elements.tapButton.onclick = startSwingMeter;
+        if (elements.tapButton) {
+            elements.tapButton.style.display = 'block';
+            elements.tapButton.textContent = 'TAP TO START';
+            elements.tapButton.onclick = startSwingMeter;
+            console.log('Tap button display style:', elements.tapButton.style.display);
+        } else {
+            console.error('Tap button element not found');
+        }
     }
     
     // Start the swing meter
     function startSwingMeter() {
         console.log('Starting swing meter');
         
+        // Debug: Check swing meter container
+        const swingMeterContainer = document.querySelector('.swing-meter-container');
+        console.log('Swing meter container:', swingMeterContainer);
+        console.log('Swing meter container display:', swingMeterContainer ? getComputedStyle(swingMeterContainer).display : 'element not found');
+        
+        // Debug: Check swing meter
+        const swingMeter = document.getElementById('swing-meter');
+        console.log('Swing meter element:', swingMeter);
+        console.log('Swing meter display:', swingMeter ? getComputedStyle(swingMeter).display : 'element not found');
+        
         // Change button text
         elements.tapButton.textContent = 'TAP TO STOP';
         
         // Reset the indicators
-        const indicator = document.querySelector('.meter-indicator');
+        const indicator = document.querySelector('.meter-indicator-top');
         const bottomIndicator = document.querySelector('.meter-indicator-bottom');
+        
+        // Debug: Check if indicators are found
+        console.log('Top indicator element:', indicator);
+        console.log('Bottom indicator element:', bottomIndicator);
+        
+        if (!indicator || !bottomIndicator) {
+            console.error('Indicators not found. Check HTML structure.');
+            return;
+        }
         
         indicator.style.left = '0%';
         bottomIndicator.style.left = '0%';
@@ -351,7 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
         swingPosition = Math.max(0, Math.min(100, swingPosition));
         
         // Update indicator positions
-        const indicator = document.querySelector('.meter-indicator');
+        const indicator = document.querySelector('.meter-indicator-top');
         const bottomIndicator = document.querySelector('.meter-indicator-bottom');
         
         indicator.style.left = swingPosition + '%';

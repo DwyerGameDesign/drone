@@ -237,7 +237,7 @@ body {
 /* Swing Meter Screen */
 .swing-meter-container {
     width: 100%;
-    display: flex;
+    display: none; /* Hidden by default */
     flex-direction: column;
     align-items: center;
     animation: fadeIn 0.5s ease-in-out;
@@ -250,6 +250,12 @@ body {
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.05),
                 inset 0 0 20px rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(5px);
+    z-index: 10;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .choice-summary {
@@ -306,6 +312,8 @@ body {
     width: 100%;
     height: 60px;
     margin-bottom: 20px;
+    display: block;
+    visibility: visible;
 }
 
 .meter-background {
@@ -315,6 +323,7 @@ body {
     margin: 0 auto;
     border-radius: 10px;
     overflow: hidden;
+    position: relative;
 }
 
 .meter-zone {
@@ -345,8 +354,10 @@ body {
     transform: translateX(-50%);
     transition: left 0.1s linear;
     pointer-events: none;
-    z-index: 2;
-    filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
+    z-index: 5;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+    opacity: 1;
+    visibility: visible;
 }
 
 .meter-indicator-bottom {
@@ -361,8 +372,10 @@ body {
     transform: translateX(-50%);
     transition: left 0.1s linear;
     pointer-events: none;
-    z-index: 2;
-    filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
+    z-index: 5;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+    opacity: 1;
+    visibility: visible;
 }
 
 .meter-indicator-top.good, .meter-indicator-bottom.good {
