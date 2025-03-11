@@ -65,23 +65,6 @@ function showSwingMeter(containerId, meterType, context, callback) {
         return;
     }
     
-    // Create context element
-    const contextElement = document.createElement('div');
-    contextElement.className = 'meter-context';
-    contextElement.textContent = context;
-    container.appendChild(contextElement);
-    
-    // Create meter container
-    const meterContainer = document.createElement('div');
-    meterContainer.className = 'integrated-swing-meter';
-    container.appendChild(meterContainer);
-    
-    // Add meter instructions
-    const instructions = document.createElement('div');
-    instructions.className = 'meter-instructions';
-    instructions.textContent = 'TAP AT THE RIGHT MOMENT TO DETERMINE YOUR FOCUS';
-    meterContainer.appendChild(instructions);
-    
     // We're using our own implementation in script.js now
     // We'll just return a hook for backward compatibility
     callback('good');

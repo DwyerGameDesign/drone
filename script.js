@@ -208,6 +208,19 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayInteraction(narrative) {
         console.log('Displaying interaction for narrative:', narrative.title);
         
+        // Hide the swing meter container and its elements initially
+        elements.swingMeterContainer.style.display = 'none';
+        
+        // Make sure the tap button and instructions are hidden
+        const meterInstructions = document.querySelector('.meter-instructions');
+        if (meterInstructions) {
+            meterInstructions.style.display = 'none';
+        }
+        
+        if (elements.tapButton) {
+            elements.tapButton.style.display = 'none';
+        }
+        
         // Display choice cards for the player to choose from
         displayChoiceCards(narrative.choices);
     }
@@ -216,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayChoiceCards(choices) {
         // Clear existing cards
         elements.choiceContainer.innerHTML = '';
-        elements.choiceContainer.style.display = 'block';
+        elements.choiceContainer.style.display = 'flex';
         
         // Add a card for each choice
         choices.forEach((choice, index) => {
@@ -251,6 +264,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             elements.choiceContainer.appendChild(card);
         });
+        
+        // Ensure the choice container is visible and positioned at the bottom
+        setTimeout(() => {
+            elements.choiceContainer.style.opacity = '1';
+            elements.choiceContainer.style.transform = 'translateY(0)';
+        }, 100);
     }
     
     // Handle card selection
@@ -275,7 +294,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Store the selected choice for later
         currentSelectedChoice = choice;
         
+        // Show the meter instructions and tap button now that a choice has been made
+        const meterInstructions = document.querySelector('.meter-instructions');
+        if (meterInstructions) {
+            meterInstructions.style.display = 'block';
+        }
+        
         // Set up the tap button
+        elements.tapButton.style.display = 'block';
         elements.tapButton.textContent = 'TAP TO START';
         elements.tapButton.onclick = startSwingMeter;
     }
