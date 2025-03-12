@@ -330,16 +330,24 @@ body {
     height: 100%;
 }
 
-.meter-zone.poor-start, .meter-zone.poor-end {
+.meter-zone.poor-start {
     background-color: #e74c3c;
+    width: 40%;
 }
 
 .meter-zone.okay {
     background-color: #ff9933;
+    width: 20%;
 }
 
 .meter-zone.good {
     background-color: #2ecc71;
+    width: 20%;
+}
+
+.meter-zone.poor-end {
+    background-color: #e74c3c;
+    width: 20%;
 }
 
 .meter-indicator-top {
