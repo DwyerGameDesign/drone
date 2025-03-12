@@ -56,11 +56,16 @@ document.addEventListener('DOMContentLoaded', function() {
     function initGame() {
         console.log('Initializing game...');
         
+        // Ensure we're starting from stop 1
+        game.currentStop = 1;
+        game.currentRound = 1;
+        
         // Start the game
         const result = game.startGame();
         
         // Display the first narrative
         if (result.success && result.narrative) {
+            console.log('Starting game with narrative:', result.narrative.title, 'Stop:', result.narrative.stop);
             displayNarrative(result.narrative);
         } else {
             console.error('Failed to start game:', result);
@@ -119,6 +124,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Reset game state
         game.restart();
+        
+        // Explicitly ensure we're at stop 1
+        if (game.currentStop !== 1) {
+            console.warn('Game did not reset to stop 1, forcing reset...');
+            game.currentStop = 1;
+            game.currentRound = 1;
+            game.performanceScore = 0;
+            game.decisionHistory = [];
+            game.decisionTypes = [];
+            game.resources = { soul: 0, connections: 0, money: 0 };
+            game.gameOver = false;
+            game.gameOverReason = null;
+        }
+        
+        console.log('Game reset to stop:', game.currentStop);
         
         // Reset UI elements
         elements.decisionTrack.innerHTML = '';
@@ -181,9 +201,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get the first narrative and display it
         const narrative = game.getCurrentNarrative();
         if (narrative) {
+            console.log('First narrative after reset:', narrative.title, 'Stop:', narrative.stop);
             displayNarrative(narrative);
         } else {
             console.error('Failed to get initial narrative after reset');
+            // Fallback: Try to get the first narrative directly
+            if (game.narratives && game.narratives.length > 0) {
+                const firstNarrative = game.narratives.find(n => n.stop === 1);
+                if (firstNarrative) {
+                    console.log('Using fallback first narrative:', firstNarrative.title);
+                    displayNarrative(firstNarrative);
+                }
+            }
         }
         
         // Update the UI to reflect the reset state
@@ -191,8 +220,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     elements.restartButton.addEventListener('click', function() {
-        console.log('Restart button clicked');
+        console.log('Restart button clicked, current stop before reset:', game.currentStop);
+        
+        // Reset the game state
         resetGameState();
+        
+        // Double-check that we're at stop 1
+        console.log('Current stop after reset:', game.currentStop);
+        if (game.currentStop !== 1) {
+            console.error('Failed to reset to stop 1, forcing reset...');
+            // Force a complete game restart
+            game.currentStop = 1;
+            game.currentRound = 1;
+            
+            // Get the first narrative directly
+            if (game.narratives && game.narratives.length > 0) {
+                const firstNarrative = game.narratives.find(n => n.stop === 1);
+                if (firstNarrative) {
+                    console.log('Displaying first narrative directly:', firstNarrative.title);
+                    displayNarrative(firstNarrative);
+                    updateUI();
+                }
+            }
+        }
     });
     
     // Initialize the decision track with empty cards
@@ -1047,6 +1097,9 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.roundSoulValue.textContent = game.resources.soul;
         elements.roundConnectionsValue.textContent = game.resources.connections;
         elements.roundMoneyValue.textContent = game.resources.money;
+        
+        // Set the next round button text
+        elements.nextRoundButton.textContent = 'Continue Journey';
         
         // Get the round summary text
         const roundSummaryText = game.getRoundSummaryText();
