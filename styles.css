@@ -106,17 +106,50 @@ body {
     background-color: #2A66C9;
 }
 
+.decision-card.soul-okay {
+    background-color: #1a3c78; /* Muted blue */
+}
+
 .decision-card.connections {
     background-color: #7D3CCF;
+}
+
+.decision-card.connections-okay {
+    background-color: #4a2378; /* Muted violet */
 }
 
 .decision-card.success {
     background-color: #1F6F50;
 }
 
+.decision-card.success-okay {
+    background-color: #134230; /* Muted green */
+}
+
 .decision-card.poor {
     background-color: #444;
     border-color: #555;
+    position: relative;
+}
+
+.decision-card.poor::before,
+.decision-card.poor::after {
+    content: '';
+    position: absolute;
+    width: 60%;
+    height: 2px;
+    background-color: #e74c3c; /* Red X */
+    top: 50%;
+    left: 20%;
+    transform: translateY(-50%);
+}
+
+.decision-card.poor::before {
+    transform: translateY(-50%) rotate(45deg);
+}
+
+.decision-card.poor::after {
+    transform: translateY(-50%) rotate(-45deg);
 }
 
 .decision-card-number {

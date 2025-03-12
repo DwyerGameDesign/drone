@@ -146,7 +146,7 @@ class DroneManGame {
     
     // Handle swing meter interaction
     handleSwingMeter(result, choice) {
-        console.log('Handling swing meter result:', result);
+        console.log('Handling swing meter result:', result, choice);
         
         // Get the current narrative
         const narrative = this.currentNarrative;
@@ -165,7 +165,7 @@ class DroneManGame {
             success: true,
             narrative: narrative,
             choice: choice,
-            decisionType: choice.decisionType
+            decisionType: choice.type // Use the type from the choice object
         };
         
         // Add swing meter result to the processed result
@@ -204,81 +204,49 @@ class DroneManGame {
         // Add the decision to history with result and effects
         const decision = {
             stop: this.currentStop,
-            narrative: narrative.title,
-            choice: choice.text,
-            result: result,
-            decisionType: choice.decisionType,
-            effects: choice.effects,
-            performanceSuccess: result !== 'fail'
+            narrative: narrative.id,
+            choice: choice.index,
+            swingMeterResult: result, // Store the swing meter result
+            performanceSuccess: result !== 'fail', // Consider 'good' and 'okay' as success
+            effects: choice.effects || {}
         };
         
+        // Store the decision type for this stop
+        this.decisionTypes[this.currentStop - 1] = choice.type;
+        
+        // Add to decision history
         this.decisionHistory.push(decision);
         
-        // Update the decision type for this stop
-        this.decisionTypes[this.currentStop - 1] = choice.decisionType;
-        
-        // Check if the player has failed due to poor performance
-        if (this.performanceScore <= this.failureThreshold) {
-            this.gameOver = true;
-            this.gameOverReason = "You've lost focus on what really matters. The daily grind has worn you down completely.";
-            
-            return {
-                success: true,
-                gameOver: true,
-                reason: this.gameOverReason,
-                narrative: narrative,
-                choice: choice,
-                result: result
-            };
-        }
+        console.log('Added decision to history:', decision);
+        console.log('Updated decision types:', this.decisionTypes);
         
         // Move to the next stop
         this.currentStop++;
         
-        // Check if we've completed all stops in the current round
-        if (this.currentStop > this.stopsPerRound) {
-            // Move to the next round
-            this.currentRound++;
-            this.currentStop = 1;
-            
-            // Check if we've completed all rounds
-            if (this.currentRound > this.maxRounds) {
-                // Game completed successfully
-                this.gameOver = true;
-                this.gameOverReason = "success";
-                
-                return {
-                    success: true,
-                    gameOver: true,
-                    reason: "success",
-                    narrative: narrative,
-                    choice: choice,
-                    result: result
-                };
-            }
-            
-            // Return round complete result
-            return {
-                success: true,
-                roundComplete: true,
-                nextRound: this.currentRound,
-                narrative: narrative,
-                choice: choice,
-                result: result
-            };
+        // Check if the game is over due to performance
+        if (this.performanceScore <= this.failureThreshold) {
+            this.gameOver = true;
+            this.gameOverReason = 'performance';
+            processedResult.gameOver = true;
+            processedResult.reason = 'performance';
+            return processedResult;
         }
         
         // Get the next narrative
-        const nextNarrative = this.getNarrativeForStop(this.currentStop);
+        const nextNarrative = this.narratives.find(n => n.stop === this.currentStop);
+        if (nextNarrative) {
+            this.currentNarrative = nextNarrative;
+            processedResult.nextNarrative = nextNarrative;
+        } else {
+            // If no next narrative, check if the round is complete
+            if (this.currentStop > this.stopsPerRound * this.currentRound) {
+                processedResult.roundComplete = true;
+            } else {
+                console.error('No narrative found for stop:', this.currentStop);
+            }
+        }
         
-        // Set the current narrative to the next one
-        this.currentNarrative = nextNarrative;
-        
-        // Return the processed result with the next narrative
-        return {
-            ...processedResult,
-            nextNarrative: nextNarrative
-        };
+        return processedResult;
     }
     
     // Mark a swing meter as completed to prevent replaying

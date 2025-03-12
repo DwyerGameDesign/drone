@@ -285,6 +285,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const cardContent = card.querySelector('.card-content');
         const choiceText = cardContent ? cardContent.textContent : 'Unknown choice';
         const decisionType = card.dataset.type || 'standard';
+        const choiceIndex = parseInt(card.dataset.index || '0');
+        
+        // Get the current narrative and its choices
+        const narrative = game.getCurrentNarrative();
+        const choice = narrative && narrative.choices ? narrative.choices[choiceIndex] : null;
+        
+        console.log('Selected choice:', choice);
         
         // Update the choice description
         if (elements.choiceDescription) {
@@ -308,12 +315,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Store the selected choice
+        // Store the selected choice with all necessary properties
         currentSelectedChoice = {
             text: choiceText,
             type: decisionType,
-            index: parseInt(card.dataset.index || '0')
+            index: choiceIndex,
+            // Include the result texts if available from the original choice
+            resultGood: choice && choice.resultGood ? choice.resultGood : "You executed this perfectly!",
+            resultOkay: choice && choice.resultOkay ? choice.resultOkay : "You managed reasonably well.",
+            resultFail: choice && choice.resultFail ? choice.resultFail : "You struggled with this task."
         };
+        
+        console.log('Current selected choice with results:', currentSelectedChoice);
         
         // Show the swing meter container
         elements.swingMeterContainer.style.display = 'block';
@@ -430,20 +443,38 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get the result text based on the result
         let resultText = '';
         if (currentSelectedChoice) {
+            console.log('Getting result text for:', result, currentSelectedChoice);
+            
             if (result === 'good' && currentSelectedChoice.resultGood) {
                 resultText = currentSelectedChoice.resultGood;
             } else if (result === 'okay' && currentSelectedChoice.resultOkay) {
                 resultText = currentSelectedChoice.resultOkay;
             } else if (result === 'fail' && currentSelectedChoice.resultFail) {
                 resultText = currentSelectedChoice.resultFail;
-            } else {
-                // Default result texts if not specified - intentionally left empty
-                resultText = "";
+            }
+            
+            // Ensure we have some text to display
+            if (!resultText) {
+                if (result === 'good') {
+                    resultText = "You executed this perfectly!";
+                } else if (result === 'okay') {
+                    resultText = "You managed reasonably well.";
+                } else {
+                    resultText = "You struggled with this task.";
+                }
             }
         } else {
-            // Fallback if no choice is selected - intentionally left empty
-            resultText = "";
+            // Fallback if no choice is selected
+            if (result === 'good') {
+                resultText = "You executed this perfectly!";
+            } else if (result === 'okay') {
+                resultText = "You managed reasonably well.";
+            } else {
+                resultText = "You struggled with this task.";
+            }
         }
+        
+        console.log('Result text to display:', resultText);
         
         // Fade out the swing meter
         const swingMeter = document.querySelector('.swing-meter');
@@ -589,6 +620,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const decisions = game.decisionHistory;
         const decisionTypes = game.decisionTypes;
         
+        console.log('Decision history:', decisions);
+        console.log('Decision types:', decisionTypes);
+        
         // Add a card for each decision
         for (let i = 0; i < game.currentStop - 1; i++) {
             const card = document.createElement('div');
@@ -597,13 +631,20 @@ document.addEventListener('DOMContentLoaded', function() {
             // Find the corresponding decision in history
             const decision = decisions.find(d => d.stop === i + 1);
             
-            // Determine if the performance was successful
-            const performanceSuccess = decision ? decision.performanceSuccess : true;
+            console.log(`Decision for stop ${i + 1}:`, decision);
             
-            // Set the card class based on decision type and performance
-            if (performanceSuccess) {
+            // Determine the result of the swing meter
+            let swingResult = decision ? decision.swingMeterResult : null;
+            
+            // Set the card class based on decision type and swing meter result
+            if (swingResult === 'good') {
+                // Good result - full color
                 card.className = `decision-card ${decisionType}`;
+            } else if (swingResult === 'okay') {
+                // Okay result - muted color
+                card.className = `decision-card ${decisionType}-okay`;
             } else {
+                // Failed or no result - poor (gray with X)
                 card.className = 'decision-card poor';
             }
             
