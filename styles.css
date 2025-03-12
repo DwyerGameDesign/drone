@@ -751,6 +751,7 @@ body {
 #round-summary-text {
     font-size: 1.1rem;
     line-height: 1.5;
+    min-height: 100px; /* Ensure consistent layout during typewriter effect */
 }
 
 #next-round-button {
@@ -762,6 +763,12 @@ body {
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+#next-round-button.fade-in {
+    opacity: 1;
 }
 
 /* Game Over Screen */
@@ -793,6 +800,7 @@ body {
     margin-bottom: 30px;
     line-height: 1.5;
     white-space: pre-line;
+    min-height: 150px; /* Ensure consistent layout during typewriter effect */
 }
 
 #restart-button {
@@ -804,6 +812,12 @@ body {
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+#restart-button.fade-in {
+    opacity: 1;
 }
 
 /* Swing Meter Transitions */

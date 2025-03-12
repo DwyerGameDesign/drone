@@ -875,6 +875,49 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Show game over screen
+    function showGameOver(success) {
+        console.log('Showing game over screen, success:', success);
+        elements.gameOver.style.display = 'flex';
+        
+        // Get the game over message
+        const gameOverMessage = game.getGameOverMessage(success);
+        
+        // Clear existing content
+        elements.gameOverMessage.textContent = '';
+        
+        // Hide the restart button initially
+        elements.restartButton.style.display = 'none';
+        elements.restartButton.textContent = 'Reboard Train';
+        
+        // Create a temporary div to store the full message
+        const tempDiv = document.createElement('div');
+        tempDiv.textContent = gameOverMessage;
+        const sanitizedMessage = tempDiv.innerHTML;
+        
+        // Start typewriter effect
+        let index = 0;
+        let displayText = '';
+        
+        const typeNextCharacter = () => {
+            if (index < sanitizedMessage.length) {
+                displayText += sanitizedMessage.charAt(index);
+                elements.gameOverMessage.innerHTML = displayText;
+                index++;
+                setTimeout(typeNextCharacter, typingSpeed);
+            } else {
+                // Show the restart button after the message is fully displayed
+                setTimeout(() => {
+                    elements.restartButton.style.display = 'block';
+                    elements.restartButton.classList.add('fade-in');
+                }, 500);
+            }
+        };
+        
+        // Start the typewriter effect
+        typeNextCharacter();
+    }
+    
     // Show round complete screen
     function showRoundComplete() {
         console.log('Showing round complete screen');
@@ -883,14 +926,42 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.roundSoulValue.textContent = game.resources.soul;
         elements.roundConnectionsValue.textContent = game.resources.connections;
         elements.roundMoneyValue.textContent = game.resources.money;
-        elements.roundSummaryText.textContent = game.getRoundSummaryText();
-    }
-    
-    // Show game over screen
-    function showGameOver(success) {
-        console.log('Showing game over screen, success:', success);
-        elements.gameOver.style.display = 'flex';
-        elements.gameOverMessage.textContent = game.getGameOverMessage(success);
+        
+        // Get the round summary text
+        const roundSummaryText = game.getRoundSummaryText();
+        
+        // Clear existing content
+        elements.roundSummaryText.textContent = '';
+        
+        // Hide the next round button initially
+        elements.nextRoundButton.style.display = 'none';
+        
+        // Create a temporary div to store the full message
+        const tempDiv = document.createElement('div');
+        tempDiv.textContent = roundSummaryText;
+        const sanitizedMessage = tempDiv.innerHTML;
+        
+        // Start typewriter effect
+        let index = 0;
+        let displayText = '';
+        
+        const typeNextCharacter = () => {
+            if (index < sanitizedMessage.length) {
+                displayText += sanitizedMessage.charAt(index);
+                elements.roundSummaryText.innerHTML = displayText;
+                index++;
+                setTimeout(typeNextCharacter, typingSpeed);
+            } else {
+                // Show the next round button after the text is fully displayed
+                setTimeout(() => {
+                    elements.nextRoundButton.style.display = 'block';
+                    elements.nextRoundButton.classList.add('fade-in');
+                }, 500);
+            }
+        };
+        
+        // Start the typewriter effect
+        typeNextCharacter();
     }
     
     // Update game state (adding the missing function)
