@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Update the game state UI
-        updateGameState();
+        updateUI();
     }
     
     // Add event listeners
@@ -288,7 +288,8 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Swing meter container display after setting:', elements.swingMeterContainer.style.display);
         
         // Get choice data from the card
-        const choiceText = card.querySelector('.choice-text').textContent;
+        const cardContent = card.querySelector('.card-content');
+        const choiceText = cardContent ? cardContent.textContent : 'Unknown choice';
         const decisionType = card.dataset.type || 'standard';
         
         // Update the choice summary
@@ -306,7 +307,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Set up the swing meter title
-        elements.swingMeterTitle.textContent = 'How will you approach this?';
+        if (elements.swingMeterTitle) {
+            elements.swingMeterTitle.textContent = 'How will you approach this?';
+        }
         
         // Store the selected choice
         currentSelectedChoice = {
@@ -439,12 +442,32 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Get the result text based on the result
         let resultText = '';
-        if (result === 'good' && currentSelectedChoice.resultGood) {
-            resultText = currentSelectedChoice.resultGood;
-        } else if (result === 'okay' && currentSelectedChoice.resultOkay) {
-            resultText = currentSelectedChoice.resultOkay;
-        } else if (result === 'fail' && currentSelectedChoice.resultFail) {
-            resultText = currentSelectedChoice.resultFail;
+        if (currentSelectedChoice) {
+            if (result === 'good' && currentSelectedChoice.resultGood) {
+                resultText = currentSelectedChoice.resultGood;
+            } else if (result === 'okay' && currentSelectedChoice.resultOkay) {
+                resultText = currentSelectedChoice.resultOkay;
+            } else if (result === 'fail' && currentSelectedChoice.resultFail) {
+                resultText = currentSelectedChoice.resultFail;
+            } else {
+                // Default result texts if not specified
+                if (result === 'good') {
+                    resultText = "You executed this perfectly!";
+                } else if (result === 'okay') {
+                    resultText = "You managed reasonably well.";
+                } else {
+                    resultText = "You struggled with this task.";
+                }
+            }
+        } else {
+            // Fallback if no choice is selected
+            if (result === 'good') {
+                resultText = "You executed this perfectly!";
+            } else if (result === 'okay') {
+                resultText = "You managed reasonably well.";
+            } else {
+                resultText = "You struggled with this task.";
+            }
         }
         
         // Create result element
@@ -461,36 +484,62 @@ document.addEventListener('DOMContentLoaded', function() {
         nextButton.className = 'next-stop-button';
         nextButton.textContent = 'Next Stop';
         nextButton.onclick = function() {
-            // Process the result
-            const processedResult = game.handleSwingMeter(result, currentSelectedChoice);
-            
-            // Hide the swing meter container
-            elements.swingMeterContainer.style.display = 'none';
-            
-            // Remove the result element
-            if (resultElement.parentNode) {
-                resultElement.parentNode.removeChild(resultElement);
-            }
-            
-            // Remove the next button
-            if (nextButton.parentNode) {
-                nextButton.parentNode.removeChild(nextButton);
-            }
-            
-            // Show the tap button again for next time
-            elements.tapButton.style.display = 'block';
-            
-            // Reset the tap marker
-            const tapMarker = document.querySelector('.tap-marker');
-            tapMarker.style.display = 'none';
-            tapMarker.classList.remove('good', 'okay', 'fail');
-            
-            // Update the game state
-            updateGameState();
-            
-            // Move to the next narrative if available
-            if (processedResult && processedResult.nextNarrative) {
-                displayNarrative(processedResult.nextNarrative);
+            try {
+                // Process the result
+                const processedResult = game.handleSwingMeter(result, currentSelectedChoice);
+                
+                // Hide the swing meter container
+                elements.swingMeterContainer.style.display = 'none';
+                
+                // Remove the result element
+                if (resultElement.parentNode) {
+                    resultElement.parentNode.removeChild(resultElement);
+                }
+                
+                // Remove the next button
+                if (nextButton.parentNode) {
+                    nextButton.parentNode.removeChild(nextButton);
+                }
+                
+                // Show the tap button again for next time
+                elements.tapButton.style.display = 'block';
+                
+                // Reset the tap marker
+                const tapMarker = document.querySelector('.tap-marker');
+                tapMarker.style.display = 'none';
+                tapMarker.classList.remove('good', 'okay', 'fail');
+                
+                // Update the game state
+                updateGameState();
+                
+                // Move to the next narrative if available
+                if (processedResult && processedResult.nextNarrative) {
+                    displayNarrative(processedResult.nextNarrative);
+                } else {
+                    // If no next narrative, try to get the current narrative
+                    if (typeof game.getCurrentNarrative === 'function') {
+                        const currentNarrative = game.getCurrentNarrative();
+                        if (currentNarrative) {
+                            displayNarrative(currentNarrative);
+                        } else {
+                            console.error('No current narrative available');
+                            // Try to find the next narrative based on the current stop
+                            const nextNarrative = game.narratives.find(n => n.stop === game.currentStop);
+                            if (nextNarrative) {
+                                displayNarrative(nextNarrative);
+                            } else {
+                                console.error('No next narrative found for stop:', game.currentStop);
+                            }
+                        }
+                    } else {
+                        console.error('getCurrentNarrative function not found on game object');
+                    }
+                }
+            } catch (error) {
+                console.error('Error processing swing meter result:', error);
+                // Fallback to hide the swing meter and show the narrative
+                elements.swingMeterContainer.style.display = 'none';
+                updateGameState();
             }
         };
         
@@ -668,5 +717,23 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Showing game over screen, success:', success);
         elements.gameOver.style.display = 'flex';
         elements.gameOverMessage.textContent = game.getGameOverMessage(success);
+    }
+    
+    // Update game state (adding the missing function)
+    function updateGameState() {
+        console.log('Updating game state');
+        
+        // Update UI elements
+        updateUI();
+        
+        // Check for game over
+        if (game.gameOver) {
+            showGameOver(game.gameOverReason === 'success');
+        }
+        
+        // Check for round complete
+        if (game.currentStop > game.stopsPerRound * game.currentRound) {
+            showRoundComplete();
+        }
     }
 });
