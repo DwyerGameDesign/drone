@@ -614,28 +614,35 @@ document.addEventListener('DOMContentLoaded', function() {
         // Stop the animation immediately
         isSwingMeterMoving = false;
         
-        // Fix the indicator position at the exact tap position
+        // Compensate for reaction time delay by moving back slightly
+        // This makes it feel more accurate to when the player intended to tap
+        const reactionTimeCompensation = 3; // Adjust this value as needed
+        const compensatedPosition = Math.max(0, Math.min(100, swingPosition - (swingSpeed * swingDirection * reactionTimeCompensation)));
+        
+        console.log('Compensated position:', compensatedPosition);
+        
+        // Fix the indicator position at the compensated position
         const indicatorBar = document.querySelector('.meter-indicator-bar');
         if (indicatorBar) {
             indicatorBar.style.transition = 'none'; // Remove transition to prevent any movement
-            indicatorBar.style.left = swingPosition + '%';
+            indicatorBar.style.left = compensatedPosition + '%';
         }
         
-        // Determine the result based on position
+        // Determine the result based on compensated position
         // With our current layout:
         // 0-40%: poor-start (fail)
         // 40-60%: good
         // 60-100%: poor-end (fail)
         let result = 'fail';
-        if (swingPosition >= 40 && swingPosition < 60) {
+        if (compensatedPosition >= 40 && compensatedPosition < 60) {
             result = 'good';
         }
         
         console.log('Swing meter result:', result);
         
-        // Show the tap marker
+        // Show the tap marker at the compensated position
         const tapMarker = document.querySelector('.tap-marker');
-        tapMarker.style.left = swingPosition + '%';
+        tapMarker.style.left = compensatedPosition + '%';
         tapMarker.style.display = 'block';
         
         // Set tap marker color based on result and decision type
