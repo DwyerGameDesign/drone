@@ -148,9 +148,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Reset game state
         game.restart();
         
-        // Explicitly ensure we're at stop 1
-        if (game.currentStop !== 1) {
-            console.warn('Game did not reset to stop 1, forcing reset...');
+        // Explicitly ensure we're at stop 1 and performance score is 0
+        if (game.currentStop !== 1 || game.performanceScore !== 0) {
+            console.warn('Game did not reset properly, forcing reset...');
+            console.warn('Current stop:', game.currentStop, 'Performance score:', game.performanceScore);
+            
             game.currentStop = 1;
             game.currentRound = 1;
             game.performanceScore = 0;
@@ -161,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
             game.gameOverReason = null;
         }
         
-        console.log('Game reset to stop:', game.currentStop);
+        console.log('Game reset to stop:', game.currentStop, 'Performance score:', game.performanceScore);
         
         // Reset UI elements
         elements.decisionTrack.innerHTML = '';
@@ -229,6 +231,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Wait a moment to ensure data is loaded
         setTimeout(() => {
+            // Verify performance score is still 0
+            console.log('Verifying reset - Performance score:', game.performanceScore);
+            
             // Get the first narrative and display it
             let firstNarrative = null;
             
@@ -1153,17 +1158,35 @@ document.addEventListener('DOMContentLoaded', function() {
         tempDiv.textContent = gameOverMessage;
         const sanitizedMessage = tempDiv.innerHTML;
         
-        // Start typewriter effect
+        // Variables for typewriter effect
         let index = 0;
         let displayText = '';
+        let isTyping = true;
+        
+        // Function to complete the typing immediately
+        const completeTyping = () => {
+            if (isTyping) {
+                isTyping = false;
+                elements.gameOverMessage.innerHTML = sanitizedMessage;
+                // Show the restart button immediately
+                elements.restartButton.style.display = 'block';
+                elements.restartButton.classList.add('fade-in');
+            }
+        };
+        
+        // Add click event to skip typing
+        elements.gameOverMessage.style.cursor = 'pointer';
+        elements.gameOverMessage.addEventListener('click', completeTyping);
         
         const typeNextCharacter = () => {
-            if (index < sanitizedMessage.length) {
+            if (isTyping && index < sanitizedMessage.length) {
                 displayText += sanitizedMessage.charAt(index);
                 elements.gameOverMessage.innerHTML = displayText;
                 index++;
                 setTimeout(typeNextCharacter, typingSpeed);
-            } else {
+            } else if (isTyping) {
+                // Typing is complete naturally
+                isTyping = false;
                 // Show the restart button after the message is fully displayed
                 setTimeout(() => {
                     elements.restartButton.style.display = 'block';
@@ -1202,17 +1225,35 @@ document.addEventListener('DOMContentLoaded', function() {
         tempDiv.textContent = roundSummaryText;
         const sanitizedMessage = tempDiv.innerHTML;
         
-        // Start typewriter effect
+        // Variables for typewriter effect
         let index = 0;
         let displayText = '';
+        let isTyping = true;
+        
+        // Function to complete the typing immediately
+        const completeTyping = () => {
+            if (isTyping) {
+                isTyping = false;
+                elements.roundSummaryText.innerHTML = sanitizedMessage;
+                // Show the next round button immediately
+                elements.nextRoundButton.style.display = 'block';
+                elements.nextRoundButton.classList.add('fade-in');
+            }
+        };
+        
+        // Add click event to skip typing
+        elements.roundSummaryText.style.cursor = 'pointer';
+        elements.roundSummaryText.addEventListener('click', completeTyping);
         
         const typeNextCharacter = () => {
-            if (index < sanitizedMessage.length) {
+            if (isTyping && index < sanitizedMessage.length) {
                 displayText += sanitizedMessage.charAt(index);
                 elements.roundSummaryText.innerHTML = displayText;
                 index++;
                 setTimeout(typeNextCharacter, typingSpeed);
-            } else {
+            } else if (isTyping) {
+                // Typing is complete naturally
+                isTyping = false;
                 // Show the next round button after the text is fully displayed
                 setTimeout(() => {
                     elements.nextRoundButton.style.display = 'block';
@@ -1240,8 +1281,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Check if all stops are completed (game completed successfully)
-        if (game.currentStop > game.narratives.length) {
-            console.log('All stops completed, showing success game over');
+        const maxStops = game.maxRounds * game.stopsPerRound;
+        if (game.currentStop > maxStops) {
+            console.log(`All stops completed (${game.currentStop} > ${maxStops}), showing success game over`);
+            // Set game over state
+            game.gameOver = true;
             showGameOver(true); // Show success ending
             return;
         }

@@ -108,20 +108,21 @@ class DroneManGame {
     restart() {
         console.log('Restarting game...');
         // Reset resources
-        this.resources = { ...this.startingResources };
+        this.resources = { soul: 0, connections: 0, money: 0 };
         this.currentRound = 1;
         this.currentStop = 1;
         this.gameOver = false;
         this.gameOverReason = "";
         this.activePassiveEffects = [];
         this.decisionHistory = [];
-        this.lastRandomEventId = null;
-        this.currentRandomEvent = null;
         this.decisionTypes = [];
         this.performanceResults = [];
-        this.completedSwingMeters = [];
-        this.performanceScore = 0;        
+        this.lastRandomEventId = null;
+        this.currentRandomEvent = null;
+        this.performanceScore = 0; // Explicitly reset performance score to 0
+        this.completedSwingMeters = []; // Reset completed swing meters
         
+        console.log('Game state reset. Performance score:', this.performanceScore);
         return true;
     }
     
