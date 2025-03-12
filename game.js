@@ -208,7 +208,8 @@ class DroneManGame {
             choice: choice.index,
             swingMeterResult: result, // Store the swing meter result
             performanceSuccess: result !== 'fail', // Consider 'good' and 'okay' as success
-            effects: choice.effects || {}
+            effects: choice.effects || {},
+            intendedType: choice.type // Track the intended decision type regardless of success
         };
         
         // Store the decision type for this stop
@@ -218,32 +219,32 @@ class DroneManGame {
         this.decisionHistory.push(decision);
         
         console.log('Added decision to history:', decision);
-        console.log('Updated decision types:', this.decisionTypes);
-        
-        // Move to the next stop
-        this.currentStop++;
         
         // Check if the game is over due to performance
         if (this.performanceScore <= this.failureThreshold) {
             this.gameOver = true;
-            this.gameOverReason = 'performance';
+            this.gameOverReason = "Your performance has been consistently poor. The journey ends here.";
             processedResult.gameOver = true;
-            processedResult.reason = 'performance';
+            processedResult.success = false;
+            processedResult.reason = this.gameOverReason;
             return processedResult;
         }
         
-        // Get the next narrative
-        const nextNarrative = this.narratives.find(n => n.stop === this.currentStop);
-        if (nextNarrative) {
-            this.currentNarrative = nextNarrative;
-            processedResult.nextNarrative = nextNarrative;
-        } else {
-            // If no next narrative, check if the round is complete
-            if (this.currentStop > this.stopsPerRound * this.currentRound) {
-                processedResult.roundComplete = true;
-            } else {
-                console.error('No narrative found for stop:', this.currentStop);
-            }
+        // Check if we've reached the end of the journey
+        if (this.currentStop >= this.maxRounds * this.stopsPerRound) {
+            this.gameOver = true;
+            processedResult.gameOver = true;
+            processedResult.success = true;
+            return processedResult;
+        }
+        
+        // Move to the next stop
+        this.currentStop++;
+        
+        // Check if we've completed a round
+        if ((this.currentStop - 1) % this.stopsPerRound === 0) {
+            this.currentRound++;
+            processedResult.roundComplete = true;
         }
         
         return processedResult;
@@ -594,7 +595,39 @@ class DroneManGame {
     // Get game over message
     getGameOverMessage(success) {
         if (!success) {
-            return this.gameOverReason;
+            // Count the types of decisions the player ATTEMPTED
+            const soulAttempts = this.decisionHistory.filter(d => d.intendedType === "soul").length;
+            const connectionsAttempts = this.decisionHistory.filter(d => d.intendedType === "connections").length;
+            const successAttempts = this.decisionHistory.filter(d => d.intendedType === "success").length;
+            
+            console.log('Decision attempts:', { soul: soulAttempts, connections: connectionsAttempts, success: successAttempts });
+            
+            // Determine dominant attempt pattern
+            let dominantAttempt = "mixed";
+            if (soulAttempts > connectionsAttempts && soulAttempts > successAttempts) {
+                dominantAttempt = "soul";
+            } else if (connectionsAttempts > soulAttempts && connectionsAttempts > successAttempts) {
+                dominantAttempt = "connections";
+            } else if (successAttempts > soulAttempts && successAttempts > connectionsAttempts) {
+                dominantAttempt = "success";
+            }
+            
+            console.log('Dominant attempt:', dominantAttempt);
+            
+            // Return ending based on dominant attempt pattern
+            switch (dominantAttempt) {
+                case "soul":
+                    return "You sought to reconnect with your authentic self, but each attempt slipped through your fingers. The more desperately you grasped at meaning, the more it eluded you. Now you find yourself more lost than when you began, haunted by glimpses of a self you couldn't quite reach.";
+                    
+                case "connections":
+                    return "You reached out to others, seeking bonds to anchor you in this drifting life. But something in your approach pushed people away. Perhaps it was desperation, perhaps insincerity. The bridges you tried to build collapsed, leaving you more isolated than before.";
+                    
+                case "success":
+                    return "You chased achievement and recognition, believing they would fill the emptiness. But each rung of the ladder broke as you climbed, each victory proved hollow. Now you stand amid the wreckage of ambitions that consumed you without ever nourishing your spirit.";
+                    
+                default:
+                    return "You tried many paths, committed to none. The scattered efforts left you disoriented, unable to find a true direction. The drone remains, neither transformed nor at peace, caught in a limbo of half-realized possibilities.";
+            }
         }
         
         // Count the decision types to determine the dominant path
