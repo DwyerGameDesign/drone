@@ -803,9 +803,9 @@
       "title": "STANDARD CHALLENGE",
       "narrative": "Balance is key. Find the right amount of effort without going too far.",
       "zones": [
-        {"type": "poor", "width": 150},
-        {"type": "good", "width": 100},
-        {"type": "poor", "width": 150}
+        {"type": "poor", "width": 40},
+        {"type": "good", "width": 20},
+        {"type": "poor", "width": 40}
       ],
       "results": {
         "fail": {
@@ -823,8 +823,8 @@
       "title": "CRITICAL MOMENT",
       "narrative": "Perfect timing required. This is your one chance - a single moment will define everything.",
       "zones": [
-        {"type": "poor", "width": 320},
-        {"type": "good", "width": 80}
+        {"type": "poor", "width": 80},
+        {"type": "good", "width": 20}
       ],
       "results": {
         "fail": {
@@ -842,8 +842,8 @@
       "title": "MEASURED RESPONSE",
       "narrative": "Finding balance is crucial. Neither too little nor too much will serve you here.",
       "zones": [
-        {"type": "poor", "width": 300},
-        {"type": "good", "width": 60},
+        {"type": "poor", "width": 40},
+        {"type": "good", "width": 20},
         {"type": "poor", "width": 40}
       ],
       "results": {

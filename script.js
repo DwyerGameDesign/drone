@@ -352,39 +352,39 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateMeterZoneColors(decisionType) {
         // Get all meter zones
         const goodZone = document.querySelector('.meter-zone.good');
-        const okayZone = document.querySelector('.meter-zone.okay');
+        const poorStartZone = document.querySelector('.meter-zone.poor-start');
+        const poorEndZone = document.querySelector('.meter-zone.poor-end');
         
-        if (!goodZone || !okayZone) {
-            console.error('Meter zones not found');
+        if (!goodZone) {
+            console.error('Good meter zone not found');
             return;
         }
         
         // Reset classes
         goodZone.className = 'meter-zone good';
-        okayZone.className = 'meter-zone okay';
         
         // Set colors based on decision type
         switch(decisionType) {
             case 'soul':
                 // Blue for soul
                 goodZone.style.backgroundColor = '#2A66C9'; // Blue for good
-                okayZone.style.backgroundColor = '#1a3c78'; // Muted blue for okay
                 break;
             case 'connections':
                 // Violet for connections
                 goodZone.style.backgroundColor = '#7D3CCF'; // Violet for good
-                okayZone.style.backgroundColor = '#4a2378'; // Muted violet for okay
                 break;
             case 'success':
                 // Green for success
                 goodZone.style.backgroundColor = '#1F6F50'; // Green for good
-                okayZone.style.backgroundColor = '#134230'; // Muted green for okay
                 break;
             default:
                 // Default colors
                 goodZone.style.backgroundColor = '#2ecc71'; // Default green
-                okayZone.style.backgroundColor = '#ff9933'; // Default orange
         }
+        
+        // Ensure poor zones are red
+        if (poorStartZone) poorStartZone.style.backgroundColor = '#e74c3c';
+        if (poorEndZone) poorEndZone.style.backgroundColor = '#e74c3c';
     }
     
     // Start the swing meter
@@ -460,8 +460,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Determine the result based on position
+        // With our current layout:
+        // 0-40%: poor-start (fail)
+        // 40-60%: good
+        // 60-100%: poor-end (fail)
         let result = 'fail';
-        if (swingPosition >= 40 && swingPosition < 80) {
+        if (swingPosition >= 40 && swingPosition < 60) {
             result = 'good';
         }
         
