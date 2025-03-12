@@ -246,7 +246,7 @@ body {
     border-radius: 8px;
     padding: 20px;
     position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 3px solid; /* Border will be colored by JS based on resource type */
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.05),
                 inset 0 0 20px rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(5px);
@@ -263,48 +263,26 @@ body {
     text-align: center;
 }
 
+/* Hide the choice type and title */
 .choice-type {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.choice-type.soul {
-    background-color: rgba(42, 102, 201, 0.3);
-    color: #2A66C9;
-}
-
-.choice-type.connections {
-    background-color: rgba(125, 60, 207, 0.3);
-    color: #7D3CCF;
-}
-
-.choice-type.success {
-    background-color: rgba(31, 111, 80, 0.3);
-    color: #1F6F50;
+    display: none;
 }
 
 .choice-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 10px;
+    display: none;
 }
 
 .choice-description {
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: #ccc;
     line-height: 1.4;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
+/* Hide the swing meter title */
 .swing-meter-title {
-    font-size: 1.1rem;
-    margin-bottom: 20px;
-    text-align: center;
+    display: none;
 }
 
 .swing-meter {
@@ -350,15 +328,18 @@ body {
     width: 20%;
 }
 
-.meter-indicator-top {
+/* Replace the triangular indicators with a solid white bar */
+.meter-indicator-top, .meter-indicator-bottom {
+    display: none; /* Hide the triangular indicators */
+}
+
+/* New solid indicator */
+.meter-indicator-bar {
     position: absolute;
-    top: -24px;
-    left: 0;
-    width: 0;
-    height: 0;
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-top: 16px solid white;
+    top: -10px;
+    bottom: -10px;
+    width: 4px;
+    background-color: white;
     transform: translateX(-50%);
     transition: left 0.1s linear;
     pointer-events: none;
@@ -368,37 +349,21 @@ body {
     visibility: visible;
 }
 
-.meter-indicator-bottom {
-    position: absolute;
-    bottom: -24px;
-    left: 0;
-    width: 0;
-    height: 0;
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-bottom: 16px solid white;
-    transform: translateX(-50%);
-    transition: left 0.1s linear;
-    pointer-events: none;
-    z-index: 5;
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
-    opacity: 1;
-    visibility: visible;
+.meter-indicator-bar.good {
+    background-color: #2ecc71;
 }
 
-.meter-indicator-top.good, .meter-indicator-bottom.good {
-    border-top-color: #2ecc71;
-    border-bottom-color: #2ecc71;
+.meter-indicator-bar.okay {
+    background-color: #ff9933;
 }
 
-.meter-indicator-top.okay, .meter-indicator-bottom.okay {
-    border-top-color: #ff9933;
-    border-bottom-color: #ff9933;
+.meter-indicator-bar.fail {
+    background-color: #e74c3c;
 }
 
-.meter-indicator-top.fail, .meter-indicator-bottom.fail {
-    border-top-color: #e74c3c;
-    border-bottom-color: #e74c3c;
+/* Hide the meter instructions */
+.meter-instructions {
+    display: none;
 }
 
 .tap-marker {
@@ -435,7 +400,7 @@ body {
 
 .tap-button {
     display: block;
-    margin: 0 auto;
+    margin: 20px auto 0;
     padding: 12px 24px;
     background-color: #3498db;
     color: white;

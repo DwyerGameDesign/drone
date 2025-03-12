@@ -281,34 +281,31 @@ document.addEventListener('DOMContentLoaded', function() {
         // Hide the choice container
         elements.choiceContainer.style.display = 'none';
         
-        // Show the swing meter container
-        elements.swingMeterContainer.style.display = 'block';
-        console.log('Setting swing meter container display to block');
-        console.log('Swing meter container element:', elements.swingMeterContainer);
-        console.log('Swing meter container display after setting:', elements.swingMeterContainer.style.display);
-        
         // Get choice data from the card
         const cardContent = card.querySelector('.card-content');
         const choiceText = cardContent ? cardContent.textContent : 'Unknown choice';
         const decisionType = card.dataset.type || 'standard';
         
-        // Update the choice summary
-        if (elements.choiceType) {
-            elements.choiceType.textContent = decisionType.toUpperCase();
-            elements.choiceType.className = 'choice-type ' + decisionType;
-        }
-        
-        if (elements.choiceTitle) {
-            elements.choiceTitle.textContent = 'Your Choice';
-        }
-        
+        // Update the choice description
         if (elements.choiceDescription) {
             elements.choiceDescription.textContent = choiceText;
         }
         
-        // Set up the swing meter title
-        if (elements.swingMeterTitle) {
-            elements.swingMeterTitle.textContent = 'How will you approach this?';
+        // Set the border color based on decision type
+        if (elements.swingMeterContainer) {
+            switch(decisionType) {
+                case 'soul':
+                    elements.swingMeterContainer.style.borderTopColor = '#2A66C9';
+                    break;
+                case 'connections':
+                    elements.swingMeterContainer.style.borderTopColor = '#7D3CCF';
+                    break;
+                case 'success':
+                    elements.swingMeterContainer.style.borderTopColor = '#1F6F50';
+                    break;
+                default:
+                    elements.swingMeterContainer.style.borderTopColor = '#999';
+            }
         }
         
         // Store the selected choice
@@ -318,61 +315,48 @@ document.addEventListener('DOMContentLoaded', function() {
             index: parseInt(card.dataset.index || '0')
         };
         
-        // Show the meter instructions and tap button
-        if (elements.meterInstructions) {
-            elements.meterInstructions.style.display = 'block';
-        }
+        // Show the swing meter container
+        elements.swingMeterContainer.style.display = 'block';
+        console.log('Setting swing meter container display to block');
         
         // Set up the tap button
         if (elements.tapButton) {
             elements.tapButton.style.display = 'block';
-            elements.tapButton.textContent = 'TAP TO START';
-            elements.tapButton.onclick = startSwingMeter;
-            console.log('Tap button display style:', elements.tapButton.style.display);
+            elements.tapButton.textContent = 'TAP TO STOP';
+            elements.tapButton.onclick = stopSwingMeter;
         } else {
             console.error('Tap button element not found');
         }
+        
+        // Start the swing meter automatically
+        startSwingMeter();
     }
     
     // Start the swing meter
     function startSwingMeter() {
         console.log('Starting swing meter');
         
-        // Debug: Check swing meter container
-        const swingMeterContainer = document.querySelector('.swing-meter-container');
-        console.log('Swing meter container:', swingMeterContainer);
-        console.log('Swing meter container display:', swingMeterContainer ? getComputedStyle(swingMeterContainer).display : 'element not found');
-        
-        // Debug: Check swing meter
-        const swingMeter = document.getElementById('swing-meter');
-        console.log('Swing meter element:', swingMeter);
-        console.log('Swing meter display:', swingMeter ? getComputedStyle(swingMeter).display : 'element not found');
-        
-        // Change button text
-        elements.tapButton.textContent = 'TAP TO STOP';
-        
-        // Reset the indicators
-        const indicator = document.querySelector('.meter-indicator-top');
-        const bottomIndicator = document.querySelector('.meter-indicator-bottom');
-        
-        // Debug: Check if indicators are found
-        console.log('Top indicator element:', indicator);
-        console.log('Bottom indicator element:', bottomIndicator);
-        
-        if (!indicator || !bottomIndicator) {
-            console.error('Indicators not found. Check HTML structure.');
-            return;
+        // Create the solid indicator bar if it doesn't exist
+        let indicatorBar = document.querySelector('.meter-indicator-bar');
+        if (!indicatorBar) {
+            indicatorBar = document.createElement('div');
+            indicatorBar.className = 'meter-indicator-bar';
+            const meterBackground = document.querySelector('.meter-background');
+            if (meterBackground) {
+                meterBackground.appendChild(indicatorBar);
+            } else {
+                console.error('Meter background not found');
+                return;
+            }
         }
         
-        indicator.style.left = '0%';
-        bottomIndicator.style.left = '0%';
+        // Reset the indicator position
+        indicatorBar.style.left = '0%';
         
         // Start the animation
         isSwingMeterMoving = true;
         swingPosition = 0;
-        
-        // Change button function
-        elements.tapButton.onclick = stopSwingMeter;
+        swingDirection = 1;
         
         // Start the animation
         requestAnimationFrame(animateSwingMeter);
@@ -383,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!isSwingMeterMoving) return;
         
         // Update position
-        swingPosition += swingSpeed;
+        swingPosition += swingSpeed * swingDirection;
         
         // If at or past the end, reverse direction
         if (swingPosition >= 100) {
@@ -392,17 +376,14 @@ document.addEventListener('DOMContentLoaded', function() {
             swingDirection = 1;
         }
         
-        swingPosition += swingSpeed * swingDirection;
-        
         // Make sure position stays in bounds
         swingPosition = Math.max(0, Math.min(100, swingPosition));
         
-        // Update indicator positions
-        const indicator = document.querySelector('.meter-indicator-top');
-        const bottomIndicator = document.querySelector('.meter-indicator-bottom');
-        
-        indicator.style.left = swingPosition + '%';
-        bottomIndicator.style.left = swingPosition + '%';
+        // Update indicator position
+        const indicatorBar = document.querySelector('.meter-indicator-bar');
+        if (indicatorBar) {
+            indicatorBar.style.left = swingPosition + '%';
+        }
         
         // Continue animation
         requestAnimationFrame(animateSwingMeter);
@@ -430,6 +411,12 @@ document.addEventListener('DOMContentLoaded', function() {
         tapMarker.style.left = swingPosition + '%';
         tapMarker.style.display = 'block';
         tapMarker.classList.add(result);
+        
+        // Update the indicator bar color based on result
+        const indicatorBar = document.querySelector('.meter-indicator-bar');
+        if (indicatorBar) {
+            indicatorBar.classList.add(result);
+        }
         
         // Show the result of the swing meter
         showSwingMeterResult(result);
