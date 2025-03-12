@@ -494,8 +494,17 @@ document.addEventListener('DOMContentLoaded', function() {
         resultTextElement.className = 'meter-result-text';
         resultContainer.appendChild(resultTextElement);
         
-        // Add the result container to the swing meter container
-        elements.swingMeterContainer.appendChild(resultContainer);
+        // Get the choice description element (narrative text)
+        const choiceDescription = elements.choiceDescription;
+        
+        // Add the result container right after the choice description
+        if (choiceDescription && choiceDescription.parentNode) {
+            // Insert the result container after the choice description
+            choiceDescription.parentNode.insertBefore(resultContainer, choiceDescription.nextSibling);
+        } else {
+            // Fallback: Add to the swing meter container
+            elements.swingMeterContainer.appendChild(resultContainer);
+        }
         
         // Wait for the swing meter to fade out before showing the result
         setTimeout(() => {
