@@ -164,23 +164,30 @@ document.addEventListener('DOMContentLoaded', function() {
         // Hide all interaction elements initially
         hideAllInteractions();
         
+        // Create a temporary div to store the full message
+        const tempDiv = document.createElement('div');
+        tempDiv.textContent = narrative.narrative;
+        const sanitizedMessage = tempDiv.innerHTML;
+        
         // Start typewriter effect
         let index = 0;
+        let displayText = '';
         isTyping = true;
         skipTyping = false;
         
         const typeNextCharacter = () => {
             if (skipTyping) {
                 // If skipping, show the full text immediately
-                elements.narrativeCardText.textContent = narrative.narrative;
+                elements.narrativeCardText.innerHTML = sanitizedMessage;
                 isTyping = false;
                 skipTyping = false;
                 displayInteraction(narrative);
                 return;
             }
             
-            if (index < narrative.narrative.length) {
-                elements.narrativeCardText.textContent += narrative.narrative.charAt(index);
+            if (index < sanitizedMessage.length) {
+                displayText += sanitizedMessage.charAt(index);
+                elements.narrativeCardText.innerHTML = displayText;
                 index++;
                 setTimeout(typeNextCharacter, typingSpeed);
             } else {
@@ -601,13 +608,20 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show the result container
             resultContainer.classList.add('visible');
             
+            // Create a temporary div to store the full message
+            const tempDiv = document.createElement('div');
+            tempDiv.textContent = resultText;
+            const sanitizedMessage = tempDiv.innerHTML;
+            
             // Typewriter effect for the result text
             let index = 0;
+            let displayText = '';
             resultTextElement.textContent = ''; // Ensure we start with an empty string
             
             const typeNextCharacter = () => {
-                if (index < resultText.length) {
-                    resultTextElement.textContent += resultText.charAt(index);
+                if (index < sanitizedMessage.length) {
+                    displayText += sanitizedMessage.charAt(index);
+                    resultTextElement.innerHTML = displayText;
                     index++;
                     setTimeout(typeNextCharacter, 30); // 30ms per character
                 } else {
