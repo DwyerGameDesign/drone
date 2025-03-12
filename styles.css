@@ -341,24 +341,50 @@ body {
     height: 100%;
 }
 
+/* Base styles for meter zones - colors will be set dynamically */
 .meter-zone.poor-start {
-    background-color: #e74c3c;
+    background-color: #e74c3c; /* Default red for fail */
     width: 40%;
 }
 
 .meter-zone.okay {
-    background-color: #ff9933;
+    background-color: #ff9933; /* Default orange for okay */
     width: 20%;
 }
 
 .meter-zone.good {
-    background-color: #2ecc71;
+    background-color: #2ecc71; /* Default green for good */
     width: 20%;
 }
 
 .meter-zone.poor-end {
-    background-color: #e74c3c;
+    background-color: #e74c3c; /* Default red for fail */
     width: 20%;
+}
+
+/* Resource-specific colors for meter zones */
+.meter-zone.soul-good {
+    background-color: #2A66C9; /* Blue for soul success */
+}
+
+.meter-zone.soul-okay {
+    background-color: #1a3c78; /* Muted blue for soul okay */
+}
+
+.meter-zone.connections-good {
+    background-color: #7D3CCF; /* Violet for connections success */
+}
+
+.meter-zone.connections-okay {
+    background-color: #4a2378; /* Muted violet for connections okay */
+}
+
+.meter-zone.success-good {
+    background-color: #1F6F50; /* Green for success type */
+}
+
+.meter-zone.success-okay {
+    background-color: #134230; /* Muted green for success okay */
 }
 
 /* Replace the triangular indicators with a solid white bar */

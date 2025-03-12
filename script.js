@@ -315,6 +315,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
+        // Update meter zone colors based on decision type
+        updateMeterZoneColors(decisionType);
+        
         // Store the selected choice with all necessary properties
         currentSelectedChoice = {
             text: choiceText,
@@ -343,6 +346,45 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Start the swing meter automatically
         startSwingMeter();
+    }
+    
+    // Update meter zone colors based on decision type
+    function updateMeterZoneColors(decisionType) {
+        // Get all meter zones
+        const goodZone = document.querySelector('.meter-zone.good');
+        const okayZone = document.querySelector('.meter-zone.okay');
+        
+        if (!goodZone || !okayZone) {
+            console.error('Meter zones not found');
+            return;
+        }
+        
+        // Reset classes
+        goodZone.className = 'meter-zone good';
+        okayZone.className = 'meter-zone okay';
+        
+        // Set colors based on decision type
+        switch(decisionType) {
+            case 'soul':
+                // Blue for soul
+                goodZone.style.backgroundColor = '#2A66C9'; // Blue for good
+                okayZone.style.backgroundColor = '#1a3c78'; // Muted blue for okay
+                break;
+            case 'connections':
+                // Violet for connections
+                goodZone.style.backgroundColor = '#7D3CCF'; // Violet for good
+                okayZone.style.backgroundColor = '#4a2378'; // Muted violet for okay
+                break;
+            case 'success':
+                // Green for success
+                goodZone.style.backgroundColor = '#1F6F50'; // Green for good
+                okayZone.style.backgroundColor = '#134230'; // Muted green for okay
+                break;
+            default:
+                // Default colors
+                goodZone.style.backgroundColor = '#2ecc71'; // Default green
+                okayZone.style.backgroundColor = '#ff9933'; // Default orange
+        }
     }
     
     // Start the swing meter
@@ -423,12 +465,85 @@ document.addEventListener('DOMContentLoaded', function() {
         const tapMarker = document.querySelector('.tap-marker');
         tapMarker.style.left = swingPosition + '%';
         tapMarker.style.display = 'block';
-        tapMarker.classList.add(result);
         
-        // Update the indicator bar color based on result
+        // Set tap marker color based on result and decision type
+        if (result === 'fail') {
+            tapMarker.style.backgroundColor = '#e74c3c'; // Red for fail
+        } else {
+            // Set color based on decision type and result
+            const decisionType = currentSelectedChoice.type;
+            if (result === 'good') {
+                switch(decisionType) {
+                    case 'soul':
+                        tapMarker.style.backgroundColor = '#2A66C9'; // Blue for soul good
+                        break;
+                    case 'connections':
+                        tapMarker.style.backgroundColor = '#7D3CCF'; // Violet for connections good
+                        break;
+                    case 'success':
+                        tapMarker.style.backgroundColor = '#1F6F50'; // Green for success good
+                        break;
+                    default:
+                        tapMarker.style.backgroundColor = '#2ecc71'; // Default green
+                }
+            } else if (result === 'okay') {
+                switch(decisionType) {
+                    case 'soul':
+                        tapMarker.style.backgroundColor = '#1a3c78'; // Muted blue for soul okay
+                        break;
+                    case 'connections':
+                        tapMarker.style.backgroundColor = '#4a2378'; // Muted violet for connections okay
+                        break;
+                    case 'success':
+                        tapMarker.style.backgroundColor = '#134230'; // Muted green for success okay
+                        break;
+                    default:
+                        tapMarker.style.backgroundColor = '#ff9933'; // Default orange
+                }
+            }
+        }
+        
+        // Update the indicator bar color based on result and decision type
         const indicatorBar = document.querySelector('.meter-indicator-bar');
         if (indicatorBar) {
-            indicatorBar.classList.add(result);
+            // Remove any existing result classes
+            indicatorBar.classList.remove('good', 'okay', 'fail');
+            
+            if (result === 'fail') {
+                indicatorBar.style.backgroundColor = '#e74c3c'; // Red for fail
+            } else {
+                // Set color based on decision type and result
+                const decisionType = currentSelectedChoice.type;
+                if (result === 'good') {
+                    switch(decisionType) {
+                        case 'soul':
+                            indicatorBar.style.backgroundColor = '#2A66C9'; // Blue for soul good
+                            break;
+                        case 'connections':
+                            indicatorBar.style.backgroundColor = '#7D3CCF'; // Violet for connections good
+                            break;
+                        case 'success':
+                            indicatorBar.style.backgroundColor = '#1F6F50'; // Green for success good
+                            break;
+                        default:
+                            indicatorBar.style.backgroundColor = '#2ecc71'; // Default green
+                    }
+                } else if (result === 'okay') {
+                    switch(decisionType) {
+                        case 'soul':
+                            indicatorBar.style.backgroundColor = '#1a3c78'; // Muted blue for soul okay
+                            break;
+                        case 'connections':
+                            indicatorBar.style.backgroundColor = '#4a2378'; // Muted violet for connections okay
+                            break;
+                        case 'success':
+                            indicatorBar.style.backgroundColor = '#134230'; // Muted green for success okay
+                            break;
+                        default:
+                            indicatorBar.style.backgroundColor = '#ff9933'; // Default orange
+                    }
+                }
+            }
         }
         
         // Show the result of the swing meter
@@ -605,12 +720,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (indicatorBar) {
             indicatorBar.style.left = '0%';
             indicatorBar.classList.remove('good', 'okay', 'fail');
+            indicatorBar.style.backgroundColor = 'white'; // Reset to default white color
         }
         
         // Reset the tap marker
         const tapMarker = document.querySelector('.tap-marker');
         tapMarker.style.display = 'none';
         tapMarker.classList.remove('good', 'okay', 'fail');
+        tapMarker.style.backgroundColor = 'white'; // Reset to default white color
         
         // Show the tap button again for next time
         if (elements.tapButton) {
