@@ -59,6 +59,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // Ensure we're starting from stop 1
         game.currentStop = 1;
         game.currentRound = 1;
+        game.performanceScore = 0;
+        game.decisionHistory = [];
+        game.decisionTypes = [];
+        game.resources = { soul: 0, connections: 0, money: 0 };
+        game.gameOver = false;
+        game.gameOverReason = null;
+        
+        // Reload game data if possible
+        if (game.loadGameData && typeof game.loadGameData === 'function') {
+            console.log('Loading fresh game data...');
+            game.loadGameData();
+        }
         
         // Start the game
         const result = game.startGame();
@@ -69,6 +81,17 @@ document.addEventListener('DOMContentLoaded', function() {
             displayNarrative(result.narrative);
         } else {
             console.error('Failed to start game:', result);
+            
+            // Fallback: Try to get the first narrative directly
+            if (game.narratives && game.narratives.length > 0) {
+                const firstNarrative = game.narratives.find(n => n.stop === 1);
+                if (firstNarrative) {
+                    console.log('Using fallback first narrative:', firstNarrative.title);
+                    displayNarrative(firstNarrative);
+                } else {
+                    console.error('Could not find first narrative');
+                }
+            }
         }
         
         // Update the game state UI
@@ -198,25 +221,41 @@ document.addEventListener('DOMContentLoaded', function() {
         swingDirection = 1;
         currentSelectedChoice = null;
         
-        // Get the first narrative and display it
-        const narrative = game.getCurrentNarrative();
-        if (narrative) {
-            console.log('First narrative after reset:', narrative.title, 'Stop:', narrative.stop);
-            displayNarrative(narrative);
-        } else {
-            console.error('Failed to get initial narrative after reset');
-            // Fallback: Try to get the first narrative directly
-            if (game.narratives && game.narratives.length > 0) {
-                const firstNarrative = game.narratives.find(n => n.stop === 1);
-                if (firstNarrative) {
-                    console.log('Using fallback first narrative:', firstNarrative.title);
-                    displayNarrative(firstNarrative);
-                }
-            }
+        // Force a complete reload of the game data
+        if (game.loadGameData && typeof game.loadGameData === 'function') {
+            console.log('Reloading game data...');
+            game.loadGameData();
         }
         
-        // Update the UI to reflect the reset state
-        updateUI();
+        // Wait a moment to ensure data is loaded
+        setTimeout(() => {
+            // Get the first narrative and display it
+            let firstNarrative = null;
+            
+            // Try multiple methods to get the first narrative
+            if (game.narratives && game.narratives.length > 0) {
+                firstNarrative = game.narratives.find(n => n.stop === 1);
+                console.log('Found first narrative directly:', firstNarrative?.title);
+            }
+            
+            if (!firstNarrative && typeof game.getCurrentNarrative === 'function') {
+                firstNarrative = game.getCurrentNarrative();
+                console.log('Found first narrative via getCurrentNarrative:', firstNarrative?.title);
+            }
+            
+            if (firstNarrative) {
+                console.log('Displaying first narrative after reset:', firstNarrative.title);
+                displayNarrative(firstNarrative);
+            } else {
+                console.error('Failed to get initial narrative after reset');
+                // Last resort: Try to restart the game completely
+                console.log('Attempting to restart game completely...');
+                initGame();
+            }
+            
+            // Update the UI to reflect the reset state
+            updateUI();
+        }, 100);
     }
     
     elements.restartButton.addEventListener('click', function() {
@@ -225,24 +264,44 @@ document.addEventListener('DOMContentLoaded', function() {
         // Reset the game state
         resetGameState();
         
-        // Double-check that we're at stop 1
-        console.log('Current stop after reset:', game.currentStop);
-        if (game.currentStop !== 1) {
-            console.error('Failed to reset to stop 1, forcing reset...');
-            // Force a complete game restart
-            game.currentStop = 1;
-            game.currentRound = 1;
-            
-            // Get the first narrative directly
-            if (game.narratives && game.narratives.length > 0) {
-                const firstNarrative = game.narratives.find(n => n.stop === 1);
-                if (firstNarrative) {
-                    console.log('Displaying first narrative directly:', firstNarrative.title);
-                    displayNarrative(firstNarrative);
-                    updateUI();
+        // Double-check that we're at stop 1 after a short delay to ensure reset has completed
+        setTimeout(() => {
+            console.log('Current stop after reset:', game.currentStop);
+            if (game.currentStop !== 1) {
+                console.error('Failed to reset to stop 1, forcing complete restart...');
+                
+                // Force a complete game restart
+                game.currentStop = 1;
+                game.currentRound = 1;
+                game.performanceScore = 0;
+                game.decisionHistory = [];
+                game.decisionTypes = [];
+                game.resources = { soul: 0, connections: 0, money: 0 };
+                game.gameOver = false;
+                game.gameOverReason = null;
+                
+                // Reload game data if possible
+                if (game.loadGameData && typeof game.loadGameData === 'function') {
+                    game.loadGameData();
+                }
+                
+                // Get the first narrative directly
+                if (game.narratives && game.narratives.length > 0) {
+                    const firstNarrative = game.narratives.find(n => n.stop === 1);
+                    if (firstNarrative) {
+                        console.log('Displaying first narrative directly:', firstNarrative.title);
+                        displayNarrative(firstNarrative);
+                        updateUI();
+                    } else {
+                        console.error('Could not find first narrative, restarting game...');
+                        initGame();
+                    }
+                } else {
+                    console.error('No narratives found, restarting game...');
+                    initGame();
                 }
             }
-        }
+        }, 200);
     });
     
     // Initialize the decision track with empty cards
