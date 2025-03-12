@@ -252,6 +252,16 @@ class DroneManGame {
             processedResult.roundComplete = true;
         }
         
+        // Find and set the next narrative
+        const nextNarrative = this.narratives.find(n => n.stop === this.currentStop);
+        if (nextNarrative) {
+            this.currentNarrative = nextNarrative;
+            processedResult.nextNarrative = nextNarrative;
+            console.log(`Next narrative set to stop ${this.currentStop}: ${nextNarrative.title}`);
+        } else {
+            console.error(`No narrative found for stop ${this.currentStop}`);
+        }
+        
         return processedResult;
     }
     
@@ -569,11 +579,22 @@ class DroneManGame {
         this.currentRound++;
         this.currentStop = (this.currentRound - 1) * this.stopsPerRound + 1;
         
+        console.log(`Next round started: Round ${this.currentRound}, Stop ${this.currentStop}`);
+        
         // Apply passive effects for the new round
         this.applyPassiveEffects();
         
         // Get the first narrative of the new round
         const nextNarrative = this.narratives.find(n => n.stop === this.currentStop) || null;
+        
+        if (nextNarrative) {
+            // Set the current narrative
+            this.currentNarrative = nextNarrative;
+            console.log(`Set current narrative for new round: ${nextNarrative.title} (Stop ${nextNarrative.stop})`);
+        } else {
+            console.error(`No narrative found for stop ${this.currentStop} in round ${this.currentRound}`);
+            console.log('Available stops:', this.narratives.map(n => n.stop).sort((a, b) => a - b));
+        }
         
         return {
             success: true,

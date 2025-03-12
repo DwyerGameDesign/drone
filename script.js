@@ -78,6 +78,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Display the first narrative
         if (result.success && result.narrative) {
             console.log('Starting game with narrative:', result.narrative.title, 'Stop:', result.narrative.stop);
+            // Ensure the current narrative is set
+            game.currentNarrative = result.narrative;
             displayNarrative(result.narrative);
         } else {
             console.error('Failed to start game:', result);
@@ -87,9 +89,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 const firstNarrative = game.narratives.find(n => n.stop === 1);
                 if (firstNarrative) {
                     console.log('Using fallback first narrative:', firstNarrative.title);
+                    // Ensure the current narrative is set
+                    game.currentNarrative = firstNarrative;
                     displayNarrative(firstNarrative);
                 } else {
                     console.error('Could not find first narrative');
+                    console.log('Available stops:', game.narratives.map(n => n.stop).sort((a, b) => a - b));
                 }
             }
         }
@@ -887,7 +892,9 @@ document.addEventListener('DOMContentLoaded', function() {
         nextButton.onclick = function() {
             try {
                 // Process the result
+                console.log('Processing swing meter result:', result, 'Current stop before:', game.currentStop);
                 const processedResult = game.handleSwingMeter(result, currentSelectedChoice);
+                console.log('Processed result:', processedResult, 'Current stop after:', game.currentStop);
                 
                 // Hide the swing meter container
                 elements.swingMeterContainer.style.display = 'none';
@@ -900,21 +907,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Move to the next narrative if available
                 if (processedResult && processedResult.nextNarrative) {
+                    console.log('Displaying next narrative from processedResult:', processedResult.nextNarrative.title, 'Stop:', processedResult.nextNarrative.stop);
                     displayNarrative(processedResult.nextNarrative);
                 } else {
+                    console.warn('No nextNarrative in processedResult, trying alternatives...');
+                    
                     // If no next narrative, try to get the current narrative
                     if (typeof game.getCurrentNarrative === 'function') {
                         const currentNarrative = game.getCurrentNarrative();
                         if (currentNarrative) {
+                            console.log('Using getCurrentNarrative:', currentNarrative.title, 'Stop:', currentNarrative.stop);
                             displayNarrative(currentNarrative);
                         } else {
                             console.error('No current narrative available');
                             // Try to find the next narrative based on the current stop
                             const nextNarrative = game.narratives.find(n => n.stop === game.currentStop);
                             if (nextNarrative) {
+                                console.log('Found narrative for current stop:', nextNarrative.title, 'Stop:', game.currentStop);
                                 displayNarrative(nextNarrative);
                             } else {
                                 console.error('No next narrative found for stop:', game.currentStop);
+                                console.log('Available stops:', game.narratives.map(n => n.stop).sort((a, b) => a - b));
                             }
                         }
                     } else {
