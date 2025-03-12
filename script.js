@@ -451,9 +451,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('Selected choice:', choice);
         
-        // Update the choice description
+        // Update the choice description with meterContext if available, otherwise use choice text
         if (elements.choiceDescription) {
-            elements.choiceDescription.textContent = choiceText;
+            if (choice && choice.meterContext) {
+                elements.choiceDescription.textContent = choice.meterContext;
+            } else {
+                elements.choiceDescription.textContent = choiceText;
+            }
         }
         
         // Set the border color based on decision type
