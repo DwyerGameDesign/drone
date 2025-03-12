@@ -416,14 +416,7 @@ body {
 }
 
 .integrated-meter-result {
-    font-size: 1.1rem;
-    color: #fff;
-    text-align: center;
-    margin: 20px 0;
-    padding: 15px;
-    border-radius: 8px;
-    line-height: 1.5;
-    background-color: rgba(0, 0, 0, 0.3);
+    display: none; /* Hide the old result display */
 }
 
 .integrated-meter-result.good {
@@ -436,6 +429,46 @@ body {
 
 .integrated-meter-result.fail {
     border-left: 4px solid #e74c3c;
+}
+
+.meter-result-container {
+    width: 100%;
+    padding: 20px;
+    margin: 20px 0;
+    opacity: 0;
+    transition: opacity 0.8s ease-in;
+    border-left: 4px solid;
+    border-right: 4px solid;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.meter-result-container.visible {
+    opacity: 1;
+}
+
+.meter-result-container.soul {
+    border-color: #2A66C9;
+}
+
+.meter-result-container.connections {
+    border-color: #7D3CCF;
+}
+
+.meter-result-container.success {
+    border-color: #1F6F50;
+}
+
+.meter-result-container.fail {
+    border-color: #555;
+}
+
+.meter-result-text {
+    font-size: 1.1rem;
+    color: #fff;
+    line-height: 1.6;
+    text-align: left;
+    min-height: 80px;
 }
 
 .next-stop-button {
@@ -456,6 +489,12 @@ body {
 
 .next-stop-button:hover {
     background-color: #2980b9;
+}
+
+.meter-result-container .next-stop-button {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in-out forwards;
+    animation-delay: 0.5s; /* Delay the button appearance */
 }
 
 /* Result Screen */
@@ -727,4 +766,11 @@ body {
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
+}
+
+/* Swing Meter Transitions */
+.swing-meter.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+    pointer-events: none;
 }

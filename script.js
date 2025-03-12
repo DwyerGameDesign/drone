@@ -437,35 +437,62 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (result === 'fail' && currentSelectedChoice.resultFail) {
                 resultText = currentSelectedChoice.resultFail;
             } else {
-                // Default result texts if not specified
-                if (result === 'good') {
-                    resultText = "You executed this perfectly!";
-                } else if (result === 'okay') {
-                    resultText = "You managed reasonably well.";
-                } else {
-                    resultText = "You struggled with this task.";
-                }
+                // Default result texts if not specified - intentionally left empty
+                resultText = "";
             }
         } else {
-            // Fallback if no choice is selected
-            if (result === 'good') {
-                resultText = "You executed this perfectly!";
-            } else if (result === 'okay') {
-                resultText = "You managed reasonably well.";
-            } else {
-                resultText = "You struggled with this task.";
-            }
+            // Fallback if no choice is selected - intentionally left empty
+            resultText = "";
         }
         
-        // Create result element
-        const resultElement = document.createElement('div');
-        resultElement.className = `integrated-meter-result ${result}`;
-        resultElement.textContent = resultText;
-        
-        // Add the result to the swing meter
+        // Fade out the swing meter
         const swingMeter = document.querySelector('.swing-meter');
-        swingMeter.appendChild(resultElement);
+        swingMeter.classList.add('fade-out');
         
+        // Create result container
+        const resultContainer = document.createElement('div');
+        resultContainer.className = `meter-result-container ${currentSelectedChoice.type}`;
+        
+        // If the result is fail, override the border color
+        if (result === 'fail') {
+            resultContainer.classList.add('fail');
+        }
+        
+        // Create result text element
+        const resultTextElement = document.createElement('div');
+        resultTextElement.className = 'meter-result-text';
+        resultContainer.appendChild(resultTextElement);
+        
+        // Add the result container to the swing meter container
+        elements.swingMeterContainer.appendChild(resultContainer);
+        
+        // Wait for the swing meter to fade out before showing the result
+        setTimeout(() => {
+            // Show the result container
+            resultContainer.classList.add('visible');
+            
+            // Typewriter effect for the result text
+            let index = 0;
+            resultTextElement.textContent = ''; // Ensure we start with an empty string
+            
+            const typeNextCharacter = () => {
+                if (index < resultText.length) {
+                    resultTextElement.textContent += resultText.charAt(index);
+                    index++;
+                    setTimeout(typeNextCharacter, 30); // 30ms per character
+                } else {
+                    // Add a "Next Stop" button after the text is fully displayed
+                    addNextStopButton(result, resultContainer);
+                }
+            };
+            
+            // Start the typewriter effect
+            typeNextCharacter();
+        }, 500); // Wait 500ms for the fade-out
+    }
+    
+    // Add the Next Stop button
+    function addNextStopButton(result, resultContainer) {
         // Add a "Next Stop" button
         const nextButton = document.createElement('button');
         nextButton.className = 'next-stop-button';
@@ -478,23 +505,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Hide the swing meter container
                 elements.swingMeterContainer.style.display = 'none';
                 
-                // Remove the result element
-                if (resultElement.parentNode) {
-                    resultElement.parentNode.removeChild(resultElement);
-                }
-                
-                // Remove the next button
-                if (nextButton.parentNode) {
-                    nextButton.parentNode.removeChild(nextButton);
-                }
-                
-                // Show the tap button again for next time
-                elements.tapButton.style.display = 'block';
-                
-                // Reset the tap marker
-                const tapMarker = document.querySelector('.tap-marker');
-                tapMarker.style.display = 'none';
-                tapMarker.classList.remove('good', 'okay', 'fail');
+                // Reset the swing meter for next time
+                resetSwingMeter();
                 
                 // Update the game state
                 updateGameState();
@@ -530,8 +542,40 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
         
-        // Add the button to the swing meter container
-        elements.swingMeterContainer.appendChild(nextButton);
+        // Add the button to the result container
+        resultContainer.appendChild(nextButton);
+    }
+    
+    // Reset the swing meter for next use
+    function resetSwingMeter() {
+        // Remove any result containers
+        const resultContainers = document.querySelectorAll('.meter-result-container');
+        resultContainers.forEach(container => {
+            if (container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+        });
+        
+        // Reset the swing meter
+        const swingMeter = document.querySelector('.swing-meter');
+        swingMeter.classList.remove('fade-out');
+        
+        // Reset the indicator bar
+        const indicatorBar = document.querySelector('.meter-indicator-bar');
+        if (indicatorBar) {
+            indicatorBar.style.left = '0%';
+            indicatorBar.classList.remove('good', 'okay', 'fail');
+        }
+        
+        // Reset the tap marker
+        const tapMarker = document.querySelector('.tap-marker');
+        tapMarker.style.display = 'none';
+        tapMarker.classList.remove('good', 'okay', 'fail');
+        
+        // Show the tap button again for next time
+        if (elements.tapButton) {
+            elements.tapButton.style.display = 'block';
+        }
     }
     
     // Update the decision track
