@@ -453,10 +453,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Determine the result based on position
         let result = 'fail';
-        if (swingPosition >= 60 && swingPosition < 80) {
+        if (swingPosition >= 40 && swingPosition < 80) {
             result = 'good';
-        } else if ((swingPosition >= 40 && swingPosition < 60) || (swingPosition >= 80 && swingPosition < 100)) {
-            result = 'okay';
         }
         
         console.log('Swing meter result:', result);
@@ -486,20 +484,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     default:
                         tapMarker.style.backgroundColor = '#2ecc71'; // Default green
                 }
-            } else if (result === 'okay') {
-                switch(decisionType) {
-                    case 'soul':
-                        tapMarker.style.backgroundColor = '#1a3c78'; // Muted blue for soul okay
-                        break;
-                    case 'connections':
-                        tapMarker.style.backgroundColor = '#4a2378'; // Muted violet for connections okay
-                        break;
-                    case 'success':
-                        tapMarker.style.backgroundColor = '#134230'; // Muted green for success okay
-                        break;
-                    default:
-                        tapMarker.style.backgroundColor = '#ff9933'; // Default orange
-                }
             }
         }
         
@@ -528,20 +512,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         default:
                             indicatorBar.style.backgroundColor = '#2ecc71'; // Default green
                     }
-                } else if (result === 'okay') {
-                    switch(decisionType) {
-                        case 'soul':
-                            indicatorBar.style.backgroundColor = '#1a3c78'; // Muted blue for soul okay
-                            break;
-                        case 'connections':
-                            indicatorBar.style.backgroundColor = '#4a2378'; // Muted violet for connections okay
-                            break;
-                        case 'success':
-                            indicatorBar.style.backgroundColor = '#134230'; // Muted green for success okay
-                            break;
-                        default:
-                            indicatorBar.style.backgroundColor = '#ff9933'; // Default orange
-                    }
                 }
             }
         }
@@ -562,8 +532,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (result === 'good' && currentSelectedChoice.resultGood) {
                 resultText = currentSelectedChoice.resultGood;
-            } else if (result === 'okay' && currentSelectedChoice.resultOkay) {
-                resultText = currentSelectedChoice.resultOkay;
             } else if (result === 'fail' && currentSelectedChoice.resultFail) {
                 resultText = currentSelectedChoice.resultFail;
             }
@@ -572,8 +540,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!resultText) {
                 if (result === 'good') {
                     resultText = "You executed this perfectly!";
-                } else if (result === 'okay') {
-                    resultText = "You managed reasonably well.";
                 } else {
                     resultText = "You struggled with this task.";
                 }
@@ -582,8 +548,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // Fallback if no choice is selected
             if (result === 'good') {
                 resultText = "You executed this perfectly!";
-            } else if (result === 'okay') {
-                resultText = "You managed reasonably well.";
             } else {
                 resultText = "You struggled with this task.";
             }

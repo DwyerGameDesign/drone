@@ -805,20 +805,14 @@
           "title": "STANDARD CHALLENGE",
           "narrative": "Balance is key. Find the right amount of effort without going too far.",
           "zones": [
-            {"type": "poor", "width": 50},
-            {"type": "okay", "width": 50},
+            {"type": "poor", "width": 150},
             {"type": "good", "width": 100},
-            {"type": "okay", "width": 50},
             {"type": "poor", "width": 150}
           ],
           "results": {
             "fail": {
               "text": "TOO WEAK",
               "modifier": -2
-            },
-            "okay": {
-              "text": "ADEQUATE",
-              "modifier": -1
             },
             "good": {
               "text": "PERFECT",
@@ -831,8 +825,7 @@
           "title": "CRITICAL MOMENT",
           "narrative": "Perfect timing required. This is your one chance - a single moment will define everything.",
           "zones": [
-            {"type": "poor", "width": 280},
-            {"type": "okay", "width": 40},
+            {"type": "poor", "width": 320},
             {"type": "good", "width": 80}
           ],
           "results": {
@@ -851,8 +844,7 @@
           "title": "MEASURED RESPONSE",
           "narrative": "Finding balance is crucial. Neither too little nor too much will serve you here.",
           "zones": [
-            {"type": "poor", "width": 240},
-            {"type": "okay", "width": 60},
+            {"type": "poor", "width": 300},
             {"type": "good", "width": 60},
             {"type": "poor", "width": 40}
           ],
@@ -860,10 +852,6 @@
             "fail": {
               "text": "MISSED THE MARK",
               "modifier": -2
-            },
-            "okay": {
-              "text": "CLOSE ENOUGH",
-              "modifier": -1
             },
             "good": {
               "text": "BALANCED",
