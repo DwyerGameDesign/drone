@@ -834,18 +834,35 @@ document.addEventListener('DOMContentLoaded', function() {
             tempDiv.textContent = resultText;
             const sanitizedMessage = tempDiv.innerHTML;
             
-            // Typewriter effect for the result text
+            // Variables for typewriter effect
             let index = 0;
             let displayText = '';
+            let isTyping = true;
             resultTextElement.textContent = ''; // Ensure we start with an empty string
             
+            // Function to complete the typing immediately
+            const completeTyping = () => {
+                if (isTyping) {
+                    isTyping = false;
+                    resultTextElement.innerHTML = sanitizedMessage;
+                    // Add the Next Stop button immediately
+                    addNextStopButton(result, resultContainer);
+                }
+            };
+            
+            // Add click event to skip typing
+            resultTextElement.style.cursor = 'pointer';
+            resultTextElement.addEventListener('click', completeTyping);
+            
             const typeNextCharacter = () => {
-                if (index < sanitizedMessage.length) {
+                if (isTyping && index < sanitizedMessage.length) {
                     displayText += sanitizedMessage.charAt(index);
                     resultTextElement.innerHTML = displayText;
                     index++;
                     setTimeout(typeNextCharacter, 30); // 30ms per character
-                } else {
+                } else if (isTyping) {
+                    // Typing is complete naturally
+                    isTyping = false;
                     // Add a "Next Stop" button after the text is fully displayed
                     addNextStopButton(result, resultContainer);
                 }

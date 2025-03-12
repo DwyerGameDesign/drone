@@ -117,6 +117,10 @@ class DroneManGame {
         this.decisionHistory = [];
         this.lastRandomEventId = null;
         this.currentRandomEvent = null;
+        this.decisionTypes = [];
+        this.performanceResults = [];
+        this.completedSwingMeters = [];
+        this.performanceScore = 0;        
         
         return true;
     }
