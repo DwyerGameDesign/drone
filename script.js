@@ -675,7 +675,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Compensate for reaction time delay by moving back slightly
         // This makes it feel more accurate to when the player intended to tap
-        const reactionTimeCompensation = 3; // Adjust this value as needed
+        const reactionTimeCompensation = 5; // Adjust this value as needed
         const compensatedPosition = Math.max(0, Math.min(100, swingPosition - (swingSpeed * swingDirection * reactionTimeCompensation)));
         
         console.log('Compensated position:', compensatedPosition);
