@@ -1148,6 +1148,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show game over screen
     function showGameOver(success) {
         console.log('Showing game over screen, success:', success);
+        console.log('Game state at game over:', {
+            currentStop: game.currentStop,
+            maxStops: game.maxRounds * game.stopsPerRound,
+            gameOverReason: game.gameOverReason,
+            performanceScore: game.performanceScore,
+            failureThreshold: game.failureThreshold
+        });
+        
         elements.gameOver.style.display = 'flex';
         
         // Set appropriate title based on success or failure
@@ -1158,6 +1166,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Get the game over message
         const gameOverMessage = game.getGameOverMessage(success);
+        console.log('Game over message:', gameOverMessage);
         
         // Clear existing content
         elements.gameOverMessage.textContent = '';
@@ -1289,7 +1298,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Check for game over
         if (game.gameOver) {
             console.log('Game over detected, reason:', game.gameOverReason);
-            showGameOver(game.gameOverReason === 'success');
+            const isSuccess = game.gameOverReason === 'success' || game.currentStop >= game.maxRounds * game.stopsPerRound;
+            console.log('Is success ending:', isSuccess, 'Current stop:', game.currentStop, 'Max stops:', game.maxRounds * game.stopsPerRound);
+            showGameOver(isSuccess);
             return;
         }
         
@@ -1299,6 +1310,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(`All stops completed (${game.currentStop} > ${maxStops}), showing success game over`);
             // Set game over state
             game.gameOver = true;
+            game.gameOverReason = "success";
             showGameOver(true); // Show success ending
             return;
         }

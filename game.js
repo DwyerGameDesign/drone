@@ -237,9 +237,12 @@ class DroneManGame {
         
         // Check if we've reached the end of the journey
         if (this.currentStop >= this.maxRounds * this.stopsPerRound) {
+            console.log('Reached the end of the journey! Setting successful game over.');
             this.gameOver = true;
+            this.gameOverReason = "success"; // Explicitly set success reason
             processedResult.gameOver = true;
             processedResult.success = true;
+            processedResult.reason = "success";
             return processedResult;
         }
         
@@ -620,6 +623,8 @@ class DroneManGame {
 
     // Get game over message
     getGameOverMessage(success) {
+        console.log('Getting game over message, success:', success, 'gameOverReason:', this.gameOverReason);
+        
         if (!success) {
             // Count the types of decisions the player ATTEMPTED
             const soulAttempts = this.decisionHistory.filter(d => d.intendedType === "soul").length;
@@ -656,12 +661,14 @@ class DroneManGame {
             }
         }
         
-        // Count the decision types to determine the dominant path
+        // For success endings, count the decision types to determine the dominant path
         const counts = {
             soul: this.decisionTypes.filter(type => type === "soul").length,
             connections: this.decisionTypes.filter(type => type === "connections").length,
             success: this.decisionTypes.filter(type => type === "success").length
         };
+        
+        console.log('Success ending - Decision type counts:', counts);
         
         // Determine the dominant path
         let dominant = "mixed";
@@ -672,6 +679,8 @@ class DroneManGame {
         } else if (counts.success > counts.soul && counts.success > counts.connections) {
             dominant = "success";
         }
+        
+        console.log('Dominant path for success ending:', dominant);
         
         // Return ending based on dominant path
         if (dominant === "soul") {
