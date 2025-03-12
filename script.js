@@ -78,20 +78,121 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     elements.nextRoundButton.addEventListener('click', function() {
+        console.log('Starting next round...');
+        
+        // Start the next round in the game
         const result = game.startNextRound();
+        
+        // Hide the round complete screen
         elements.roundComplete.style.display = 'none';
+        
+        // Reset any fade-in classes
+        elements.nextRoundButton.classList.remove('fade-in');
+        
+        // Clear any result containers or swing meter elements
+        const resultContainers = document.querySelectorAll('.meter-result-container');
+        resultContainers.forEach(container => {
+            if (container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+        });
+        
+        // Reset the swing meter if it exists
+        const swingMeter = document.querySelector('.swing-meter');
+        if (swingMeter) {
+            swingMeter.classList.remove('fade-out');
+        }
+        
+        // Hide all interaction elements
+        hideAllInteractions();
+        
+        // Display the next narrative
         displayNarrative(result.nextNarrative);
+        
+        // Update the UI to reflect the new round
         updateUI();
     });
     
-    elements.restartButton.addEventListener('click', function() {
+    // Reset the entire game state
+    function resetGameState() {
+        console.log('Resetting game state...');
+        
+        // Reset game state
         game.restart();
-        elements.gameOver.style.display = 'none';
+        
+        // Reset UI elements
         elements.decisionTrack.innerHTML = '';
+        elements.performanceFill.style.width = '0%';
+        elements.performanceFill.style.backgroundColor = '#2ecc71'; // Green for good
+        
+        // Clear any result containers or swing meter elements
+        const resultContainers = document.querySelectorAll('.meter-result-container');
+        resultContainers.forEach(container => {
+            if (container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+        });
+        
+        // Reset the swing meter if it exists
+        const swingMeter = document.querySelector('.swing-meter');
+        if (swingMeter) {
+            swingMeter.classList.remove('fade-out');
+        }
+        
+        // Reset the indicator bar
+        const indicatorBar = document.querySelector('.meter-indicator-bar');
+        if (indicatorBar) {
+            indicatorBar.style.transition = 'left 0.1s linear';
+            indicatorBar.style.left = '0%';
+            indicatorBar.classList.remove('good', 'okay', 'fail');
+            indicatorBar.style.backgroundColor = 'white';
+        }
+        
+        // Reset the tap marker
+        const tapMarker = document.querySelector('.tap-marker');
+        if (tapMarker) {
+            tapMarker.style.display = 'none';
+            tapMarker.classList.remove('good', 'okay', 'fail');
+            tapMarker.style.backgroundColor = 'white';
+        }
+        
+        // Reset any fade-in classes
+        elements.restartButton.classList.remove('fade-in');
+        elements.nextRoundButton.classList.remove('fade-in');
+        
+        // Hide all screens
+        elements.gameOver.style.display = 'none';
+        elements.roundComplete.style.display = 'none';
+        
+        // Hide all interaction elements
+        hideAllInteractions();
+        
+        // Re-initialize the decision track
         initDecisionTrack();
+        
+        // Reset any global variables
+        isTyping = false;
+        skipTyping = false;
+        isSwingMeterMoving = false;
+        swingPosition = 0;
+        swingDirection = 1;
+        currentSelectedChoice = null;
+        
+        // Get the first narrative and display it
         const narrative = game.getCurrentNarrative();
-        displayNarrative(narrative);
+        if (narrative) {
+            displayNarrative(narrative);
+        } else {
+            console.error('Failed to get initial narrative after reset');
+        }
+        
+        // Update the UI to reflect the reset state
         updateUI();
+    }
+    
+    elements.restartButton.addEventListener('click', function() {
+        console.log('Restart button clicked');
+        resetGameState();
     });
     
     // Initialize the decision track with empty cards
@@ -894,6 +995,12 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Showing game over screen, success:', success);
         elements.gameOver.style.display = 'flex';
         
+        // Set appropriate title based on success or failure
+        const gameOverTitle = document.querySelector('#game-over h2');
+        if (gameOverTitle) {
+            gameOverTitle.textContent = success ? "Journey's End" : "Journey Derailed";
+        }
+        
         // Get the game over message
         const gameOverMessage = game.getGameOverMessage(success);
         
@@ -978,7 +1085,7 @@ document.addEventListener('DOMContentLoaded', function() {
         typeNextCharacter();
     }
     
-    // Update game state (adding the missing function)
+    // Update game state
     function updateGameState() {
         console.log('Updating game state');
         
@@ -987,12 +1094,23 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Check for game over
         if (game.gameOver) {
+            console.log('Game over detected, reason:', game.gameOverReason);
             showGameOver(game.gameOverReason === 'success');
+            return;
+        }
+        
+        // Check if all stops are completed (game completed successfully)
+        if (game.currentStop > game.narratives.length) {
+            console.log('All stops completed, showing success game over');
+            showGameOver(true); // Show success ending
+            return;
         }
         
         // Check for round complete
         if (game.currentStop > game.stopsPerRound * game.currentRound) {
+            console.log('Round complete detected');
             showRoundComplete();
+            return;
         }
     }
 });
