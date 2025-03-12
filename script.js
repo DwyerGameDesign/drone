@@ -405,7 +405,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Reset the indicator position
+        // Reset the indicator position and ensure transition is set
+        indicatorBar.style.transition = 'left 0.1s linear';
         indicatorBar.style.left = '0%';
         
         // Start the animation
@@ -448,8 +449,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function stopSwingMeter() {
         console.log('Stopping swing meter at position:', swingPosition);
         
-        // Stop the animation
+        // Stop the animation immediately
         isSwingMeterMoving = false;
+        
+        // Fix the indicator position at the exact tap position
+        const indicatorBar = document.querySelector('.meter-indicator-bar');
+        if (indicatorBar) {
+            indicatorBar.style.transition = 'none'; // Remove transition to prevent any movement
+            indicatorBar.style.left = swingPosition + '%';
+        }
         
         // Determine the result based on position
         let result = 'fail';
@@ -488,7 +496,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Update the indicator bar color based on result and decision type
-        const indicatorBar = document.querySelector('.meter-indicator-bar');
         if (indicatorBar) {
             // Remove any existing result classes
             indicatorBar.classList.remove('good', 'okay', 'fail');
@@ -682,6 +689,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Reset the indicator bar
         const indicatorBar = document.querySelector('.meter-indicator-bar');
         if (indicatorBar) {
+            indicatorBar.style.transition = 'left 0.1s linear'; // Restore transition
             indicatorBar.style.left = '0%';
             indicatorBar.classList.remove('good', 'okay', 'fail');
             indicatorBar.style.backgroundColor = 'white'; // Reset to default white color
