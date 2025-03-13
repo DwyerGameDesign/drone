@@ -775,6 +775,7 @@ document.addEventListener('DOMContentLoaded', function() {
             criticalZone.style.width = `${criticalZoneWidth}%`;
             // Critical zone is always centered within the good zone
             criticalZone.style.left = `${goodZonePosition}%`;
+            criticalZone.style.transform = 'translateX(-50%)';
         }
         
         // Create the solid indicator bar if it doesn't exist
@@ -870,8 +871,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (criticalZone && criticalZone.style.left && criticalZone.style.width) {
+            // Critical zone is centered at the position specified by left
+            const criticalZonePosition = parseFloat(criticalZone.style.left);
             const criticalZoneWidth = parseFloat(criticalZone.style.width);
-            criticalZoneStart = parseFloat(criticalZone.style.left) - (criticalZoneWidth / 2);
+            criticalZoneStart = criticalZonePosition - (criticalZoneWidth / 2);
             criticalZoneEnd = criticalZoneStart + criticalZoneWidth;
         }
         
