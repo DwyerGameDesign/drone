@@ -851,9 +851,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('Result text to display:', resultText);
         
-        // Fade out the swing meter
+        // Hide the swing meter completely instead of just fading it out
         const swingMeter = document.querySelector('.swing-meter');
-        swingMeter.classList.add('fade-out');
+        swingMeter.style.display = 'none';
         
         // Create result container
         const resultContainer = document.createElement('div');
@@ -869,65 +869,65 @@ document.addEventListener('DOMContentLoaded', function() {
         resultTextElement.className = 'meter-result-text';
         resultContainer.appendChild(resultTextElement);
         
-        // Get the choice description element (narrative text)
-        const choiceDescription = elements.choiceDescription;
+        // Replace the swing meter container content with just the result
+        elements.swingMeterContainer.innerHTML = ''; // Clear the container
+        elements.choiceDescription.style.display = 'none'; // Hide the choice description
         
-        // Add the result container right after the choice description
-        if (choiceDescription && choiceDescription.parentNode) {
-            // Insert the result container after the choice description
-            choiceDescription.parentNode.insertBefore(resultContainer, choiceDescription.nextSibling);
-        } else {
-            // Fallback: Add to the swing meter container
-            elements.swingMeterContainer.appendChild(resultContainer);
-        }
+        // Add the result container to the swing meter container
+        elements.swingMeterContainer.appendChild(resultContainer);
         
-        // Wait for the swing meter to fade out before showing the result
-        setTimeout(() => {
-            // Show the result container
-            resultContainer.classList.add('visible');
-            
-            // Create a temporary div to store the full message
-            const tempDiv = document.createElement('div');
-            tempDiv.textContent = resultText;
-            const sanitizedMessage = tempDiv.innerHTML;
-            
-            // Variables for typewriter effect
-            let index = 0;
-            let displayText = '';
-            let isTyping = true;
-            resultTextElement.textContent = ''; // Ensure we start with an empty string
-            
-            // Function to complete the typing immediately
-            const completeTyping = () => {
-                if (isTyping) {
-                    isTyping = false;
-                    resultTextElement.innerHTML = sanitizedMessage;
-                    // Add the Next Stop button immediately
-                    addNextStopButton(result, resultContainer);
-                }
-            };
-            
-            // Add click event to skip typing
-            resultTextElement.style.cursor = 'pointer';
-            resultTextElement.addEventListener('click', completeTyping);
-            
-            const typeNextCharacter = () => {
-                if (isTyping && index < sanitizedMessage.length) {
-                    displayText += sanitizedMessage.charAt(index);
-                    resultTextElement.innerHTML = displayText;
-                    index++;
-                    setTimeout(typeNextCharacter, 30); // 30ms per character
-                } else if (isTyping) {
-                    // Typing is complete naturally
-                    isTyping = false;
-                    // Add a "Next Stop" button after the text is fully displayed
-                    addNextStopButton(result, resultContainer);
-                }
-            };
-            
-            // Start the typewriter effect
-            typeNextCharacter();
-        }, 500); // Wait 500ms for the fade-out
+        // Show the result immediately
+        resultContainer.classList.add('visible');
+        
+        // Create a temporary div to store the full message
+        const tempDiv = document.createElement('div');
+        tempDiv.textContent = resultText;
+        const sanitizedMessage = tempDiv.innerHTML;
+        
+        // Variables for typewriter effect
+        let index = 0;
+        let displayText = '';
+        let isTyping = true;
+        resultTextElement.textContent = ''; // Ensure we start with an empty string
+        
+        // Function to complete the typing immediately
+        const completeTyping = () => {
+            if (isTyping) {
+                isTyping = false;
+                resultTextElement.innerHTML = sanitizedMessage;
+                // Add the Next Stop button immediately
+                addNextStopButton(result, resultContainer);
+            }
+        };
+        
+        // Add click event to skip typing - make sure it's properly attached
+        resultTextElement.style.cursor = 'pointer';
+        resultTextElement.addEventListener('click', completeTyping);
+        
+        // Also make the entire result container tappable to skip typing
+        resultContainer.addEventListener('click', function(e) {
+            // Only trigger if we're still typing and the click wasn't on a child element with its own handler
+            if (isTyping && e.target === resultContainer) {
+                completeTyping();
+            }
+        });
+        
+        const typeNextCharacter = () => {
+            if (isTyping && index < sanitizedMessage.length) {
+                displayText += sanitizedMessage.charAt(index);
+                resultTextElement.innerHTML = displayText;
+                index++;
+                setTimeout(typeNextCharacter, 30); // 30ms per character
+            } else if (isTyping) {
+                // Typing is complete naturally
+                isTyping = false;
+                // Add a "Next Stop" button after the text is fully displayed
+                addNextStopButton(result, resultContainer);
+            }
+        };
+        
+        // Start the typewriter effect
+        typeNextCharacter();
     }
     
     // Add the Next Stop button
@@ -947,6 +947,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Make the entire result container tappable
         resultContainer.style.cursor = 'pointer';
+        
+        // Remove any existing click handlers to prevent duplicates
+        const oldClickHandler = resultContainer.onclick;
+        if (oldClickHandler) {
+            resultContainer.removeEventListener('click', oldClickHandler);
+        }
+        
+        // Add the new click handler
         resultContainer.onclick = function(e) {
             // Prevent clicks on child elements from triggering multiple times
             if (e.target === resultContainer || !nextButton.contains(e.target)) {
@@ -1002,9 +1010,64 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Reset the swing meter
-        const swingMeter = document.querySelector('.swing-meter');
-        swingMeter.classList.remove('fade-out');
+        // Restore the swing meter container structure if it was cleared
+        if (elements.swingMeterContainer.innerHTML === '') {
+            // Recreate the swing meter structure
+            const choiceDescription = document.createElement('div');
+            choiceDescription.id = 'choiceDescription';
+            choiceDescription.className = 'choice-description';
+            elements.swingMeterContainer.appendChild(choiceDescription);
+            elements.choiceDescription = choiceDescription;
+            
+            const swingMeter = document.createElement('div');
+            swingMeter.className = 'swing-meter';
+            
+            const meterBackground = document.createElement('div');
+            meterBackground.id = 'meterBackground';
+            meterBackground.className = 'meter-background';
+            
+            const poorStartZone = document.createElement('div');
+            poorStartZone.className = 'meter-zone poor-start';
+            
+            const goodZone = document.createElement('div');
+            goodZone.className = 'meter-zone good';
+            
+            const poorEndZone = document.createElement('div');
+            poorEndZone.className = 'meter-zone poor-end';
+            
+            const indicatorBar = document.createElement('div');
+            indicatorBar.className = 'meter-indicator-bar';
+            
+            const tapMarker = document.createElement('div');
+            tapMarker.className = 'tap-marker';
+            
+            meterBackground.appendChild(poorStartZone);
+            meterBackground.appendChild(goodZone);
+            meterBackground.appendChild(poorEndZone);
+            meterBackground.appendChild(indicatorBar);
+            meterBackground.appendChild(tapMarker);
+            
+            swingMeter.appendChild(meterBackground);
+            elements.swingMeterContainer.appendChild(swingMeter);
+            
+            const tapInstruction = document.createElement('div');
+            tapInstruction.className = 'tap-instruction';
+            tapInstruction.textContent = 'Tap anywhere to stop';
+            elements.swingMeterContainer.appendChild(tapInstruction);
+            elements.tapInstruction = tapInstruction;
+        } else {
+            // Restore the choice description if it was hidden
+            if (elements.choiceDescription) {
+                elements.choiceDescription.style.display = 'block';
+            }
+            
+            // Restore the swing meter
+            const swingMeter = document.querySelector('.swing-meter');
+            if (swingMeter) {
+                swingMeter.style.display = 'block';
+                swingMeter.classList.remove('fade-out');
+            }
+        }
         
         // Reset the indicator bar
         const indicatorBar = document.querySelector('.meter-indicator-bar');
@@ -1017,13 +1080,19 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Reset the tap marker
         const tapMarker = document.querySelector('.tap-marker');
-        tapMarker.style.display = 'none';
-        tapMarker.classList.remove('good', 'okay', 'fail');
-        tapMarker.style.backgroundColor = 'white'; // Reset to default white color
+        if (tapMarker) {
+            tapMarker.style.display = 'none';
+            tapMarker.classList.remove('good', 'okay', 'fail');
+            tapMarker.style.backgroundColor = 'white'; // Reset to default white color
+        }
         
         // Reset tap button
         if (elements.tapButton) {
             elements.tapButton.style.display = 'none';
+        }
+        
+        // Make sure tap instruction is visible
+        if (elements.tapInstruction) {
             elements.tapInstruction.style.display = 'block';
         }
     }
