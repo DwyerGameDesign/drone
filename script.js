@@ -1367,6 +1367,12 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.restartButton.style.display = 'none';
         elements.restartButton.textContent = 'Start New Journey';
         
+        // Get the instruction element
+        const gameOverInstruction = document.getElementById('gameOverInstruction');
+        if (gameOverInstruction) {
+            gameOverInstruction.style.display = 'none';
+        }
+        
         // Create a temporary div to store the full message
         const tempDiv = document.createElement('div');
         tempDiv.textContent = gameOverMessage;
@@ -1385,12 +1391,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Show the restart button immediately
                 elements.restartButton.style.display = 'block';
                 elements.restartButton.classList.add('fade-in');
+                // Show the instruction
+                if (gameOverInstruction) {
+                    gameOverInstruction.style.display = 'block';
+                    gameOverInstruction.classList.add('fade-in');
+                }
             }
         };
         
         // Add click event to skip typing
         elements.gameOverMessage.style.cursor = 'pointer';
         elements.gameOverMessage.addEventListener('click', completeTyping);
+        
+        // Make the entire game over screen tappable
+        elements.gameOver.addEventListener('click', function(e) {
+            // Only trigger if we're not clicking on a child element with its own handler
+            if (e.target === elements.gameOver) {
+                if (isTyping) {
+                    completeTyping();
+                } else if (elements.restartButton.style.display === 'block') {
+                    // If typing is done and restart button is visible, act as if restart button was clicked
+                    resetGameState();
+                }
+            }
+        });
         
         const typeNextCharacter = () => {
             if (isTyping && index < sanitizedMessage.length) {
@@ -1405,6 +1429,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     elements.restartButton.style.display = 'block';
                     elements.restartButton.classList.add('fade-in');
+                    // Show the instruction
+                    if (gameOverInstruction) {
+                        gameOverInstruction.style.display = 'block';
+                        gameOverInstruction.classList.add('fade-in');
+                    }
                 }, 500);
             }
         };
