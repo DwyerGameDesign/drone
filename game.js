@@ -15,8 +15,9 @@ class DroneManGame {
         this.performanceResults = [];
         this.currentRound = 1;
         this.currentStop = 1;
-        this.maxRounds = 3;
-        this.stopsPerRound = 5;
+        this.logicalStop = 1; // Track the logical stop (1-5) separately from the actual narrative stop
+        this.maxRounds = 1; // Only 1 round with 5 stops
+        this.stopsPerRound = 5; // 5 stops per journey
         this.gameOver = false;
         this.gameOverReason = "";
         this.activePassiveEffects = [];
@@ -36,6 +37,15 @@ class DroneManGame {
         this.loadGameData();
     }
     
+    // Initialize the journey manager after game data is loaded
+    initializeJourneyManager() {
+        if (!this.journeyManager) {
+            console.log('Initializing journey manager');
+            this.journeyManager = new JourneyManager(this);
+            this.journeyManager.initializeJourney();
+        }
+    }
+    
     // Load game data from JSON
     async loadGameData() {
         console.log('Loading game data...');
@@ -47,6 +57,10 @@ class DroneManGame {
             // Process the loaded data
             this.processGameData(cardsData, eventsData);
             console.log('Game data loaded successfully from files');
+            
+            // Initialize the journey manager
+            this.initializeJourneyManager();
+            
             return { success: true };
         } catch (error) {
             console.error('Failed to load game data:', error);
@@ -104,26 +118,62 @@ class DroneManGame {
         });
     }
     
-    // Start or restart the game
-    restart() {
-        console.log('Restarting game...');
-        // Reset resources
-        this.resources = { soul: 0, connections: 0, money: 0 };
+    // Start the game
+    startGame() {
+        console.log('Starting game...');
+        
+        // Reset game state
         this.currentRound = 1;
         this.currentStop = 1;
-        this.gameOver = false;
-        this.gameOverReason = "";
-        this.activePassiveEffects = [];
+        this.logicalStop = 1;
+        this.performanceScore = 0;
+        this.resources = { soul: 0, connections: 0, money: 0 };
         this.decisionHistory = [];
         this.decisionTypes = [];
-        this.performanceResults = [];
-        this.lastRandomEventId = null;
-        this.currentRandomEvent = null;
-        this.performanceScore = 0; // Explicitly reset performance score to 0
-        this.completedSwingMeters = []; // Reset completed swing meters
+        this.gameOver = false;
+        this.gameOverReason = null;
         
-        console.log('Game state reset. Performance score:', this.performanceScore);
-        return true;
+        // Initialize a new journey with randomized stops
+        this.initializeJourneyManager();
+        
+        // Get the first narrative based on the journey
+        const firstNarrative = this.journeyManager.getNarrativeForLogicalStop(1);
+        if (firstNarrative) {
+            this.currentNarrative = firstNarrative;
+            console.log(`Starting game with narrative: ${firstNarrative.title} (Logical Stop: 1, Actual Stop: ${firstNarrative.stop})`);
+            return { success: true, narrative: firstNarrative };
+        } else {
+            console.error('Failed to get first narrative');
+            return { success: false, reason: 'Failed to get first narrative' };
+        }
+    }
+    
+    // Restart the game
+    restart() {
+        console.log('Restarting game...');
+        
+        // Reset game state
+        this.currentRound = 1;
+        this.currentStop = 1;
+        this.logicalStop = 1;
+        this.performanceScore = 0;
+        this.resources = { soul: 0, connections: 0, money: 0 };
+        this.decisionHistory = [];
+        this.decisionTypes = [];
+        this.gameOver = false;
+        this.gameOverReason = null;
+        
+        // Initialize a new journey with randomized stops
+        this.initializeJourneyManager();
+        
+        // Get the first narrative based on the journey
+        const firstNarrative = this.journeyManager.getNarrativeForLogicalStop(1);
+        if (firstNarrative) {
+            this.currentNarrative = firstNarrative;
+            console.log(`Restarted game with narrative: ${firstNarrative.title} (Logical Stop: 1, Actual Stop: ${firstNarrative.stop})`);
+        } else {
+            console.error('Failed to get first narrative for restart');
+        }
     }
     
     // Get the current narrative
@@ -208,7 +258,8 @@ class DroneManGame {
         
         // Add the decision to history with result and effects
         const decision = {
-            stop: this.currentStop,
+            logicalStop: this.logicalStop,
+            actualStop: narrative.stop,
             narrative: narrative.id,
             choice: choice.index,
             swingMeterResult: result, // Store the swing meter result
@@ -218,7 +269,7 @@ class DroneManGame {
         };
         
         // Store the decision type for this stop
-        this.decisionTypes[this.currentStop - 1] = choice.type;
+        this.decisionTypes[this.logicalStop - 1] = choice.type;
         
         // Add to decision history
         this.decisionHistory.push(decision);
@@ -235,8 +286,11 @@ class DroneManGame {
             return processedResult;
         }
         
+        // Increment the logical stop
+        this.logicalStop++;
+        
         // Check if we've reached the end of the journey
-        if (this.currentStop >= this.maxRounds * this.stopsPerRound) {
+        if (this.journeyManager.isJourneyComplete(this.logicalStop)) {
             console.log('Reached the end of the journey! Setting successful game over.');
             this.gameOver = true;
             this.gameOverReason = "success"; // Explicitly set success reason
@@ -246,23 +300,15 @@ class DroneManGame {
             return processedResult;
         }
         
-        // Move to the next stop
-        this.currentStop++;
-        
-        // Check if we've completed a round
-        if ((this.currentStop - 1) % this.stopsPerRound === 0) {
-            this.currentRound++;
-            processedResult.roundComplete = true;
-        }
-        
-        // Find and set the next narrative
-        const nextNarrative = this.narratives.find(n => n.stop === this.currentStop);
+        // Find and set the next narrative based on the journey
+        const nextNarrative = this.journeyManager.getNarrativeForLogicalStop(this.logicalStop);
         if (nextNarrative) {
             this.currentNarrative = nextNarrative;
+            this.currentStop = nextNarrative.stop; // Update the actual stop number
             processedResult.nextNarrative = nextNarrative;
-            console.log(`Next narrative set to stop ${this.currentStop}: ${nextNarrative.title}`);
+            console.log(`Next narrative set to logical stop ${this.logicalStop} (actual stop ${nextNarrative.stop}): ${nextNarrative.title}`);
         } else {
-            console.error(`No narrative found for stop ${this.currentStop}`);
+            console.error(`No narrative found for logical stop ${this.logicalStop}`);
         }
         
         return processedResult;
@@ -708,32 +754,6 @@ class DroneManGame {
     // Get a narrative for a specific stop
     getNarrativeForStop(stop) {
         return this.narratives.find(n => n.stop === stop) || null;
-    }
-
-    // Start a new game
-    startGame() {
-        console.log('Starting new game...');
-        
-        // Reset game state
-        this.resources = { ...this.startingResources };
-        this.decisionTypes = [];
-        this.performanceResults = [];
-        this.currentRound = 1;
-        this.currentStop = 1;
-        this.gameOver = false;
-        this.gameOverReason = "";
-        this.activePassiveEffects = [];
-        this.decisionHistory = [];
-        this.completedSwingMeters = [];
-        this.performanceScore = 0;
-        
-        // Set the current narrative
-        this.currentNarrative = this.getNarrativeForStop(this.currentStop);
-        
-        return {
-            success: true,
-            narrative: this.currentNarrative
-        };
     }
 }
 

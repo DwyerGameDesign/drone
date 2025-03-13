@@ -111,6 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Ensure we're starting from stop 1
         game.currentStop = 1;
+        game.logicalStop = 1;
         game.currentRound = 1;
         game.performanceScore = 0;
         game.decisionHistory = [];
@@ -124,6 +125,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Loading fresh game data...');
             game.loadGameData();
         }
+        
+        // Initialize journey manager
+        game.initializeJourneyManager();
         
         // Initialize journey track
         updateJourneyTrack();
@@ -142,7 +146,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Fallback: Try to get the first narrative directly
             if (game.narratives && game.narratives.length > 0) {
-                const firstNarrative = game.narratives.find(n => n.stop === 1);
+                const firstActualStop = game.journeyManager.getActualStop(1);
+                const firstNarrative = game.narratives.find(n => n.stop === firstActualStop);
                 if (firstNarrative) {
                     console.log('Using fallback first narrative:', firstNarrative.title);
                     // Ensure the current narrative is set
@@ -191,11 +196,12 @@ document.addEventListener('DOMContentLoaded', function() {
         game.restart();
         
         // Explicitly ensure we're at stop 1 and performance score is 0
-        if (game.currentStop !== 1 || game.performanceScore !== 0) {
+        if (game.logicalStop !== 1 || game.performanceScore !== 0) {
             console.warn('Game did not reset properly, forcing reset...');
-            console.warn('Current stop:', game.currentStop, 'Performance score:', game.performanceScore);
+            console.warn('Current logical stop:', game.logicalStop, 'Performance score:', game.performanceScore);
             
             game.currentStop = 1;
+            game.logicalStop = 1;
             game.currentRound = 1;
             game.performanceScore = 0;
             game.decisionHistory = [];
@@ -205,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function() {
             game.gameOverReason = null;
         }
         
-        console.log('Game reset to stop:', game.currentStop, 'Performance score:', game.performanceScore);
+        console.log('Game reset to logical stop:', game.logicalStop, 'Performance score:', game.performanceScore);
         
         // Reset UI elements
         const journeyTrack = document.getElementById('journeyTrack');
@@ -279,7 +285,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Try multiple methods to get the first narrative
             if (game.narratives && game.narratives.length > 0) {
-                firstNarrative = game.narratives.find(n => n.stop === 1);
+                const firstActualStop = game.journeyManager.getActualStop(1);
+                firstNarrative = game.narratives.find(n => n.stop === firstActualStop);
                 console.log('Found first narrative directly:', firstNarrative?.title);
             }
             
@@ -1175,9 +1182,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         journeyTrack.innerHTML = '';
         
-        // Get the total number of stops
-        const totalStops = game.maxRounds * game.stopsPerRound;
-        console.log('Total stops:', totalStops, 'Current stop:', game.currentStop);
+        // Get the total number of stops in the journey
+        const totalStops = game.journeyManager.getTotalStops();
+        console.log('Total stops:', totalStops, 'Current logical stop:', game.logicalStop);
         
         if (!totalStops || totalStops <= 0) {
             console.warn('Invalid total stops:', totalStops);
@@ -1198,19 +1205,19 @@ document.addEventListener('DOMContentLoaded', function() {
             station.dataset.stop = i;
             
             // Add completed class if this stop has been passed
-            if (i < game.currentStop) {
+            if (i < game.logicalStop) {
                 station.classList.add('completed');
                 
-                // Find the decision for this stop
-                const decision = game.decisionHistory.find(d => d.stop === i);
+                // Find the decision for this logical stop
+                const decision = game.decisionHistory.find(d => d.logicalStop === i);
                 if (decision) {
                     // Add decision type class
-                    station.classList.add(decision.type || 'standard');
+                    station.classList.add(decision.intendedType || 'standard');
                 }
             }
             
             // Add current class if this is the current stop
-            if (i === game.currentStop) {
+            if (i === game.logicalStop) {
                 station.classList.add('current');
             }
             
@@ -1260,12 +1267,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Handle round complete
-        if (result.roundComplete) {
-            showRoundComplete();
-            return;
-        }
-        
         // Handle random event
         if (result.randomEvent) {
             displayRandomEvent(result.randomEvent);
@@ -1292,9 +1293,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.warn('No next narrative found in result:', result);
             
             // Try to get the next narrative manually
-            const currentStop = game.currentStop;
-            console.log('Current game stop:', currentStop);
-            const manualNextNarrative = game.narratives.find(n => n.stop === currentStop);
+            const logicalStop = game.logicalStop;
+            console.log('Current logical stop:', logicalStop);
+            const manualNextNarrative = game.journeyManager.getNarrativeForLogicalStop(logicalStop);
             
             if (manualNextNarrative) {
                 console.log('Found manual next narrative:', manualNextNarrative);
@@ -1303,7 +1304,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Display the next narrative with typewriter effect
                 displayNarrative(manualNextNarrative);
             } else {
-                console.error('Cannot find next narrative for stop:', currentStop);
+                console.error('Cannot find next narrative for logical stop:', logicalStop);
             }
         }
     }
@@ -1312,8 +1313,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function showGameOver(success) {
         console.log('Showing game over screen, success:', success);
         console.log('Game state at game over:', {
+            logicalStop: game.logicalStop,
             currentStop: game.currentStop,
-            maxStops: game.maxRounds * game.stopsPerRound,
+            totalStops: game.journeyManager.getTotalStops(),
             gameOverReason: game.gameOverReason,
             performanceScore: game.performanceScore,
             failureThreshold: game.failureThreshold
@@ -1322,9 +1324,8 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.gameOver.style.display = 'flex';
         
         // Set appropriate title based on success or failure
-        const gameOverTitle = document.querySelector('#game-over h2');
-        if (gameOverTitle) {
-            gameOverTitle.textContent = success ? "Journey's End" : "Journey Derailed";
+        if (elements.gameOverTitle) {
+            elements.gameOverTitle.textContent = success ? "Journey's End" : "Journey Derailed";
         }
         
         // Get the game over message
@@ -1336,7 +1337,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Hide the restart button initially
         elements.restartButton.style.display = 'none';
-        elements.restartButton.textContent = 'Reboard Train';
+        elements.restartButton.textContent = 'Start New Journey';
         
         // Create a temporary div to store the full message
         const tempDiv = document.createElement('div');
@@ -1462,27 +1463,20 @@ document.addEventListener('DOMContentLoaded', function() {
         // Check for game over
         if (game.gameOver) {
             console.log('Game over detected, reason:', game.gameOverReason);
-            const isSuccess = game.gameOverReason === 'success' || game.currentStop >= game.maxRounds * game.stopsPerRound;
-            console.log('Is success ending:', isSuccess, 'Current stop:', game.currentStop, 'Max stops:', game.maxRounds * game.stopsPerRound);
+            const isSuccess = game.gameOverReason === 'success';
+            console.log('Is success ending:', isSuccess, 'Current logical stop:', game.logicalStop, 'Total stops:', game.journeyManager.getTotalStops());
             showGameOver(isSuccess);
             return;
         }
         
         // Check if all stops are completed (game completed successfully)
-        const maxStops = game.maxRounds * game.stopsPerRound;
-        if (game.currentStop > maxStops) {
-            console.log(`All stops completed (${game.currentStop} > ${maxStops}), showing success game over`);
+        const totalStops = game.journeyManager.getTotalStops();
+        if (game.logicalStop > totalStops) {
+            console.log(`All stops completed (${game.logicalStop} > ${totalStops}), showing success game over`);
             // Set game over state
             game.gameOver = true;
             game.gameOverReason = "success";
             showGameOver(true); // Show success ending
-            return;
-        }
-        
-        // Check for round complete
-        if (game.currentStop > game.stopsPerRound * game.currentRound) {
-            console.log('Round complete detected');
-            showRoundComplete();
             return;
         }
     }
