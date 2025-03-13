@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const restartGameMenu = document.getElementById('restartGameMenu');
     const aboutGameMenu = document.getElementById('aboutGameMenu');
     const helpMenu = document.getElementById('helpMenu');
+    const recordButton = document.getElementById('recordButton');
 
     console.log('Menu elements:', {
         menuButton: !!menuButton,
@@ -22,7 +23,8 @@ document.addEventListener('DOMContentLoaded', function() {
         closeMenu: !!closeMenu,
         restartGameMenu: !!restartGameMenu,
         aboutGameMenu: !!aboutGameMenu,
-        helpMenu: !!helpMenu
+        helpMenu: !!helpMenu,
+        recordButton: !!recordButton
     });
 
     // Ensure menu is closed by default
@@ -57,6 +59,14 @@ document.addEventListener('DOMContentLoaded', function() {
         menuOverlay.classList.remove('open');
         resetGameState();
     });
+
+    // Record button event listener
+    if (recordButton) {
+        recordButton.addEventListener('click', () => {
+            console.log('Record button clicked');
+            showRecordCollection();
+        });
+    }
 
     // Record Collection menu option
     const recordCollectionMenu = document.getElementById('recordCollectionMenu');
@@ -1937,6 +1947,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Show the record collection screen
         recordCollection.style.display = 'flex';
+        // Add the open class after a small delay to trigger the animation
+        setTimeout(() => {
+            recordCollection.classList.add('open');
+        }, 10);
         
         // Get all achievements
         const allAchievements = game.achievementSystem.getAllAchievements();
@@ -1987,7 +2001,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const recordCollection = document.getElementById('recordCollection');
         if (recordCollection) {
-            recordCollection.style.display = 'none';
+            // Remove the open class to trigger the closing animation
+            recordCollection.classList.remove('open');
+            
+            // Wait for the animation to complete before hiding the element
+            setTimeout(() => {
+                recordCollection.style.display = 'none';
+            }, 300); // Match the transition duration in CSS
         }
     }
     

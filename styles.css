@@ -68,13 +68,32 @@ header {
     text-transform: uppercase;
 }
 
-.menu-button {
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.menu-button, .record-button {
     background: none;
     border: none;
     color: var(--text-color);
     font-size: 1.5rem;
     cursor: pointer;
     padding: 0.25rem;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.record-button {
+    color: var(--accent-color);
+}
+
+.menu-button:hover, .record-button:hover {
+    transform: scale(1.1);
+}
+
+.record-button:hover {
+    color: #ffcc00;
 }
 
 /* Journey track styles */
@@ -1263,6 +1282,14 @@ header {
     padding: 20px;
     box-sizing: border-box;
     overflow-y: auto;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.record-collection-screen.open {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .collection-header {
@@ -1272,6 +1299,8 @@ header {
     width: 100%;
     max-width: 800px;
     margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
 }
 
 .collection-header h2 {
@@ -1299,6 +1328,9 @@ header {
     margin-bottom: 20px;
     width: 100%;
     max-width: 800px;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 10px;
 }
 
 .collection-tab {
@@ -1309,11 +1341,18 @@ header {
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 14px;
+    border: 1px solid transparent;
 }
 
 .collection-tab.active {
+    background-color: var(--accent-color);
+    color: #000;
+    font-weight: bold;
+}
+
+.collection-tab:hover:not(.active) {
     background-color: rgba(255, 255, 255, 0.2);
-    color: #fff;
+    border-color: var(--accent-color);
 }
 
 .album-collection-grid {
@@ -1323,6 +1362,9 @@ header {
     width: 100%;
     max-width: 800px;
     margin-bottom: 20px;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
 }
 
 .collection-album {
@@ -1331,10 +1373,14 @@ header {
     aspect-ratio: 1;
     cursor: pointer;
     transition: transform 0.2s ease;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 .collection-album:hover {
     transform: scale(1.05);
+    z-index: 2;
 }
 
 .collection-album-cover {
@@ -1342,6 +1388,9 @@ header {
     height: 100%;
     position: relative;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .collection-album-info {
@@ -1396,19 +1445,23 @@ header {
 }
 
 .return-to-game-button {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: var(--accent-color);
+    color: #000;
+    border: none;
     border-radius: 20px;
-    padding: 10px 20px;
+    padding: 12px 25px;
     font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin-top: 10px;
+    transition: all 0.2s ease;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .return-to-game-button:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: #ffcc00;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Album Shine Effect */
