@@ -93,7 +93,7 @@ class JourneyManager {
     
     // Check if the journey is complete
     isJourneyComplete(currentLogicalStop) {
-        return currentLogicalStop >= this.journeyStructure.length;
+        return currentLogicalStop > this.journeyStructure.length;
     }
     
     // Get the total number of stops in the journey

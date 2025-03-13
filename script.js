@@ -1338,8 +1338,16 @@ document.addEventListener('DOMContentLoaded', function() {
             totalStops: game.journeyManager.getTotalStops(),
             gameOverReason: game.gameOverReason,
             performanceScore: game.performanceScore,
-            failureThreshold: game.failureThreshold
+            failureThreshold: game.failureThreshold,
+            decisionHistory: game.decisionHistory.length,
+            decisionTypes: game.decisionTypes
         });
+        
+        // Force success to true if gameOverReason is "success"
+        if (game.gameOverReason === "success") {
+            console.log('Forcing success to true because gameOverReason is "success"');
+            success = true;
+        }
         
         elements.gameOver.style.display = 'flex';
         
@@ -1496,6 +1504,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Set game over state
             game.gameOver = true;
             game.gameOverReason = "success";
+            console.log('Set gameOverReason to "success" in updateGameState');
             showGameOver(true); // Show success ending
             return;
         }

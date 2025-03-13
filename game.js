@@ -294,6 +294,7 @@ class DroneManGame {
             console.log('Reached the end of the journey! Setting successful game over.');
             this.gameOver = true;
             this.gameOverReason = "success"; // Explicitly set success reason
+            console.log('Set gameOverReason to "success"');
             processedResult.gameOver = true;
             processedResult.success = true;
             processedResult.reason = "success";
