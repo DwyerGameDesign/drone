@@ -368,6 +368,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Wait for game data to load
     waitForGameData(game).then(() => {
+        // Ensure UI elements are visible
+        const header = document.querySelector('header');
+        if (header) {
+            header.style.display = 'flex';
+        }
+        
+        const journeyTrackContainer = document.querySelector('.journey-track');
+        if (journeyTrackContainer) {
+            journeyTrackContainer.style.display = 'flex';
+        }
+        
         // Start the game
         initGame();
     }).catch(error => {
@@ -486,8 +497,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear existing cards
         elements.choiceContainer.innerHTML = '';
         elements.choiceContainer.style.display = 'flex';
-        elements.choiceContainer.style.opacity = '0';
-        elements.choiceContainer.style.transform = 'translateY(10px)';
+        elements.choiceContainer.style.opacity = '1';
+        elements.choiceContainer.style.transform = 'translateY(0)';
         
         if (!choices || choices.length === 0) {
             console.warn('No choices to display');
@@ -546,12 +557,6 @@ document.addEventListener('DOMContentLoaded', function() {
             card.appendChild(content);
             elements.choiceContainer.appendChild(card);
         });
-        
-        // Ensure the choice container is visible with animation
-        setTimeout(() => {
-            elements.choiceContainer.style.opacity = '1';
-            elements.choiceContainer.style.transform = 'translateY(0)';
-        }, 100);
     }
     
     // Handle card selection

@@ -30,6 +30,8 @@ body {
     padding: 0;
     height: 100vh;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .container {
@@ -40,6 +42,7 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    width: 100%;
 }
 
 /* Header styles */
@@ -50,6 +53,8 @@ header {
     padding: 0.5rem 0;
     position: relative;
     margin-bottom: 0.5rem;
+    background-color: var(--background-color);
+    z-index: 10;
 }
 
 .game-title {
@@ -57,6 +62,7 @@ header {
     font-weight: bold;
     margin: 0;
     color: var(--accent-color);
+    text-transform: uppercase;
 }
 
 .menu-button {
@@ -65,6 +71,7 @@ header {
     color: var(--text-color);
     font-size: 1.5rem;
     cursor: pointer;
+    padding: 0.25rem;
 }
 
 /* Journey track styles */
@@ -80,6 +87,8 @@ header {
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 0.5rem;
     padding: 0.75rem 0.5rem;
+    position: relative;
+    z-index: 5;
 }
 
 .journey-track::-webkit-scrollbar {
@@ -189,11 +198,11 @@ header {
     flex-direction: column;
     gap: 0.75rem;
     margin-top: 1rem;
-    opacity: 0;
-    transform: translateY(10px);
+    opacity: 1;
+    transform: translateY(0);
     transition: opacity 0.3s, transform 0.3s;
     overflow-y: auto;
-    max-height: 30vh;
+    max-height: 40vh;
     padding-right: 0.5rem;
     scrollbar-width: thin;
     scrollbar-color: var(--accent-color) var(--primary-color);
