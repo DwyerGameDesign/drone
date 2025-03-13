@@ -39,6 +39,7 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 /* Header styles */
@@ -48,6 +49,7 @@ header {
     align-items: center;
     padding: 0.5rem 0;
     position: relative;
+    margin-bottom: 0.5rem;
 }
 
 .game-title {
@@ -73,6 +75,15 @@ header {
     overflow-x: auto;
     padding: 0.5rem 0;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 0.5rem;
+    padding: 0.75rem 0.5rem;
+}
+
+.journey-track::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
 }
 
 .journey-label {
@@ -81,12 +92,14 @@ header {
     margin-right: 0.5rem;
     color: var(--text-color);
     opacity: 0.7;
+    white-space: nowrap;
 }
 
 .track {
     display: flex;
     align-items: center;
     flex-grow: 1;
+    min-width: min-content;
 }
 
 .station {
@@ -96,6 +109,7 @@ header {
     background-color: #555;
     margin: 0 0.5rem;
     position: relative;
+    flex-shrink: 0;
 }
 
 .station.current {
@@ -123,6 +137,7 @@ header {
     height: 2px;
     background-color: #555;
     flex-grow: 1;
+    min-width: 1rem;
 }
 
 /* Narrative card styles */
@@ -134,6 +149,25 @@ header {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     max-height: 35vh;
     overflow-y: auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color) var(--primary-color);
+}
+
+.narrative-card::-webkit-scrollbar {
+    width: 6px;
+}
+
+.narrative-card::-webkit-scrollbar-track {
+    background: var(--primary-color);
+    border-radius: 3px;
+}
+
+.narrative-card::-webkit-scrollbar-thumb {
+    background-color: var(--accent-color);
+    border-radius: 3px;
 }
 
 .narrative-title {
@@ -155,6 +189,28 @@ header {
     flex-direction: column;
     gap: 0.75rem;
     margin-top: 1rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s, transform 0.3s;
+    overflow-y: auto;
+    max-height: 30vh;
+    padding-right: 0.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color) var(--primary-color);
+}
+
+.choice-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.choice-container::-webkit-scrollbar-track {
+    background: var(--primary-color);
+    border-radius: 3px;
+}
+
+.choice-container::-webkit-scrollbar-thumb {
+    background-color: var(--accent-color);
+    border-radius: 3px;
 }
 
 .card {
@@ -587,7 +643,7 @@ header {
     width: 80%;
     height: 100%;
     background-color: var(--primary-color);
-    z-index: 200;
+    z-index: 1000;
     transition: right 0.3s ease;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
     padding: 1rem;
@@ -635,6 +691,8 @@ header {
     background-color: rgba(255, 255, 255, 0.1);
     cursor: pointer;
     transition: background-color 0.2s;
+    color: var(--text-color);
+    font-weight: 500;
 }
 
 .menu-item:hover, .menu-item:active {
@@ -648,7 +706,7 @@ header {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 199;
+    z-index: 999;
     display: none;
 }
 

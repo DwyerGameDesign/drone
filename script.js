@@ -15,18 +15,39 @@ document.addEventListener('DOMContentLoaded', function() {
     const aboutGameMenu = document.getElementById('aboutGameMenu');
     const helpMenu = document.getElementById('helpMenu');
 
+    console.log('Menu elements:', {
+        menuButton: !!menuButton,
+        menuPanel: !!menuPanel,
+        menuOverlay: !!menuOverlay,
+        closeMenu: !!closeMenu,
+        restartGameMenu: !!restartGameMenu,
+        aboutGameMenu: !!aboutGameMenu,
+        helpMenu: !!helpMenu
+    });
+
+    // Ensure menu is closed by default
+    if (menuPanel) {
+        menuPanel.classList.remove('open');
+    }
+    if (menuOverlay) {
+        menuOverlay.classList.remove('open');
+    }
+
     // Menu event listeners
     menuButton.addEventListener('click', () => {
+        console.log('Menu button clicked');
         menuPanel.classList.add('open');
         menuOverlay.classList.add('open');
     });
 
     closeMenu.addEventListener('click', () => {
+        console.log('Close menu clicked');
         menuPanel.classList.remove('open');
         menuOverlay.classList.remove('open');
     });
 
     menuOverlay.addEventListener('click', () => {
+        console.log('Menu overlay clicked');
         menuPanel.classList.remove('open');
         menuOverlay.classList.remove('open');
     });
@@ -460,9 +481,18 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Display decision cards for the player to choose from
     function displayChoiceCards(choices) {
+        console.log('Displaying choice cards:', choices);
+        
         // Clear existing cards
         elements.choiceContainer.innerHTML = '';
         elements.choiceContainer.style.display = 'flex';
+        elements.choiceContainer.style.opacity = '0';
+        elements.choiceContainer.style.transform = 'translateY(10px)';
+        
+        if (!choices || choices.length === 0) {
+            console.warn('No choices to display');
+            return;
+        }
         
         // Add a card for each choice
         choices.forEach((choice, index) => {
@@ -1075,9 +1105,25 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Updating journey track');
         
         const journeyTrack = document.getElementById('journeyTrack');
+        if (!journeyTrack) {
+            console.error('Journey track element not found');
+            return;
+        }
+        
         journeyTrack.innerHTML = '';
         
+        // Get the total number of stops
         const totalStops = game.maxRounds * game.stopsPerRound;
+        console.log('Total stops:', totalStops, 'Current stop:', game.currentStop);
+        
+        if (!totalStops || totalStops <= 0) {
+            console.warn('Invalid total stops:', totalStops);
+            // Add a placeholder station if no valid stops
+            const station = document.createElement('div');
+            station.className = 'station current';
+            journeyTrack.appendChild(station);
+            return;
+        }
         
         // Create track line elements between stations
         for (let i = 1; i <= totalStops; i++) {
@@ -1118,8 +1164,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Scroll to current station
         const currentStation = journeyTrack.querySelector('.station.current');
         if (currentStation) {
-            const scrollPosition = currentStation.offsetLeft - (journeyTrack.offsetWidth / 2) + (currentStation.offsetWidth / 2);
-            journeyTrack.scrollLeft = Math.max(0, scrollPosition);
+            setTimeout(() => {
+                const scrollPosition = currentStation.offsetLeft - (journeyTrack.offsetWidth / 2) + (currentStation.offsetWidth / 2);
+                journeyTrack.scrollLeft = Math.max(0, scrollPosition);
+            }, 100);
         }
     }
     
