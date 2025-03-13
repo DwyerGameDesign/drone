@@ -1277,22 +1277,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 station.classList.add('completed');
                 
                 // Find the decision for this logical stop
-                const decision = game.decisionHistory.find(d => d.logicalStop === i);
+                const decision = game.decisionHistory.find(d => d.stop === i);
                 console.log(`Looking for decision at logical stop ${i}:`, decision);
                 
                 if (decision) {
                     console.log(`Decision for logical stop ${i}:`, decision);
-                    console.log(`Decision type: ${decision.intendedType}, Result: ${decision.swingMeterResult}`);
+                    console.log(`Decision type: ${decision.narrativeType}, Success: ${decision.success}`);
                     
                     // Check if the swing meter was successful
-                    if (decision.swingMeterResult === 'fail') {
+                    if (!decision.success) {
                         // If failed, add the fail class to show an X
                         station.classList.add('fail');
                         console.log(`Adding fail class to station ${i}`);
                     } else {
                         // If successful, add the decision type class for proper coloring
-                        station.classList.add(decision.intendedType || 'standard');
-                        console.log(`Adding ${decision.intendedType || 'standard'} class to station ${i}`);
+                        station.classList.add(decision.narrativeType || 'standard');
+                        console.log(`Adding ${decision.narrativeType || 'standard'} class to station ${i}`);
                     }
                 } else {
                     console.warn(`No decision found for logical stop ${i}`);
