@@ -1765,6 +1765,12 @@ document.addEventListener('DOMContentLoaded', function() {
             albumShine.className = 'album-shine';
             albumCover.appendChild(albumShine);
             
+            // Add unlocked badge
+            const unlockedBadge = document.createElement('div');
+            unlockedBadge.className = 'unlocked-badge';
+            unlockedBadge.textContent = 'UNLOCKED';
+            album.appendChild(unlockedBadge);
+            
             // Add tooltip
             const tooltip = document.createElement('div');
             tooltip.className = 'album-tooltip';
@@ -2040,30 +2046,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 const albumShine = document.createElement('div');
                 albumShine.className = 'album-shine';
                 albumCover.appendChild(albumShine);
+                
+                // Add unlocked badge
+                const unlockedBadge = document.createElement('div');
+                unlockedBadge.className = 'unlocked-badge';
+                unlockedBadge.textContent = 'UNLOCKED';
+                album.appendChild(unlockedBadge);
             } else {
                 // Locked album
                 albumCover.classList.add('locked-album');
             }
             
-            // Add album info (only visible for unlocked achievements)
-            if (achievement.unlocked) {
-                const albumInfo = document.createElement('div');
-                albumInfo.className = 'collection-album-info';
-                
-                const albumTitle = document.createElement('div');
-                albumTitle.className = 'collection-album-title';
-                albumTitle.textContent = achievement.title;
-                
-                const albumDescription = document.createElement('div');
-                albumDescription.className = 'collection-album-description';
-                albumDescription.textContent = achievement.description;
-                
-                albumInfo.appendChild(albumTitle);
-                albumInfo.appendChild(albumDescription);
-                album.appendChild(albumInfo);
-            }
+            // Add album info (always visible for all achievements)
+            const albumInfo = document.createElement('div');
+            albumInfo.className = 'collection-album-info';
+            
+            const albumTitle = document.createElement('div');
+            albumTitle.className = 'collection-album-title';
+            albumTitle.textContent = achievement.title;
+            
+            const albumDescription = document.createElement('div');
+            albumDescription.className = 'collection-album-description';
+            albumDescription.textContent = achievement.unlocked ? achievement.description : achievement.description.replace(/Complete|Choose|Fail|Visit/i, "???");
+            
+            albumInfo.appendChild(albumTitle);
+            albumInfo.appendChild(albumDescription);
             
             album.appendChild(albumCover);
+            album.appendChild(albumInfo);
             albumCollectionGrid.appendChild(album);
         });
     }
