@@ -21,6 +21,7 @@
     padding: 0;
 }
 
+/* Mobile-first styles */
 body {
     font-family: 'Roboto', sans-serif;
     background-color: var(--background-color);
@@ -28,15 +29,17 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Prevent scrolling on mobile */
 }
 
 .container {
     max-width: 100%;
-    margin: 0 auto;
+    margin: 0;
     padding: 0.5rem;
     height: 100vh;
     display: flex;
@@ -723,18 +726,24 @@ header {
     display: block;
 }
 
-/* Media queries for responsive design */
-@media (max-width: 768px) {
+/* Small mobile devices */
+@media (max-width: 360px) {
     .container {
-        padding: 0.5rem;
+        padding: 0.25rem;
     }
     
     .narrative-card {
+        padding: 0.75rem;
         max-height: 30vh;
     }
     
+    .choice-container {
+        gap: 0.5rem;
+        max-height: 45vh;
+    }
+    
     .card {
-        padding: 0.75rem;
+        padding: 0.5rem;
     }
     
     .card-title {
@@ -743,6 +752,157 @@ header {
     
     .card-content {
         font-size: 0.8rem;
+    }
+}
+
+/* Desktop styles */
+@media (min-width: 768px) {
+    body {
+        background-color: #121212;
+        background-image: 
+            linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
+        padding: 1rem 0;
+        height: 100vh;
+        overflow: auto; /* Allow scrolling on desktop */
+    }
+    
+    .container {
+        max-width: 768px;
+        margin: 2rem auto;
+        padding: 1rem;
+        box-shadow: 
+            0 0 20px rgba(0, 0, 0, 0.3),
+            0 0 60px rgba(243, 156, 18, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 0.5rem;
+        height: calc(100vh - 4rem);
+        max-height: 900px;
+        overflow: hidden;
+    }
+    
+    .narrative-card {
+        max-height: 40vh;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .narrative-title {
+        font-size: 1.4rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .narrative-text {
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+    
+    .choice-container {
+        max-height: 35vh;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+        border-left-width: 6px;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .card-content {
+        font-size: 1rem;
+    }
+    
+    .swing-meter-container {
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        border-top-width: 6px;
+        margin-top: 1.5rem;
+    }
+    
+    .swing-meter {
+        height: 4rem;
+        border-radius: 0.5rem;
+    }
+    
+    .tap-button {
+        padding: 1.25rem;
+        font-size: 1.2rem;
+        border-radius: 0.5rem;
+    }
+    
+    .journey-track {
+        margin: 0.75rem 0;
+        padding: 1rem 0.75rem;
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 0.75rem;
+    }
+    
+    .station {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin: 0 0.75rem;
+    }
+    
+    .track-line {
+        height: 3px;
+    }
+    
+    .journey-label {
+        font-size: 0.85rem;
+        margin-right: 1rem;
+    }
+    
+    header {
+        padding: 0.75rem 0;
+        margin-bottom: 1rem;
+    }
+    
+    .game-title {
+        font-size: 2rem;
+        letter-spacing: 1px;
+    }
+    
+    .menu-button {
+        font-size: 1.75rem;
+        padding: 0.5rem;
+    }
+    
+    .narrative-card::-webkit-scrollbar,
+    .choice-container::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .narrative-card::-webkit-scrollbar-thumb,
+    .choice-container::-webkit-scrollbar-thumb {
+        background-color: var(--accent-color);
+        border-radius: 4px;
+    }
+    
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .tap-button:hover {
+        background-color: #e67e22;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 800px;
     }
 }
 
