@@ -6,6 +6,47 @@ document.addEventListener('DOMContentLoaded', function() {
     const game = new DroneManGame();
     window.gameInstance = game; // Make it globally accessible for swing meter
     
+    // Menu functionality
+    const menuButton = document.getElementById('menuButton');
+    const menuPanel = document.getElementById('menuPanel');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const closeMenu = document.getElementById('closeMenu');
+    const restartGameMenu = document.getElementById('restartGameMenu');
+    const aboutGameMenu = document.getElementById('aboutGameMenu');
+    const helpMenu = document.getElementById('helpMenu');
+
+    // Menu event listeners
+    menuButton.addEventListener('click', () => {
+        menuPanel.classList.add('open');
+        menuOverlay.classList.add('open');
+    });
+
+    closeMenu.addEventListener('click', () => {
+        menuPanel.classList.remove('open');
+        menuOverlay.classList.remove('open');
+    });
+
+    menuOverlay.addEventListener('click', () => {
+        menuPanel.classList.remove('open');
+        menuOverlay.classList.remove('open');
+    });
+
+    restartGameMenu.addEventListener('click', () => {
+        menuPanel.classList.remove('open');
+        menuOverlay.classList.remove('open');
+        resetGameState();
+    });
+
+    aboutGameMenu.addEventListener('click', () => {
+        // Show about information
+        alert('Drone Man: The Journey\n\nNavigate through life\'s challenges as a delivery drone, making decisions that affect your soul, connections, and success. Every choice matters in this unique narrative experience.');
+    });
+
+    helpMenu.addEventListener('click', () => {
+        // Show help information
+        alert('How to Play:\n\n1. Read each situation carefully\n2. Choose your response\n3. Time your action using the swing meter\n4. Watch your journey progress\n\nTip: Click/tap text to skip animations');
+    });
+    
     // UI Elements
     const elements = {
         roundNumber: document.getElementById('round-number'),
@@ -465,10 +506,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const decisionType = choice.decisionType || (index === 0 ? 'soul' : index === 1 ? 'connections' : 'success');
             
             const card = document.createElement('div');
-            card.className = 'choice-card ' + decisionType;
-            
-            const header = document.createElement('div');
-            header.className = 'card-header';
+            card.className = 'card ' + decisionType;
             
             const title = document.createElement('div');
             title.className = 'card-title';
@@ -478,23 +516,45 @@ document.addEventListener('DOMContentLoaded', function() {
             content.className = 'card-content';
             content.textContent = choice.text;
             
-            header.appendChild(title);
-            card.appendChild(header);
-            card.appendChild(content);
-            
             // Store choice data
             card.dataset.index = index;
             card.dataset.type = decisionType;
             
             // Add click handler
             card.addEventListener('click', function() {
+                // Add active class to show selection
+                const allCards = elements.choiceContainer.querySelectorAll('.card');
+                allCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                
+                // Handle the selection
                 handleCardSelection(card);
             });
             
+            // Add ripple effect for touch feedback
+            card.addEventListener('touchstart', function(e) {
+                const rect = card.getBoundingClientRect();
+                const x = e.touches[0].clientX - rect.left;
+                const y = e.touches[0].clientY - rect.top;
+                
+                const ripple = document.createElement('div');
+                ripple.className = 'ripple';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                
+                card.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 1000);
+            });
+            
+            card.appendChild(title);
+            card.appendChild(content);
             elements.choiceContainer.appendChild(card);
         });
         
-        // Ensure the choice container is visible and positioned at the bottom
+        // Ensure the choice container is visible with animation
         setTimeout(() => {
             elements.choiceContainer.style.opacity = '1';
             elements.choiceContainer.style.transform = 'translateY(0)';
@@ -1065,15 +1125,65 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Update the journey track
+    function updateJourneyTrack() {
+        console.log('Updating journey track');
+        
+        const journeyTrack = document.getElementById('journeyTrack');
+        journeyTrack.innerHTML = '';
+        
+        const totalStops = game.maxRounds * game.stopsPerRound;
+        
+        // Create track line elements between stations
+        for (let i = 1; i <= totalStops; i++) {
+            // Add station
+            const station = document.createElement('div');
+            station.className = 'station';
+            
+            // Add station number as data attribute
+            station.dataset.stop = i;
+            
+            // Add completed class if this stop has been passed
+            if (i < game.currentStop) {
+                station.classList.add('completed');
+                
+                // Find the decision for this stop
+                const decision = game.decisionHistory.find(d => d.stop === i);
+                if (decision) {
+                    // Add decision type class
+                    station.classList.add(decision.type || 'standard');
+                }
+            }
+            
+            // Add current class if this is the current stop
+            if (i === game.currentStop) {
+                station.classList.add('current');
+            }
+            
+            // Add track line before station (except for first station)
+            if (i > 1) {
+                const trackLine = document.createElement('div');
+                trackLine.className = 'track-line';
+                journeyTrack.appendChild(trackLine);
+            }
+            
+            journeyTrack.appendChild(station);
+        }
+        
+        // Scroll to current station
+        const currentStation = journeyTrack.querySelector('.station.current');
+        if (currentStation) {
+            const scrollPosition = currentStation.offsetLeft - (journeyTrack.offsetWidth / 2) + (currentStation.offsetWidth / 2);
+            journeyTrack.scrollLeft = Math.max(0, scrollPosition);
+        }
+    }
+    
     // Update UI elements
     function updateUI() {
         console.log('Updating UI with game state:', game.currentStop, game.performanceScore);
         
-        // Update the round number
-        elements.roundNumber.textContent = game.currentRound;
-        
-        // Update the decision track
-        updateDecisionTrack();
+        // Update the journey track
+        updateJourneyTrack();
         
         // Update the performance meter
         updatePerformanceMeter();

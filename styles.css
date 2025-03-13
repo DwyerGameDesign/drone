@@ -1,697 +1,398 @@
-/* Base Styles */
+/* Base styles */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #34495e;
+    --accent-color: #f39c12;
+    --text-color: #ecf0f1;
+    --background-color: #1a1a1a;
+    --card-background: #2c3e50;
+    --soul-color: #2A66C9;
+    --connections-color: #7D3CCF;
+    --success-color: #1F6F50;
+    --soul-muted: #1a3c78;
+    --connections-muted: #4a2378;
+    --success-muted: #143b2d;
+    --fail-color: #e74c3c;
+}
+
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #1a1a1a;
-    color: #ffffff;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-
-.game-container {
-    width: 100%;
-    max-width: 600px;
-    background-color: #222222;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    min-height: 600px;
-    display: flex;
-    flex-direction: column;
-}
-
-.game-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.game-header h1 {
-    font-size: 2rem;
-    margin-bottom: 10px;
-    color: #ffffff;
-}
-
-.round-indicator {
-    font-size: 1rem;
-    color: #cccccc;
-}
-
-/* Decision Track Styles */
-.decision-track-container {
-    margin-bottom: 20px;
-}
-
-.track-label, .performance-label {
-    margin-bottom: 5px;
-    font-size: 12px;
-    color: #999;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.decision-track {
-    display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    padding: 5px 0;
-    scrollbar-width: thin;
-    scrollbar-color: #444 #222;
-}
-
-.decision-track::-webkit-scrollbar {
-    height: 5px;
-}
-
-.decision-track::-webkit-scrollbar-track {
-    background: #222;
-}
-
-.decision-track::-webkit-scrollbar-thumb {
-    background: #444;
-    border-radius: 3px;
-}
-
-.decision-card {
-    flex: 0 0 auto;
-    width: 30px;
-    height: 50px;
-    border-radius: 4px;
-    background-color: #333;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 12px;
-    font-weight: bold;
-    border: 1px solid #444;
-    transition: all 0.3s ease;
-}
-
-.decision-card.active {
-    border-color: #666;
-    transform: translateY(-3px);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-}
-
-.decision-card.soul {
-    background-color: #2A66C9;
-}
-
-.decision-card.soul-okay {
-    background-color: #1a3c78; /* Muted blue */
-}
-
-.decision-card.connections {
-    background-color: #7D3CCF;
-}
-
-.decision-card.connections-okay {
-    background-color: #4a2378; /* Muted violet */
-}
-
-.decision-card.success {
-    background-color: #1F6F50;
-}
-
-.decision-card.success-okay {
-    background-color: #134230; /* Muted green */
-}
-
-.decision-card.poor {
-    background-color: #444;
-    border-color: #555;
-    position: relative;
-}
-
-.decision-card.poor::before,
-.decision-card.poor::after {
-    content: '';
-    position: absolute;
-    width: 60%;
-    height: 2px;
-    background-color: #e74c3c; /* Red X */
-    top: 50%;
-    left: 20%;
-    transform: translateY(-50%);
-}
-
-.decision-card.poor::before {
-    transform: translateY(-50%) rotate(45deg);
-}
-
-.decision-card.poor::after {
-    transform: translateY(-50%) rotate(-45deg);
-}
-
-.decision-card-number {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    width: 16px;
-    height: 16px;
-    background-color: #222;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    color: #999;
-    border: 1px solid #444;
-}
-
-/* Performance Meter */
-.performance-container {
-    margin-bottom: 20px;
-}
-
-.performance-meter {
-    width: 100%;
-    height: 8px;
-    background-color: #333;
-    border-radius: 4px;
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
     overflow: hidden;
 }
 
-.meter-fill {
-    height: 100%;
-    width: 0%;
-    background-color: #e74c3c;
-    transition: width 0.3s ease;
-}
-
-/* Choice Cards */
-.choice-container {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-    width: 100%;
-    position: relative;
-    bottom: 0;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-.choice-card {
-    flex: 1;
-    min-width: 0;
-    max-width: 180px;
-    background-color: #333;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: transform 0.3s, box-shadow 0.3s;
-    cursor: pointer;
-    border: 1px solid #444;
-    display: flex;
-    flex-direction: column;
-}
-
-.choice-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.choice-card.soul {
-    border-color: #2A66C9;
-}
-
-.choice-card.connections {
-    border-color: #7D3CCF;
-}
-
-.choice-card.success {
-    border-color: #1F6F50;
-}
-
-.card-header {
-    padding: 10px;
-    background-color: #222;
-    border-bottom: 1px solid #444;
-}
-
-.card-title {
-    font-weight: bold;
-    font-size: 0.9rem;
-    text-align: center;
-}
-
-.card-content {
-    padding: 15px 10px;
-    font-size: 0.85rem;
-    line-height: 1.4;
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    text-align: center;
-}
-
-.choice-card.soul .card-header {
-    background-color: rgba(42, 102, 201, 0.3);
-}
-
-.choice-card.connections .card-header {
-    background-color: rgba(125, 60, 207, 0.3);
-}
-
-.choice-card.success .card-header {
-    background-color: rgba(31, 111, 80, 0.3);
-}
-
-/* Swing Meter Screen */
-.swing-meter-container {
-    width: 100%;
-    display: none; /* Hidden by default */
-    flex-direction: column;
-    align-items: center;
-    animation: fadeIn 0.5s ease-in-out;
-    min-height: 200px;
-    background-color: rgba(0, 0, 0, 0.4);
-    border-radius: 8px;
-    padding: 20px;
-    position: relative;
-    border-top: 3px solid; /* Border will be colored by JS based on resource type */
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.05),
-                inset 0 0 20px rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(5px);
-    z-index: 10;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.choice-summary {
-    margin-bottom: 0;
-    text-align: center;
-}
-
-/* Hide the choice type and title */
-.choice-type {
-    display: none;
-}
-
-.choice-title {
-    display: none;
-}
-
-.choice-description {
-    font-size: 1.1rem;
-    color: #ccc;
-    line-height: 1.4;
-    text-align: center;
-    margin-bottom: 0;
-}
-
-/* Hide the swing meter title */
-.swing-meter-title {
-    display: none;
-}
-
-.swing-meter {
-    position: relative;
-    width: 100%;
-    height: 60px;
-    margin-bottom: 20px;
-    display: block;
-    visibility: visible;
-}
-
-.meter-background {
-    display: flex;
-    width: 400px;
-    height: 20px;
+.container {
+    max-width: 100%;
     margin: 0 auto;
-    border-radius: 10px;
-    overflow: hidden;
+    padding: 0.5rem;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header styles */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
     position: relative;
 }
 
-.meter-zone {
-    height: 100%;
-}
-
-/* Base styles for meter zones - colors will be set dynamically */
-.meter-zone.poor-start {
-    background-color: #e74c3c; /* Default red for fail */
-    width: 40%;
-}
-
-.meter-zone.good {
-    background-color: #2ecc71; /* Default green for good */
-    width: 20%;
-}
-
-.meter-zone.poor-end {
-    background-color: #e74c3c; /* Default red for fail */
-    width: 40%;
-}
-
-/* Resource-specific colors for meter zones */
-.meter-zone.soul-good {
-    background-color: #2A66C9; /* Blue for soul success */
-}
-
-.meter-zone.connections-good {
-    background-color: #7D3CCF; /* Violet for connections success */
-}
-
-.meter-zone.success-good {
-    background-color: #1F6F50; /* Green for success type */
-}
-
-/* Replace the triangular indicators with a solid white bar */
-.meter-indicator-top, .meter-indicator-bottom {
-    display: none; /* Hide the triangular indicators */
-}
-
-/* New solid indicator */
-.meter-indicator-bar {
-    position: absolute;
-    top: -10px;
-    bottom: -10px;
-    width: 4px;
-    background-color: white;
-    transform: translateX(-50%);
-    transition: left 0.1s linear;
-    pointer-events: none;
-    z-index: 5;
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
-    opacity: 1;
-    visibility: visible;
-}
-
-.meter-indicator-bar.good {
-    background-color: #2ecc71;
-}
-
-.meter-indicator-bar.fail {
-    background-color: #e74c3c;
-}
-
-/* Hide the meter instructions */
-.meter-instructions {
-    display: none;
-}
-
-.tap-marker {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 4px;
-    height: 20px;
-    background-color: white;
-    transform: translateX(-50%);
-    display: none;
-    z-index: 1;
-}
-
-.tap-marker.good {
-    background-color: #2ecc71;
-}
-
-.tap-marker.okay {
-    background-color: #ff9933;
-}
-
-.tap-marker.fail {
-    background-color: #e74c3c;
-}
-
-.meter-instructions {
-    font-size: 0.9rem;
-    color: #aaa;
-    text-align: center;
-    margin: 15px 0;
-    letter-spacing: 1px;
-}
-
-.tap-button {
-    display: block;
-    margin: 20px auto 0;
-    padding: 12px 24px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.tap-button:hover {
-    background-color: #2980b9;
-}
-
-.integrated-meter-result {
-    display: none; /* Hide the old result display */
-}
-
-.integrated-meter-result.good {
-    border-left: 4px solid #2ecc71;
-}
-
-.integrated-meter-result.okay {
-    border-left: 4px solid #ff9933;
-}
-
-.integrated-meter-result.fail {
-    border-left: 4px solid #e74c3c;
-}
-
-.meter-result-container {
-    width: 100%;
-    padding: 15px 20px;
-    margin: 0 0 15px 0;
-    opacity: 0;
-    transition: opacity 0.8s ease-in;
-    border-left: 4px solid;
-    border-right: 4px solid;
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-}
-
-.meter-result-container.visible {
-    opacity: 1;
-}
-
-.meter-result-container.soul {
-    border-color: #2A66C9;
-}
-
-.meter-result-container.connections {
-    border-color: #7D3CCF;
-}
-
-.meter-result-container.success {
-    border-color: #1F6F50;
-}
-
-.meter-result-container.fail {
-    border-color: #555;
-}
-
-.meter-result-text {
-    font-size: 1.1rem;
-    color: #fff;
-    line-height: 1.6;
-    text-align: left;
-    min-height: 80px;
-}
-
-.next-stop-button {
-    display: block;
-    margin: 20px auto 0;
-    padding: 12px 24px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s, opacity 0.5s ease-in-out;
-    opacity: 1;
-    position: relative;
-    z-index: 10;
-}
-
-.next-stop-button:hover {
-    background-color: #2980b9;
-}
-
-.meter-result-container .next-stop-button {
-    opacity: 0;
-    animation: fadeIn 0.5s ease-in-out forwards;
-    animation-delay: 0.5s; /* Delay the button appearance */
-}
-
-/* Result Screen */
-.result-screen {
-    background-color: #2a2a2a;
-    border-radius: 8px;
-    padding: 20px;
-    animation: fadeIn 0.3s ease;
-    display: none;
-}
-
-.result-status {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
+.game-title {
+    font-size: 1.5rem;
     font-weight: bold;
-    margin-bottom: 15px;
+    margin: 0;
+    color: var(--accent-color);
+}
+
+.menu-button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Journey track styles */
+.journey-track {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem 0;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+.journey-label {
+    font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    margin-right: 0.5rem;
+    color: var(--text-color);
+    opacity: 0.7;
 }
 
-.result-status.good {
-    background-color: #2ecc71;
-    color: #fff;
+.track {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
 }
 
-.result-status.okay {
-    background-color: #f39c12;
-    color: #fff;
+.station {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background-color: #555;
+    margin: 0 0.5rem;
+    position: relative;
 }
 
-.result-status.poor {
-    background-color: #e74c3c;
-    color: #fff;
+.station.current {
+    background-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.3);
 }
 
-.result-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #fff;
+.station.completed {
+    background-color: var(--text-color);
 }
 
-.result-text {
-    font-size: 14px;
-    line-height: 1.6;
-    color: #ccc;
-    margin-bottom: 25px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #444;
+.station.completed.soul {
+    background-color: var(--soul-color);
 }
 
-.continue-button {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    background-color: #2A66C9;
-    border: none;
-    border-radius: 6px;
-    color: #fff;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 20px;
+.station.completed.connections {
+    background-color: var(--connections-color);
 }
 
-.continue-button:hover {
-    background-color: #1e4d99;
+.station.completed.success {
+    background-color: var(--success-color);
 }
 
-/* Mobile Responsive Adjustments */
-@media (max-width: 600px) {
-    .choice-container {
-        flex-direction: column;
-    }
-    
-    .choice-card {
-        min-height: 120px;
-        margin-bottom: 10px;
-    }
+.track-line {
+    height: 2px;
+    background-color: #555;
+    flex-grow: 1;
 }
 
-/* Narrative Card Styling */
+/* Narrative card styles */
 .narrative-card {
-    background-color: #2a2a2a;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    background-color: var(--card-background);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    max-height: 35vh;
+    overflow-y: auto;
 }
 
 .narrative-title {
     font-size: 1.2rem;
     font-weight: bold;
-    margin-bottom: 10px;
-    color: #ffffff;
+    margin-bottom: 0.5rem;
+    color: var(--accent-color);
 }
 
 .narrative-text {
     font-size: 1rem;
     line-height: 1.5;
-    color: #cccccc;
-    margin-bottom: 15px;
+    margin-bottom: 0.5rem;
 }
 
-.narrative-card-container {
+/* Choice container styles */
+.choice-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.card {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    min-height: 300px;
+    overflow: hidden;
+    background-color: var(--secondary-color);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border-left: 4px solid transparent;
 }
 
-.narrative-card {
-    background-color: #333;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
+.card:hover, .card:active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.narrative-card-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #ffffff;
+.card.active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background-color: var(--primary-color);
 }
 
-.narrative-card-text {
+.card.soul {
+    border-left-color: var(--soul-color);
+}
+
+.card.connections {
+    border-left-color: var(--connections-color);
+}
+
+.card.success {
+    border-left-color: var(--success-color);
+}
+
+.card-title {
     font-size: 1rem;
-    line-height: 1.5;
-    color: #cccccc;
-    margin-bottom: 20px;
-    flex-grow: 1;
-    min-height: 100px;
-    overflow-y: auto;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
 }
 
-/* Round Complete Screen */
+.card-content {
+    font-size: 0.9rem;
+}
+
+/* Ripple effect */
+.ripple {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Swing meter styles */
+.swing-meter-container {
+    display: none;
+    flex-direction: column;
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: var(--secondary-color);
+    border-radius: 0.5rem;
+    border-top: 4px solid #999;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.choice-description {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    padding: 0 0.5rem;
+}
+
+.swing-meter {
+    position: relative;
+    height: 3rem;
+    background-color: var(--primary-color);
+    border-radius: 0.25rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    touch-action: none;
+}
+
+.meter-background {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+.meter-zone {
+    height: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.meter-zone.poor-start {
+    background-color: #e74c3c;
+    width: 40%;
+}
+
+.meter-zone.good {
+    background-color: #2ecc71;
+    width: 20%;
+}
+
+.meter-zone.poor-end {
+    background-color: #e74c3c;
+    width: 40%;
+}
+
+.meter-indicator-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background-color: white;
+    transition: left 0.1s linear;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.tap-marker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background-color: white;
+    display: none;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.tap-button {
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    transition: background-color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.tap-button:hover, .tap-button:active {
+    background-color: #e67e22;
+}
+
+.tap-button:active {
+    transform: scale(0.98);
+}
+
+/* Result styles */
+.meter-result-container {
+    background-color: var(--secondary-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-top: 1rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s, transform 0.3s;
+    border-left: 4px solid transparent;
+}
+
+.meter-result-container.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.meter-result-container.soul {
+    border-left-color: var(--soul-color);
+}
+
+.meter-result-container.connections {
+    border-left-color: var(--connections-color);
+}
+
+.meter-result-container.success {
+    border-left-color: var(--success-color);
+}
+
+.meter-result-container.fail {
+    border-left-color: var(--fail-color);
+}
+
+.meter-result-text {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.next-stop-button {
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.75rem;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.next-stop-button:hover, .next-stop-button:active {
+    background-color: #e67e22;
+}
+
+/* Round complete screen */
 .round-complete-screen {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.95); /* Make background more opaque */
+    background-color: rgba(0, 0, 0, 0.95);
     display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 20px;
-    text-align: center;
-    z-index: 1000;
-    backdrop-filter: blur(5px); /* Add blur effect to further obscure background */
+    padding: 1rem;
+    z-index: 100;
+    backdrop-filter: blur(5px);
 }
 
 .round-complete-screen::before {
@@ -701,105 +402,104 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #1a1a1a; /* Solid background color */
+    background-color: #1a1a1a;
     opacity: 0.9;
     z-index: -1;
 }
 
 .round-complete-screen h2 {
-    font-size: 2rem;
-    color: #ffde00;
-    margin-bottom: 30px;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--accent-color);
 }
 
 .round-summary {
-    background-color: #222;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 30px;
-    max-width: 400px;
-    width: 100%;
+    background-color: var(--secondary-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    max-width: 90%;
+    max-height: 60vh;
+    overflow-y: auto;
 }
 
-.summary-stats {
+.round-summary-text {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.resources-summary {
     display: flex;
     justify-content: space-around;
-    margin-bottom: 20px;
+    margin-bottom: 1rem;
 }
 
-.summary-stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.resource {
+    text-align: center;
+    padding: 0.5rem;
 }
 
-.summary-value {
+.resource-label {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-bottom: 0.25rem;
+}
+
+.resource-value {
     font-size: 1.2rem;
     font-weight: bold;
-    margin-top: 5px;
 }
 
-.summary-icon {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
+.resource.soul .resource-value {
+    color: var(--soul-color);
 }
 
-.soul-icon {
-    background-color: #2A66C9;
+.resource.connections .resource-value {
+    color: var(--connections-color);
 }
 
-.connections-icon {
-    background-color: #7D3CCF;
+.resource.money .resource-value {
+    color: var(--success-color);
 }
 
-.money-icon {
-    background-color: #1F6F50;
-}
-
-#round-summary-text {
-    font-size: 1.1rem;
-    line-height: 1.5;
-    min-height: 100px; /* Ensure consistent layout during typewriter effect */
-}
-
-#next-round-button {
-    padding: 15px 30px;
-    font-size: 1.2rem;
-    background-color: #ffde00;
-    color: #1a1a1a;
+.next-round-button {
+    background-color: var(--accent-color);
+    color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 0.25rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
     cursor: pointer;
+    text-align: center;
     font-weight: bold;
-    opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: background-color 0.2s;
+    display: none;
 }
 
-#next-round-button.fade-in {
-    opacity: 1;
+.next-round-button:hover, .next-round-button:active {
+    background-color: #e67e22;
 }
 
-/* Game Over Screen */
+.next-round-button.fade-in {
+    animation: fadeIn 0.5s forwards;
+}
+
+/* Game over screen */
 .game-over-screen {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.95); /* Make background more opaque */
+    background-color: rgba(0, 0, 0, 0.95);
     display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 20px;
-    text-align: center;
-    z-index: 1000;
-    backdrop-filter: blur(5px); /* Add blur effect to further obscure background */
+    padding: 1rem;
+    z-index: 100;
+    backdrop-filter: blur(5px);
 }
 
 .game-over-screen::before {
@@ -809,49 +509,206 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #1a1a1a; /* Solid background color */
+    background-color: #1a1a1a;
     opacity: 0.9;
     z-index: -1;
 }
 
 .game-over-screen h2 {
-    font-size: 2rem;
-    color: #ffde00;
-    margin-bottom: 20px;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--accent-color);
 }
 
-.game-over-screen p {
-    font-size: 1.2rem;
-    max-width: 600px;
-    margin-bottom: 30px;
+.game-over-message {
+    background-color: var(--secondary-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    max-width: 90%;
+    max-height: 60vh;
+    overflow-y: auto;
+    font-size: 1rem;
     line-height: 1.5;
-    white-space: pre-line;
-    min-height: 150px; /* Ensure consistent layout during typewriter effect */
 }
 
-#restart-button {
-    padding: 15px 30px;
-    font-size: 1.2rem;
-    background-color: #ffde00;
-    color: #1a1a1a;
+.restart-button {
+    background-color: var(--accent-color);
+    color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 0.25rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
     cursor: pointer;
+    text-align: center;
     font-weight: bold;
-    opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: background-color 0.2s;
+    display: none;
 }
 
-#restart-button.fade-in {
-    opacity: 1;
+.restart-button:hover, .restart-button:active {
+    background-color: #e67e22;
 }
 
-/* Swing Meter Transitions */
-.swing-meter.fade-out {
-    opacity: 0;
-    transition: opacity 0.5s ease-out;
-    pointer-events: none;
-    position: absolute; /* Position absolutely to remove from normal flow */
+.restart-button.fade-in {
+    animation: fadeIn 0.5s forwards;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-out {
+    animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0.3;
+    }
+}
+
+/* Menu styles */
+.menu-panel {
+    position: fixed;
+    top: 0;
+    right: -80%;
+    width: 80%;
+    height: 100%;
+    background-color: var(--primary-color);
+    z-index: 200;
+    transition: right 0.3s ease;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-panel.open {
+    right: 0;
+}
+
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.menu-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.close-menu {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.menu-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.menu-item {
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.menu-item:hover, .menu-item:active {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    z-index: 1;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 199;
+    display: none;
+}
+
+.menu-overlay.open {
+    display: block;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 0.5rem;
+    }
+    
+    .narrative-card {
+        max-height: 30vh;
+    }
+    
+    .card {
+        padding: 0.75rem;
+    }
+    
+    .card-title {
+        font-size: 0.9rem;
+    }
+    
+    .card-content {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-title {
+        font-size: 1.2rem;
+    }
+    
+    .narrative-title {
+        font-size: 1rem;
+    }
+    
+    .narrative-text {
+        font-size: 0.9rem;
+    }
+    
+    .choice-description {
+        font-size: 0.9rem;
+    }
+    
+    .tap-button, .next-stop-button {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+    
+    .round-complete-screen h2, .game-over-screen h2 {
+        font-size: 1.2rem;
+    }
+    
+    .round-summary-text, .game-over-message {
+        font-size: 0.9rem;
+    }
+    
+    .resource-value {
+        font-size: 1rem;
+    }
 }
