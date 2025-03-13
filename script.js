@@ -917,9 +917,59 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Also make the entire result container tappable to skip typing
         resultContainer.addEventListener('click', function(e) {
-            // Only trigger if we're still typing and the click wasn't on a child element with its own handler
-            if (isTyping && e.target === resultContainer) {
-                completeTyping();
+            // Prevent clicks on child elements from triggering multiple times
+            if (e.target === resultContainer || !nextButton.contains(e.target)) {
+                // If still typing, complete the typing first
+                if (isTyping) {
+                    completeTyping();
+                    return;
+                }
+                
+                try {
+                    // Process the result
+                    console.log('Processing swing meter result:', result, 'Current stop before:', game.currentStop);
+                    
+                    // Determine if the swing meter was successful
+                    const success = result === 'good';
+                    
+                    // Get the narrative type from the selected choice
+                    const narrativeType = currentSelectedChoice.type || 'neutral';
+                    
+                    // Call the game's handleSwingMeter method with the success and narrative type
+                    const gameResult = game.handleSwingMeter(success, narrativeType);
+                    
+                    console.log('Game result after handling swing meter:', gameResult, 'Current stop after:', game.currentStop);
+                    
+                    // Update the journey track immediately to reflect the decision
+                    updateJourneyTrack();
+                    
+                    // Save the choice description text before hiding the container
+                    const choiceDescriptionText = elements.choiceDescription ? elements.choiceDescription.textContent : '';
+                    
+                    // Hide the swing meter container
+                    elements.swingMeterContainer.style.display = 'none';
+                    
+                    // Reset the swing meter for next time
+                    resetSwingMeter();
+                    
+                    // Check if the game is over
+                    if (gameResult.gameOver) {
+                        console.log('Game over detected after swing meter result');
+                        showGameOver(gameResult.reason === 'success');
+                        return;
+                    }
+                    
+                    // Get the next narrative
+                    const nextNarrative = game.getCurrentNarrative();
+                    if (nextNarrative) {
+                        console.log('Displaying next narrative:', nextNarrative);
+                        displayNarrative(nextNarrative);
+                    } else {
+                        console.error('No next narrative found after swing meter result');
+                    }
+                } catch (error) {
+                    console.error('Error processing swing meter result:', error);
+                }
             }
         });
         
@@ -969,11 +1019,26 @@ document.addEventListener('DOMContentLoaded', function() {
         resultContainer.onclick = function(e) {
             // Prevent clicks on child elements from triggering multiple times
             if (e.target === resultContainer || !nextButton.contains(e.target)) {
+                // If still typing, complete the typing first
+                if (isTyping) {
+                    completeTyping();
+                    return;
+                }
+                
                 try {
                     // Process the result
                     console.log('Processing swing meter result:', result, 'Current stop before:', game.currentStop);
-                    const processedResult = game.handleSwingMeter(result, currentSelectedChoice);
-                    console.log('Processed result:', processedResult, 'Current stop after:', game.currentStop);
+                    
+                    // Determine if the swing meter was successful
+                    const success = result === 'good';
+                    
+                    // Get the narrative type from the selected choice
+                    const narrativeType = currentSelectedChoice.type || 'neutral';
+                    
+                    // Call the game's handleSwingMeter method with the success and narrative type
+                    const gameResult = game.handleSwingMeter(success, narrativeType);
+                    
+                    console.log('Game result after handling swing meter:', gameResult, 'Current stop after:', game.currentStop);
                     
                     // Update the journey track immediately to reflect the decision
                     updateJourneyTrack();
@@ -988,25 +1053,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     resetSwingMeter();
                     
                     // Check if the game is over
-                    if (processedResult.gameOver) {
+                    if (gameResult.gameOver) {
                         console.log('Game over detected after swing meter result');
-                        showGameOver(processedResult.gameOverReason);
+                        showGameOver(gameResult.reason === 'success');
                         return;
                     }
                     
-                    // Check if we need to show the round complete screen
-                    if (processedResult.roundComplete) {
-                        console.log('Round complete detected');
-                        showRoundComplete(
-                            processedResult.roundNumber,
-                            processedResult.roundSummary,
-                            processedResult.resources
-                        );
-                        return;
+                    // Get the next narrative
+                    const nextNarrative = game.getCurrentNarrative();
+                    if (nextNarrative) {
+                        console.log('Displaying next narrative:', nextNarrative);
+                        displayNarrative(nextNarrative);
+                    } else {
+                        console.error('No next narrative found after swing meter result');
                     }
-                    
-                    // Otherwise, display the next narrative
-                    displayNarrative(processedResult.nextNarrative);
                 } catch (error) {
                     console.error('Error processing swing meter result:', error);
                 }
@@ -1356,6 +1416,82 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.gameOverTitle.textContent = success ? "Journey's End" : "Journey Derailed";
         }
         
+        // Set the ending type based on the player's decisions
+        const endingType = document.getElementById('endingType');
+        if (endingType) {
+            // For success endings, determine the dominant path
+            if (success) {
+                const counts = {
+                    soul: game.decisionTypes.filter(type => type === "soul").length,
+                    connections: game.decisionTypes.filter(type => type === "connections").length,
+                    success: game.decisionTypes.filter(type => type === "success").length
+                };
+                
+                console.log('Decision type counts for ending:', counts);
+                
+                // Determine the dominant path
+                let dominant = "mixed";
+                if (counts.soul > counts.connections && counts.soul > counts.success) {
+                    dominant = "soul";
+                } else if (counts.connections > counts.soul && counts.connections > counts.success) {
+                    dominant = "connections";
+                } else if (counts.success > counts.soul && counts.success > counts.connections) {
+                    dominant = "success";
+                }
+                
+                // Set the ending type text and class
+                endingType.className = 'ending-type ' + dominant;
+                
+                switch (dominant) {
+                    case "soul":
+                        endingType.textContent = "AUTHENTIC SELF ENDING";
+                        break;
+                    case "connections":
+                        endingType.textContent = "MEANINGFUL BONDS ENDING";
+                        break;
+                    case "success":
+                        endingType.textContent = "PROFESSIONAL ACHIEVEMENT ENDING";
+                        break;
+                    default:
+                        endingType.textContent = "BALANCED GROWTH ENDING";
+                }
+            } else {
+                // For failure endings, determine the dominant attempt pattern
+                const soulAttempts = game.decisionHistory.filter(d => d.intendedType === "soul").length;
+                const connectionsAttempts = game.decisionHistory.filter(d => d.intendedType === "connections").length;
+                const successAttempts = game.decisionHistory.filter(d => d.intendedType === "success").length;
+                
+                console.log('Decision attempts for ending:', { soul: soulAttempts, connections: connectionsAttempts, success: successAttempts });
+                
+                // Determine dominant attempt pattern
+                let dominantAttempt = "mixed";
+                if (soulAttempts > connectionsAttempts && soulAttempts > successAttempts) {
+                    dominantAttempt = "soul";
+                } else if (connectionsAttempts > soulAttempts && connectionsAttempts > successAttempts) {
+                    dominantAttempt = "connections";
+                } else if (successAttempts > soulAttempts && successAttempts > connectionsAttempts) {
+                    dominantAttempt = "success";
+                }
+                
+                // Set the ending type text and class
+                endingType.className = 'ending-type ' + dominantAttempt;
+                
+                switch (dominantAttempt) {
+                    case "soul":
+                        endingType.textContent = "LOST AUTHENTICITY ENDING";
+                        break;
+                    case "connections":
+                        endingType.textContent = "BROKEN BONDS ENDING";
+                        break;
+                    case "success":
+                        endingType.textContent = "HOLLOW ACHIEVEMENTS ENDING";
+                        break;
+                    default:
+                        endingType.textContent = "DIRECTIONLESS ENDING";
+                }
+            }
+        }
+        
         // Get the game over message
         const gameOverMessage = game.getGameOverMessage(success);
         console.log('Game over message:', gameOverMessage);
@@ -1366,12 +1502,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Hide the restart button initially
         elements.restartButton.style.display = 'none';
         elements.restartButton.textContent = 'Start New Journey';
-        
-        // Get the instruction element
-        const gameOverInstruction = document.getElementById('gameOverInstruction');
-        if (gameOverInstruction) {
-            gameOverInstruction.style.display = 'none';
-        }
         
         // Create a temporary div to store the full message
         const tempDiv = document.createElement('div');
@@ -1391,11 +1521,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Show the restart button immediately
                 elements.restartButton.style.display = 'block';
                 elements.restartButton.classList.add('fade-in');
-                // Show the instruction
-                if (gameOverInstruction) {
-                    gameOverInstruction.style.display = 'block';
-                    gameOverInstruction.classList.add('fade-in');
-                }
             }
         };
         
@@ -1429,11 +1554,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     elements.restartButton.style.display = 'block';
                     elements.restartButton.classList.add('fade-in');
-                    // Show the instruction
-                    if (gameOverInstruction) {
-                        gameOverInstruction.style.display = 'block';
-                        gameOverInstruction.classList.add('fade-in');
-                    }
                 }, 500);
             }
         };
@@ -1535,6 +1655,17 @@ document.addEventListener('DOMContentLoaded', function() {
             game.gameOverReason = "success";
             console.log('Set gameOverReason to "success" in updateGameState');
             showGameOver(true); // Show success ending
+            return;
+        }
+        
+        // Check if performance score is too low (game over due to failure)
+        if (game.performanceScore <= game.failureThreshold) {
+            console.log(`Performance score (${game.performanceScore}) below failure threshold (${game.failureThreshold}), showing failure game over`);
+            // Set game over state
+            game.gameOver = true;
+            game.gameOverReason = "failure";
+            console.log('Set gameOverReason to "failure" in updateGameState');
+            showGameOver(false); // Show failure ending
             return;
         }
     }

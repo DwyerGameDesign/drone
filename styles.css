@@ -601,7 +601,7 @@ header {
 
 .game-over-screen h2 {
     font-size: 2rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
     color: var(--accent-color);
     text-align: center;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
@@ -622,13 +622,41 @@ header {
     border-radius: 3px;
 }
 
+/* Ending type label */
+.ending-type {
+    font-size: 1rem;
+    color: var(--text-color);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+.ending-type.soul {
+    color: var(--soul-color);
+}
+
+.ending-type.connections {
+    color: var(--connections-color);
+}
+
+.ending-type.success {
+    color: var(--success-color);
+}
+
+.ending-type.mixed {
+    color: var(--accent-color);
+}
+
 .game-over-message {
     background-color: var(--secondary-color);
     border-radius: 0.75rem;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-    max-width: 90%;
-    max-height: 50vh;
+    width: 90%;
+    height: 200px; /* Fixed height */
     overflow-y: auto;
     font-size: 1.1rem;
     line-height: 1.6;
@@ -699,30 +727,27 @@ header {
     animation: fadeIn 0.5s forwards;
 }
 
-/* Add a tap instruction for the game over screen */
+/* Remove the game over instruction */
 .game-over-instruction {
-    text-align: center;
-    font-size: 0.9rem;
-    color: var(--text-color);
-    opacity: 0.8;
-    margin-top: 1rem;
     display: none;
-}
-
-.game-over-instruction.fade-in {
-    animation: fadeIn 0.5s forwards;
 }
 
 /* Desktop styles for game over screen */
 @media (min-width: 768px) {
     .game-over-screen h2 {
         font-size: 2.5rem;
-        margin-bottom: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .ending-type {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
     }
     
     .game-over-message {
         padding: 2rem;
-        max-width: 700px;
+        width: 700px;
+        height: 250px; /* Taller for desktop */
         font-size: 1.2rem;
         line-height: 1.7;
     }
