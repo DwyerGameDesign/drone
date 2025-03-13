@@ -410,6 +410,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear existing content
         elements.narrativeText.textContent = '';
         
+        // Clear the choice description
+        if (elements.choiceDescription) {
+            elements.choiceDescription.textContent = '';
+        }
+        
         // Hide all interaction elements initially
         hideAllInteractions();
         
@@ -858,9 +863,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('Result text to display:', resultText);
         
-        // Hide the swing meter completely instead of just fading it out
+        // Hide only the swing meter, not the entire container
         const swingMeter = document.querySelector('.swing-meter');
         swingMeter.style.display = 'none';
+        
+        // Keep the choice description visible
+        // Do NOT hide the choice description
         
         // Create result container
         const resultContainer = document.createElement('div');
@@ -876,11 +884,7 @@ document.addEventListener('DOMContentLoaded', function() {
         resultTextElement.className = 'meter-result-text';
         resultContainer.appendChild(resultTextElement);
         
-        // Replace the swing meter container content with just the result
-        elements.swingMeterContainer.innerHTML = ''; // Clear the container
-        elements.choiceDescription.style.display = 'none'; // Hide the choice description
-        
-        // Add the result container to the swing meter container
+        // Add the result container to the swing meter container after the choice description
         elements.swingMeterContainer.appendChild(resultContainer);
         
         // Show the result immediately
@@ -971,6 +975,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     const processedResult = game.handleSwingMeter(result, currentSelectedChoice);
                     console.log('Processed result:', processedResult, 'Current stop after:', game.currentStop);
                     
+                    // Save the choice description text before hiding the container
+                    const choiceDescriptionText = elements.choiceDescription ? elements.choiceDescription.textContent : '';
+                    
                     // Hide the swing meter container
                     elements.swingMeterContainer.style.display = 'none';
                     
@@ -1018,14 +1025,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Restore the swing meter container structure if it was cleared
-        if (elements.swingMeterContainer.innerHTML === '') {
-            // Recreate the swing meter structure
-            const choiceDescription = document.createElement('div');
-            choiceDescription.id = 'choiceDescription';
-            choiceDescription.className = 'choice-description';
-            elements.swingMeterContainer.appendChild(choiceDescription);
-            elements.choiceDescription = choiceDescription;
-            
+        if (!document.querySelector('.swing-meter')) {
+            // Recreate the swing meter structure, but preserve the choice description
             const swingMeter = document.createElement('div');
             swingMeter.className = 'swing-meter';
             
@@ -1063,11 +1064,6 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.swingMeterContainer.appendChild(tapInstruction);
             elements.tapInstruction = tapInstruction;
         } else {
-            // Restore the choice description if it was hidden
-            if (elements.choiceDescription) {
-                elements.choiceDescription.style.display = 'block';
-            }
-            
             // Restore the swing meter
             const swingMeter = document.querySelector('.swing-meter');
             if (swingMeter) {
