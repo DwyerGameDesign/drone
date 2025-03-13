@@ -593,6 +593,7 @@ header {
     padding: 1rem;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 }
 
 .menu-panel.open {

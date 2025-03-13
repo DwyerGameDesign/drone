@@ -49,36 +49,24 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // UI Elements
     const elements = {
-        roundNumber: document.getElementById('round-number'),
-        performanceFill: document.getElementById('performance-fill'),
-        narrativeCard: document.getElementById('narrative-card'),
-        narrativeCardTitle: document.querySelector('.narrative-card-title'),
-        narrativeCardText: document.querySelector('.narrative-card-text'),
-        decisionTrack: document.getElementById('decision-track'),
-        choiceContainer: document.getElementById('choice-container'),
-        choiceCards: document.getElementById('choice-cards'),
-        swingMeterContainer: document.getElementById('swing-meter-container'),
-        choiceType: document.getElementById('choice-type'),
-        choiceTitle: document.getElementById('choice-title'),
-        choiceDescription: document.getElementById('choice-description'),
-        swingMeterTitle: document.getElementById('swing-meter-title'),
-        tapButton: document.getElementById('tap-button'),
-        resultScreen: document.getElementById('result-screen'),
-        resultStatus: document.getElementById('result-status'),
-        resultTitle: document.getElementById('result-title'),
-        resultText: document.getElementById('result-text'),
-        continueButton: document.getElementById('continue-button'),
-        roundComplete: document.getElementById('round-complete'),
-        completedRound: document.getElementById('completed-round'),
-        roundSoulValue: document.getElementById('round-soul-value'),
-        roundConnectionsValue: document.getElementById('round-connections-value'),
-        roundMoneyValue: document.getElementById('round-money-value'),
-        roundSummaryText: document.getElementById('round-summary-text'),
-        nextRoundButton: document.getElementById('next-round-button'),
-        gameOver: document.getElementById('game-over'),
-        gameOverMessage: document.getElementById('game-over-message'),
-        restartButton: document.getElementById('restart-button'),
-        meterInstructions: document.querySelector('.meter-instructions')
+        narrativeTitle: document.getElementById('narrativeTitle'),
+        narrativeText: document.getElementById('narrativeText'),
+        choiceContainer: document.getElementById('choiceContainer'),
+        swingMeterContainer: document.getElementById('swingMeterContainer'),
+        choiceDescription: document.getElementById('choiceDescription'),
+        tapButton: document.getElementById('tapButton'),
+        roundComplete: document.getElementById('roundComplete'),
+        completedRound: document.getElementById('completedRound'),
+        roundSummaryText: document.getElementById('roundSummaryText'),
+        roundSoulValue: document.getElementById('roundSoulValue'),
+        roundConnectionsValue: document.getElementById('roundConnectionsValue'),
+        roundMoneyValue: document.getElementById('roundMoneyValue'),
+        nextRoundButton: document.getElementById('nextRoundButton'),
+        gameOver: document.getElementById('gameOver'),
+        gameOverTitle: document.getElementById('gameOverTitle'),
+        gameOverMessage: document.getElementById('gameOverMessage'),
+        restartButton: document.getElementById('restartButton'),
+        journeyTrack: document.getElementById('journeyTrack')
     };
     
     // Typewriter effect variables
@@ -113,6 +101,9 @@ document.addEventListener('DOMContentLoaded', function() {
             game.loadGameData();
         }
         
+        // Initialize journey track
+        updateJourneyTrack();
+        
         // Start the game
         const result = game.startGame();
         
@@ -145,7 +136,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Add event listeners
-    elements.narrativeCard.addEventListener('click', function() {
+    const narrativeCard = document.querySelector('.narrative-card');
+    narrativeCard.addEventListener('click', function() {
         if (isTyping) {
             skipTyping = true;
         }
@@ -212,9 +204,10 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Game reset to stop:', game.currentStop, 'Performance score:', game.performanceScore);
         
         // Reset UI elements
-        elements.decisionTrack.innerHTML = '';
-        elements.performanceFill.style.width = '0%';
-        elements.performanceFill.style.backgroundColor = '#2ecc71'; // Green for good
+        const journeyTrack = document.getElementById('journeyTrack');
+        if (journeyTrack) {
+            journeyTrack.innerHTML = '';
+        }
         
         // Clear any result containers or swing meter elements
         const resultContainers = document.querySelectorAll('.meter-result-container');
@@ -257,9 +250,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Hide all interaction elements
         hideAllInteractions();
-        
-        // Re-initialize the decision track
-        initDecisionTrack();
         
         // Reset any global variables
         isTyping = false;
@@ -355,32 +345,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 200);
     });
     
-    // Initialize the decision track with empty cards
-    function initDecisionTrack() {
-        elements.decisionTrack.innerHTML = '';
-        const totalStops = game.narratives.length;
-        
-        for (let i = 1; i <= totalStops; i++) {
-            const card = document.createElement('div');
-            card.className = 'decision-card';
-            if (i === game.currentStop) {
-                card.classList.add('active');
-            }
-            
-            const number = document.createElement('div');
-            number.className = 'decision-card-number';
-            number.textContent = i;
-            
-            card.appendChild(number);
-            elements.decisionTrack.appendChild(card);
-        }
-    }
-    
     // Wait for game data to load
     waitForGameData(game).then(() => {
-        // Initialize decision track
-        initDecisionTrack();
-        console.log('Game data loaded successfully');
         // Start the game
         initGame();
     }).catch(error => {
@@ -417,10 +383,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Update title
-        elements.narrativeCardTitle.textContent = narrative.title;
+        elements.narrativeTitle.textContent = narrative.title;
         
         // Clear existing content
-        elements.narrativeCardText.textContent = '';
+        elements.narrativeText.textContent = '';
         
         // Hide all interaction elements initially
         hideAllInteractions();
@@ -439,7 +405,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const typeNextCharacter = () => {
             if (skipTyping) {
                 // If skipping, show the full text immediately
-                elements.narrativeCardText.innerHTML = sanitizedMessage;
+                elements.narrativeText.innerHTML = sanitizedMessage;
                 isTyping = false;
                 skipTyping = false;
                 displayInteraction(narrative);
@@ -448,7 +414,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (index < sanitizedMessage.length) {
                 displayText += sanitizedMessage.charAt(index);
-                elements.narrativeCardText.innerHTML = displayText;
+                elements.narrativeText.innerHTML = displayText;
                 index++;
                 setTimeout(typeNextCharacter, typingSpeed);
             } else {
@@ -469,9 +435,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Hide swing meter container
         elements.swingMeterContainer.style.display = 'none';
-        
-        // Hide result screen
-        elements.resultScreen.style.display = 'none';
     }
     
     // Display the appropriate interaction based on narrative type
@@ -1107,24 +1070,6 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.decisionTrack.scrollLeft = elements.decisionTrack.scrollWidth;
     }
     
-    // Update the performance meter
-    function updatePerformanceMeter() {
-        // Calculate the percentage based on performance score and failure threshold
-        const percentage = Math.min(100, Math.max(0, (game.performanceScore * -1) / game.failureThreshold * 100));
-        
-        // Update the fill width
-        elements.performanceFill.style.width = percentage + '%';
-        
-        // Update the color based on percentage
-        if (percentage > 75) {
-            elements.performanceFill.style.backgroundColor = '#e74c3c'; // Red for danger
-        } else if (percentage > 50) {
-            elements.performanceFill.style.backgroundColor = '#f39c12'; // Orange for warning
-        } else {
-            elements.performanceFill.style.backgroundColor = '#2ecc71'; // Green for good
-        }
-    }
-    
     // Update the journey track
     function updateJourneyTrack() {
         console.log('Updating journey track');
@@ -1184,9 +1129,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update the journey track
         updateJourneyTrack();
-        
-        // Update the performance meter
-        updatePerformanceMeter();
     }
     
     // Handle the result of any interaction
@@ -1224,7 +1166,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (elements.randomEventContainer) {
                 elements.randomEventContainer.style.display = 'none';
             }
-            elements.narrativeCard.style.display = 'block';
+            elements.narrativeText.style.display = 'block';
             elements.choiceContainer.style.display = 'flex';
         }
         
