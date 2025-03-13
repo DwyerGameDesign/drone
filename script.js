@@ -975,6 +975,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     const processedResult = game.handleSwingMeter(result, currentSelectedChoice);
                     console.log('Processed result:', processedResult, 'Current stop after:', game.currentStop);
                     
+                    // Update the journey track immediately to reflect the decision
+                    updateJourneyTrack();
+                    
                     // Save the choice description text before hiding the container
                     const choiceDescriptionText = elements.choiceDescription ? elements.choiceDescription.textContent : '';
                     
@@ -1169,6 +1172,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update the journey track
     function updateJourneyTrack() {
         console.log('Updating journey track');
+        console.log('Decision history:', game.decisionHistory);
         
         const journeyTrack = document.getElementById('journeyTrack');
         if (!journeyTrack) {
@@ -1200,23 +1204,38 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add station number as data attribute
             station.dataset.stop = i;
             
+            // Add track line before station (except for first station)
+            if (i > 1) {
+                const trackLine = document.createElement('div');
+                trackLine.className = 'track-line';
+                journeyTrack.appendChild(trackLine);
+            }
+            
             // Add completed class if this stop has been passed
             if (i < game.logicalStop) {
+                // First add the completed class
                 station.classList.add('completed');
                 
                 // Find the decision for this logical stop
                 const decision = game.decisionHistory.find(d => d.logicalStop === i);
+                console.log(`Looking for decision at logical stop ${i}:`, decision);
+                
                 if (decision) {
                     console.log(`Decision for logical stop ${i}:`, decision);
+                    console.log(`Decision type: ${decision.intendedType}, Result: ${decision.swingMeterResult}`);
                     
                     // Check if the swing meter was successful
                     if (decision.swingMeterResult === 'fail') {
                         // If failed, add the fail class to show an X
                         station.classList.add('fail');
+                        console.log(`Adding fail class to station ${i}`);
                     } else {
                         // If successful, add the decision type class for proper coloring
                         station.classList.add(decision.intendedType || 'standard');
+                        console.log(`Adding ${decision.intendedType || 'standard'} class to station ${i}`);
                     }
+                } else {
+                    console.warn(`No decision found for logical stop ${i}`);
                 }
             }
             
@@ -1225,14 +1244,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 station.classList.add('current');
             }
             
-            // Add track line before station (except for first station)
-            if (i > 1) {
-                const trackLine = document.createElement('div');
-                trackLine.className = 'track-line';
-                journeyTrack.appendChild(trackLine);
-            }
-            
             journeyTrack.appendChild(station);
+            console.log(`Added station ${i} with classes:`, station.className);
         }
         
         // Scroll to current station
@@ -1264,6 +1277,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update UI
         updateUI();
+        
+        // Explicitly update the journey track
+        updateJourneyTrack();
         
         // Handle game over
         if (result.gameOver) {

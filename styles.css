@@ -148,6 +148,7 @@ header {
 .station.completed.fail {
     background-color: var(--fail-color);
     position: relative;
+    box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.5);
 }
 
 .station.completed.fail::before,
@@ -155,11 +156,12 @@ header {
     content: '';
     position: absolute;
     width: 70%;
-    height: 2px;
+    height: 3px;
     background-color: white;
     top: 50%;
     left: 15%;
     transform-origin: center;
+    z-index: 10;
 }
 
 .station.completed.fail::before {
