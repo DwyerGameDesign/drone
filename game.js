@@ -207,15 +207,16 @@ class DroneManGame {
     }
     
     // Handle swing meter interaction
-    handleSwingMeter(success, narrativeType) {
-        console.log(`Handling swing meter result: ${success ? 'Success' : 'Failure'} for narrative type: ${narrativeType}`);
+    handleSwingMeter(success, narrativeType, critical = false) {
+        console.log(`Handling swing meter result: ${success ? 'Success' : 'Failure'} for narrative type: ${narrativeType}, Critical: ${critical}`);
         
         // Track the decision in history
         const decision = {
             stop: Number(this.logicalStop),
             success: Boolean(success),
             narrativeType: String(narrativeType),
-            intendedType: this.currentNarrative.type ? String(this.currentNarrative.type) : "neutral" // Track the intended type from the narrative
+            intendedType: this.currentNarrative.type ? String(this.currentNarrative.type) : "neutral", // Track the intended type from the narrative
+            critical: Boolean(critical) // Track if this was a critical hit
         };
         
         console.log('Adding decision to history:', decision);
@@ -228,8 +229,14 @@ class DroneManGame {
         
         // Update performance score
         if (success) {
-            this.performanceScore++;
-            console.log(`Performance score increased to ${this.performanceScore}`);
+            // Bonus point for critical hits
+            if (critical) {
+                this.performanceScore += 2;
+                console.log(`Performance score increased by 2 to ${this.performanceScore} (critical hit)`);
+            } else {
+                this.performanceScore++;
+                console.log(`Performance score increased to ${this.performanceScore}`);
+            }
         } else {
             console.log(`Performance score remains at ${this.performanceScore}`);
         }
