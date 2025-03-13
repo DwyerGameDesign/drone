@@ -74,8 +74,10 @@ document.addEventListener('DOMContentLoaded', function() {
         narrativeText: document.getElementById('narrativeText'),
         choiceContainer: document.getElementById('choiceContainer'),
         swingMeterContainer: document.getElementById('swingMeterContainer'),
+        meterBackground: document.getElementById('meterBackground'),
         choiceDescription: document.getElementById('choiceDescription'),
         tapButton: document.getElementById('tapButton'),
+        tapInstruction: document.querySelector('.tap-instruction'),
         roundComplete: document.getElementById('roundComplete'),
         completedRound: document.getElementById('completedRound'),
         roundSummaryText: document.getElementById('roundSummaryText'),
@@ -83,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
         roundConnectionsValue: document.getElementById('roundConnectionsValue'),
         roundMoneyValue: document.getElementById('roundMoneyValue'),
         nextRoundButton: document.getElementById('nextRoundButton'),
+        nextInstruction: document.querySelector('.next-instruction'),
         gameOver: document.getElementById('gameOver'),
         gameOverTitle: document.getElementById('gameOverTitle'),
         gameOverMessage: document.getElementById('gameOverMessage'),
@@ -165,39 +168,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     elements.nextRoundButton.addEventListener('click', function() {
-        console.log('Starting next round...');
-        
-        // Start the next round in the game
-        const result = game.startNextRound();
-        
-        // Hide the round complete screen
-        elements.roundComplete.style.display = 'none';
-        
-        // Reset any fade-in classes
-        elements.nextRoundButton.classList.remove('fade-in');
-        
-        // Clear any result containers or swing meter elements
-        const resultContainers = document.querySelectorAll('.meter-result-container');
-        resultContainers.forEach(container => {
-            if (container.parentNode) {
-                container.parentNode.removeChild(container);
-            }
-        });
-        
-        // Reset the swing meter if it exists
-        const swingMeter = document.querySelector('.swing-meter');
-        if (swingMeter) {
-            swingMeter.classList.remove('fade-out');
+        console.log('Next round button clicked');
+        hideRoundComplete();
+        startNextRound();
+    });
+    
+    // Make the entire round complete screen tappable
+    elements.roundComplete.addEventListener('click', function(e) {
+        // Prevent clicks on child elements from triggering multiple times
+        if (e.target === elements.roundComplete || !elements.nextRoundButton.contains(e.target)) {
+            console.log('Round complete screen tapped');
+            hideRoundComplete();
+            startNextRound();
         }
-        
-        // Hide all interaction elements
-        hideAllInteractions();
-        
-        // Display the next narrative
-        displayNarrative(result.nextNarrative);
-        
-        // Update the UI to reflect the new round
-        updateUI();
     });
     
     // Reset the entire game state
@@ -626,12 +609,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Set up the tap button
         if (elements.tapButton) {
-            elements.tapButton.style.display = 'block';
-            elements.tapButton.textContent = 'TAP TO STOP';
-            elements.tapButton.onclick = stopSwingMeter;
+            elements.tapButton.style.display = 'none'; // Hide the button
+            elements.tapInstruction.style.display = 'block'; // Show the instruction text
         } else {
             console.error('Tap button element not found');
         }
+        
+        // Make the entire container tappable
+        elements.swingMeterContainer.onclick = stopSwingMeter;
         
         // Start the swing meter automatically
         startSwingMeter();
@@ -738,6 +723,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function stopSwingMeter() {
         console.log('Stopping swing meter at position:', swingPosition);
         
+        // Prevent multiple clicks
+        elements.swingMeterContainer.onclick = null;
+        
         // Stop the animation immediately
         isSwingMeterMoving = false;
         
@@ -831,6 +819,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function showSwingMeterResult(result) {
         // Hide the tap button
         elements.tapButton.style.display = 'none';
+        elements.tapInstruction.style.display = 'none';
         
         // Get the result text based on the result
         let resultText = '';
@@ -943,65 +932,64 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add the Next Stop button
     function addNextStopButton(result, resultContainer) {
-        // Add a "Next Stop" button
+        // Add a "Next Stop" button (hidden but kept for compatibility)
         const nextButton = document.createElement('button');
         nextButton.className = 'next-stop-button';
         nextButton.textContent = 'Next Stop';
-        nextButton.onclick = function() {
-            try {
-                // Process the result
-                console.log('Processing swing meter result:', result, 'Current stop before:', game.currentStop);
-                const processedResult = game.handleSwingMeter(result, currentSelectedChoice);
-                console.log('Processed result:', processedResult, 'Current stop after:', game.currentStop);
-                
-                // Hide the swing meter container
-                elements.swingMeterContainer.style.display = 'none';
-                
-                // Reset the swing meter for next time
-                resetSwingMeter();
-                
-                // Update the game state
-                updateGameState();
-                
-                // Move to the next narrative if available
-                if (processedResult && processedResult.nextNarrative) {
-                    console.log('Displaying next narrative from processedResult:', processedResult.nextNarrative.title, 'Stop:', processedResult.nextNarrative.stop);
-                    displayNarrative(processedResult.nextNarrative);
-                } else {
-                    console.warn('No nextNarrative in processedResult, trying alternatives...');
+        nextButton.style.display = 'none'; // Hide the button
+        resultContainer.appendChild(nextButton);
+        
+        // Add instruction text
+        const nextInstruction = document.createElement('div');
+        nextInstruction.className = 'next-instruction';
+        nextInstruction.textContent = 'Tap to continue';
+        resultContainer.appendChild(nextInstruction);
+        
+        // Make the entire result container tappable
+        resultContainer.style.cursor = 'pointer';
+        resultContainer.onclick = function(e) {
+            // Prevent clicks on child elements from triggering multiple times
+            if (e.target === resultContainer || !nextButton.contains(e.target)) {
+                try {
+                    // Process the result
+                    console.log('Processing swing meter result:', result, 'Current stop before:', game.currentStop);
+                    const processedResult = game.handleSwingMeter(result, currentSelectedChoice);
+                    console.log('Processed result:', processedResult, 'Current stop after:', game.currentStop);
                     
-                    // If no next narrative, try to get the current narrative
-                    if (typeof game.getCurrentNarrative === 'function') {
-                        const currentNarrative = game.getCurrentNarrative();
-                        if (currentNarrative) {
-                            console.log('Using getCurrentNarrative:', currentNarrative.title, 'Stop:', currentNarrative.stop);
-                            displayNarrative(currentNarrative);
-                        } else {
-                            console.error('No current narrative available');
-                            // Try to find the next narrative based on the current stop
-                            const nextNarrative = game.narratives.find(n => n.stop === game.currentStop);
-                            if (nextNarrative) {
-                                console.log('Found narrative for current stop:', nextNarrative.title, 'Stop:', game.currentStop);
-                                displayNarrative(nextNarrative);
-                            } else {
-                                console.error('No next narrative found for stop:', game.currentStop);
-                                console.log('Available stops:', game.narratives.map(n => n.stop).sort((a, b) => a - b));
-                            }
-                        }
-                    } else {
-                        console.error('getCurrentNarrative function not found on game object');
+                    // Hide the swing meter container
+                    elements.swingMeterContainer.style.display = 'none';
+                    
+                    // Reset the swing meter for next time
+                    resetSwingMeter();
+                    
+                    // Check if the game is over
+                    if (processedResult.gameOver) {
+                        console.log('Game over detected after swing meter result');
+                        showGameOver(processedResult.gameOverReason);
+                        return;
                     }
+                    
+                    // Check if we need to show the round complete screen
+                    if (processedResult.roundComplete) {
+                        console.log('Round complete detected');
+                        showRoundComplete(
+                            processedResult.roundNumber,
+                            processedResult.roundSummary,
+                            processedResult.resources
+                        );
+                        return;
+                    }
+                    
+                    // Otherwise, display the next narrative
+                    displayNarrative(processedResult.nextNarrative);
+                } catch (error) {
+                    console.error('Error processing swing meter result:', error);
                 }
-            } catch (error) {
-                console.error('Error processing swing meter result:', error);
-                // Fallback to hide the swing meter and show the narrative
-                elements.swingMeterContainer.style.display = 'none';
-                updateGameState();
             }
         };
         
-        // Add the button to the result container
-        resultContainer.appendChild(nextButton);
+        // Keep the original button functionality for backward compatibility
+        nextButton.onclick = resultContainer.onclick;
     }
     
     // Reset the swing meter for next use
@@ -1033,9 +1021,10 @@ document.addEventListener('DOMContentLoaded', function() {
         tapMarker.classList.remove('good', 'okay', 'fail');
         tapMarker.style.backgroundColor = 'white'; // Reset to default white color
         
-        // Show the tap button again for next time
+        // Reset tap button
         if (elements.tapButton) {
-            elements.tapButton.style.display = 'block';
+            elements.tapButton.style.display = 'none';
+            elements.tapInstruction.style.display = 'block';
         }
     }
     
@@ -1344,8 +1333,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear existing content
         elements.roundSummaryText.textContent = '';
         
-        // Hide the next round button initially
+        // Show the next round button with fade-in animation
         elements.nextRoundButton.style.display = 'none';
+        elements.nextInstruction.style.display = 'block';
         
         // Create a temporary div to store the full message
         const tempDiv = document.createElement('div');
@@ -1426,5 +1416,42 @@ document.addEventListener('DOMContentLoaded', function() {
             showRoundComplete();
             return;
         }
+    }
+
+    function hideRoundComplete() {
+        console.log('Hiding round complete screen');
+        elements.roundComplete.style.display = 'none';
+        elements.nextRoundButton.classList.remove('fade-in');
+        elements.nextInstruction.style.display = 'none';
+    }
+    
+    function startNextRound() {
+        console.log('Starting next round...');
+        
+        // Start the next round in the game
+        const result = game.startNextRound();
+        
+        // Clear any result containers or swing meter elements
+        const resultContainers = document.querySelectorAll('.meter-result-container');
+        resultContainers.forEach(container => {
+            if (container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+        });
+        
+        // Reset the swing meter if it exists
+        const swingMeter = document.querySelector('.swing-meter');
+        if (swingMeter) {
+            swingMeter.classList.remove('fade-out');
+        }
+        
+        // Hide all interaction elements
+        hideAllInteractions();
+        
+        // Display the next narrative
+        displayNarrative(result.nextNarrative);
+        
+        // Update the UI to reflect the new round
+        updateUI();
     }
 });

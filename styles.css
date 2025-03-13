@@ -297,6 +297,8 @@ header {
     border-radius: 0.5rem;
     border-top: 4px solid #999;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: relative;
+    cursor: pointer;
 }
 
 .choice-description {
@@ -312,7 +314,7 @@ header {
     background-color: var(--primary-color);
     border-radius: 0.25rem;
     overflow: hidden;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     touch-action: none;
 }
 
@@ -366,27 +368,15 @@ header {
 }
 
 .tap-button {
-    background-color: var(--accent-color);
-    color: #fff;
-    border: none;
-    border-radius: 0.25rem;
-    padding: 1rem;
-    font-size: 1.1rem;
-    cursor: pointer;
-    width: 100%;
+    display: none; /* Hide the original button */
+}
+
+.tap-instruction {
     text-align: center;
-    font-weight: bold;
-    transition: background-color 0.2s;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-}
-
-.tap-button:hover, .tap-button:active {
-    background-color: #e67e22;
-}
-
-.tap-button:active {
-    transform: scale(0.98);
+    font-size: 0.9rem;
+    color: var(--text-color);
+    opacity: 0.8;
+    margin-top: 0.5rem;
 }
 
 /* Result styles */
@@ -399,6 +389,8 @@ header {
     transform: translateY(10px);
     transition: opacity 0.3s, transform 0.3s;
     border-left: 4px solid transparent;
+    cursor: pointer;
+    position: relative;
 }
 
 .meter-result-container.visible {
@@ -429,21 +421,15 @@ header {
 }
 
 .next-stop-button {
-    background-color: var(--accent-color);
-    color: #fff;
-    border: none;
-    border-radius: 0.25rem;
-    padding: 0.75rem;
-    font-size: 1rem;
-    cursor: pointer;
-    width: 100%;
-    text-align: center;
-    font-weight: bold;
-    transition: background-color 0.2s;
+    display: none; /* Hide the original button */
 }
 
-.next-stop-button:hover, .next-stop-button:active {
-    background-color: #e67e22;
+.next-instruction {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    opacity: 0.8;
+    margin-top: 1rem;
 }
 
 /* Round complete screen */
@@ -461,6 +447,7 @@ header {
     padding: 1rem;
     z-index: 100;
     backdrop-filter: blur(5px);
+    cursor: pointer; /* Make the entire screen tappable */
 }
 
 .round-complete-screen::before {
@@ -832,10 +819,14 @@ header {
         border-radius: 0.5rem;
     }
     
-    .tap-button {
-        padding: 1.25rem;
-        font-size: 1.2rem;
-        border-radius: 0.5rem;
+    .tap-instruction {
+        font-size: 1rem;
+        margin-top: 0.75rem;
+    }
+    
+    .next-instruction {
+        font-size: 1rem;
+        margin-top: 1.25rem;
     }
     
     .journey-track {
