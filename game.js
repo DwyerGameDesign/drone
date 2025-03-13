@@ -211,12 +211,15 @@ class DroneManGame {
         console.log(`Handling swing meter result: ${success ? 'Success' : 'Failure'} for narrative type: ${narrativeType}`);
         
         // Track the decision in history
-        this.decisionHistory.push({
-            stop: this.logicalStop,
-            success: success,
-            narrativeType: narrativeType,
-            intendedType: this.currentNarrative.type // Track the intended type from the narrative
-        });
+        const decision = {
+            stop: Number(this.logicalStop),
+            success: Boolean(success),
+            narrativeType: String(narrativeType),
+            intendedType: this.currentNarrative.type ? String(this.currentNarrative.type) : "neutral" // Track the intended type from the narrative
+        };
+        
+        console.log('Adding decision to history:', decision);
+        this.decisionHistory.push(decision);
         
         // If successful, track the decision type
         if (success) {

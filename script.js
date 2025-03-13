@@ -58,6 +58,17 @@ document.addEventListener('DOMContentLoaded', function() {
         resetGameState();
     });
 
+    // Record Collection menu option
+    const recordCollectionMenu = document.getElementById('recordCollectionMenu');
+    if (recordCollectionMenu) {
+        recordCollectionMenu.addEventListener('click', () => {
+            console.log('Record Collection menu clicked');
+            menuPanel.classList.remove('open');
+            menuOverlay.classList.remove('open');
+            showRecordCollection();
+        });
+    }
+
     aboutGameMenu.addEventListener('click', () => {
         // Show about information
         alert('Drone Man: The Journey\n\nNavigate through life\'s challenges as a delivery drone, making decisions that affect your soul, connections, and success. Every choice matters in this unique narrative experience.');
@@ -129,6 +140,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize journey manager
         game.initializeJourneyManager();
         
+        // Initialize achievement system
+        if (!game.achievementSystem) {
+            console.log('Initializing achievement system...');
+            game.achievementSystem = new AchievementSystem(game);
+        } else {
+            console.log('Resetting achievement system for new playthrough...');
+            game.achievementSystem.resetPlaythrough();
+        }
+        
         // Initialize journey track
         updateJourneyTrack();
         
@@ -188,12 +208,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Add event listener for the view albums button
+    const viewAlbumsButton = document.getElementById('viewAlbumsButton');
+    if (viewAlbumsButton) {
+        viewAlbumsButton.addEventListener('click', function() {
+            console.log('View albums button clicked');
+            showRecordCollection();
+        });
+    }
+    
     // Reset the entire game state
     function resetGameState() {
         console.log('Resetting game state...');
         
         // Reset game state
         game.restart();
+        
+        // Reset achievement system for new playthrough
+        if (game.achievementSystem) {
+            console.log('Resetting achievement system for new playthrough...');
+            game.achievementSystem.resetPlaythrough();
+        }
         
         // Explicitly ensure we're at stop 1 and performance score is 0
         if (game.logicalStop !== 1 || game.performanceScore !== 0) {
@@ -915,10 +950,13 @@ document.addEventListener('DOMContentLoaded', function() {
         resultTextElement.style.cursor = 'pointer';
         resultTextElement.addEventListener('click', completeTyping);
         
+        // Create a variable to store the next button for later reference
+        let nextButton;
+        
         // Also make the entire result container tappable to skip typing
         resultContainer.addEventListener('click', function(e) {
             // Prevent clicks on child elements from triggering multiple times
-            if (e.target === resultContainer || !nextButton.contains(e.target)) {
+            if (e.target === resultContainer || (nextButton && !nextButton.contains(e.target))) {
                 // If still typing, complete the typing first
                 if (isTyping) {
                     completeTyping();
@@ -935,10 +973,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Get the narrative type from the selected choice
                     const narrativeType = currentSelectedChoice.type || 'neutral';
                     
+                    console.log(`Calling handleSwingMeter with success=${success}, narrativeType=${narrativeType}`);
+                    
+                    // Track the decision in the achievement system
+                    if (game.achievementSystem) {
+                        console.log(`Tracking decision in achievement system: Stop=${game.logicalStop}, Type=${narrativeType}, Success=${success}`);
+                        game.achievementSystem.trackDecision(game.logicalStop, narrativeType, success);
+                    }
+                    
                     // Call the game's handleSwingMeter method with the success and narrative type
                     const gameResult = game.handleSwingMeter(success, narrativeType);
                     
                     console.log('Game result after handling swing meter:', gameResult, 'Current stop after:', game.currentStop);
+                    console.log('Updated decision history:', game.decisionHistory);
                     
                     // Update the journey track immediately to reflect the decision
                     updateJourneyTrack();
@@ -983,7 +1030,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Typing is complete naturally
                 isTyping = false;
                 // Add a "Next Stop" button after the text is fully displayed
-                addNextStopButton(result, resultContainer);
+                nextButton = addNextStopButton(result, resultContainer);
             }
         };
         
@@ -1020,8 +1067,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Prevent clicks on child elements from triggering multiple times
             if (e.target === resultContainer || !nextButton.contains(e.target)) {
                 // If still typing, complete the typing first
-                if (isTyping) {
-                    completeTyping();
+                if (typeof isTyping !== 'undefined' && isTyping) {
+                    if (typeof completeTyping === 'function') {
+                        completeTyping();
+                    }
                     return;
                 }
                 
@@ -1035,10 +1084,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Get the narrative type from the selected choice
                     const narrativeType = currentSelectedChoice.type || 'neutral';
                     
+                    console.log(`Calling handleSwingMeter with success=${success}, narrativeType=${narrativeType}`);
+                    
+                    // Track the decision in the achievement system
+                    if (game.achievementSystem) {
+                        console.log(`Tracking decision in achievement system: Stop=${game.logicalStop}, Type=${narrativeType}, Success=${success}`);
+                        game.achievementSystem.trackDecision(game.logicalStop, narrativeType, success);
+                    }
+                    
                     // Call the game's handleSwingMeter method with the success and narrative type
                     const gameResult = game.handleSwingMeter(success, narrativeType);
                     
                     console.log('Game result after handling swing meter:', gameResult, 'Current stop after:', game.currentStop);
+                    console.log('Updated decision history:', game.decisionHistory);
                     
                     // Update the journey track immediately to reflect the decision
                     updateJourneyTrack();
@@ -1075,6 +1133,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Keep the original button functionality for backward compatibility
         nextButton.onclick = resultContainer.onclick;
+        
+        return nextButton;
     }
     
     // Reset the swing meter for next use
@@ -1229,10 +1289,64 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.decisionTrack.scrollLeft = elements.decisionTrack.scrollWidth;
     }
     
+    // Debug function to help understand what's happening with the journey track
+    function debugJourneyTrack() {
+        console.log('=== DEBUG JOURNEY TRACK ===');
+        console.log('Current logical stop:', game.logicalStop);
+        console.log('Total stops:', game.journeyManager.getTotalStops());
+        console.log('Decision history:', game.decisionHistory);
+        
+        // Check each station
+        const stations = document.querySelectorAll('.station');
+        console.log('Number of stations:', stations.length);
+        
+        stations.forEach((station, index) => {
+            console.log(`Station ${index + 1} classes:`, station.className);
+            
+            // Check if this station should have a decision
+            if (index + 1 < game.logicalStop) {
+                const decision = game.decisionHistory.find(d => Number(d.stop) === index + 1);
+                console.log(`Decision for station ${index + 1}:`, decision);
+                
+                if (decision) {
+                    console.log(`  Success: ${decision.success}, Type: ${decision.narrativeType}`);
+                    
+                    // Check if the station has the correct classes
+                    const hasCompletedClass = station.classList.contains('completed');
+                    const hasFailClass = station.classList.contains('fail');
+                    const hasTypeClass = station.classList.contains(decision.narrativeType);
+                    
+                    console.log(`  Has completed class: ${hasCompletedClass}`);
+                    console.log(`  Has fail class: ${hasFailClass}`);
+                    console.log(`  Has type class: ${hasTypeClass}`);
+                    
+                    // Check if the classes match the decision
+                    const shouldHaveFailClass = decision.success === false;
+                    const shouldHaveTypeClass = decision.success === true;
+                    
+                    console.log(`  Should have fail class: ${shouldHaveFailClass}`);
+                    console.log(`  Should have type class: ${shouldHaveTypeClass}`);
+                    
+                    // Log any discrepancies
+                    if (shouldHaveFailClass && !hasFailClass) {
+                        console.error(`  ERROR: Station ${index + 1} should have fail class but doesn't`);
+                    }
+                    
+                    if (shouldHaveTypeClass && !hasTypeClass) {
+                        console.error(`  ERROR: Station ${index + 1} should have ${decision.narrativeType} class but doesn't`);
+                    }
+                }
+            }
+        });
+        
+        console.log('=== END DEBUG JOURNEY TRACK ===');
+    }
+
     // Update the journey track
     function updateJourneyTrack() {
         console.log('Updating journey track');
         console.log('Decision history:', game.decisionHistory);
+        console.log('Decision types:', game.decisionTypes);
         
         const journeyTrack = document.getElementById('journeyTrack');
         if (!journeyTrack) {
@@ -1277,25 +1391,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 station.classList.add('completed');
                 
                 // Find the decision for this logical stop
-                const decision = game.decisionHistory.find(d => d.stop === i);
+                const decision = game.decisionHistory.find(d => Number(d.stop) === i);
                 console.log(`Looking for decision at logical stop ${i}:`, decision);
                 
                 if (decision) {
                     console.log(`Decision for logical stop ${i}:`, decision);
-                    console.log(`Decision type: ${decision.narrativeType}, Success: ${decision.success}`);
+                    console.log(`Decision success: ${decision.success}, type: ${decision.narrativeType}`);
                     
                     // Check if the swing meter was successful
-                    if (!decision.success) {
+                    if (decision.success === false) {
                         // If failed, add the fail class to show an X
                         station.classList.add('fail');
                         console.log(`Adding fail class to station ${i}`);
-                    } else {
+                    } else if (decision.narrativeType) {
                         // If successful, add the decision type class for proper coloring
-                        station.classList.add(decision.narrativeType || 'standard');
-                        console.log(`Adding ${decision.narrativeType || 'standard'} class to station ${i}`);
+                        station.classList.add(decision.narrativeType);
+                        console.log(`Adding ${decision.narrativeType} class to station ${i}`);
+                    } else {
+                        // Fallback to standard class if no narrative type
+                        station.classList.add('standard');
+                        console.log(`Adding standard class to station ${i} (no narrative type)`);
                     }
                 } else {
                     console.warn(`No decision found for logical stop ${i}`);
+                    
+                    // Debug: Print all decision stops to help diagnose the issue
+                    const stops = game.decisionHistory.map(d => d.stop);
+                    console.log(`All decision stops:`, stops);
+                    console.log(`Types of stops:`, stops.map(s => typeof s));
                 }
             }
             
@@ -1316,6 +1439,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 journeyTrack.scrollLeft = Math.max(0, scrollPosition);
             }, 100);
         }
+        
+        // Debug the journey track
+        debugJourneyTrack();
     }
     
     // Update UI elements
@@ -1407,6 +1533,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (game.gameOverReason === "success") {
             console.log('Forcing success to true because gameOverReason is "success"');
             success = true;
+        }
+        
+        // Complete the playthrough in the achievement system
+        let newlyUnlockedAchievements = [];
+        if (game.achievementSystem) {
+            console.log('Completing playthrough in achievement system');
+            console.log('Achievement stats before completion:', {
+                currentPlaythrough: game.achievementSystem.playerStats.currentPlaythrough,
+                allTime: game.achievementSystem.playerStats.allTime
+            });
+            
+            newlyUnlockedAchievements = game.achievementSystem.completePlaythrough();
+            console.log('Newly unlocked achievements:', newlyUnlockedAchievements);
+            
+            console.log('Achievement stats after completion:', {
+                allTime: game.achievementSystem.playerStats.allTime,
+                totalUnlocked: game.achievementSystem.achievements.filter(a => a.unlocked).length
+            });
         }
         
         elements.gameOver.style.display = 'flex';
@@ -1503,6 +1647,12 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.restartButton.style.display = 'none';
         elements.restartButton.textContent = 'Start New Journey';
         
+        // Hide the view albums button initially
+        const viewAlbumsButton = document.getElementById('viewAlbumsButton');
+        if (viewAlbumsButton) {
+            viewAlbumsButton.style.display = 'none';
+        }
+        
         // Create a temporary div to store the full message
         const tempDiv = document.createElement('div');
         tempDiv.textContent = gameOverMessage;
@@ -1518,9 +1668,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (isTyping) {
                 isTyping = false;
                 elements.gameOverMessage.innerHTML = sanitizedMessage;
+                
                 // Show the restart button immediately
                 elements.restartButton.style.display = 'block';
                 elements.restartButton.classList.add('fade-in');
+                
+                // Show achievements section if there are newly unlocked achievements
+                displayNewAchievements(newlyUnlockedAchievements);
             }
         };
         
@@ -1550,16 +1704,73 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (isTyping) {
                 // Typing is complete naturally
                 isTyping = false;
+                
                 // Show the restart button after the message is fully displayed
                 setTimeout(() => {
                     elements.restartButton.style.display = 'block';
                     elements.restartButton.classList.add('fade-in');
+                    
+                    // Show achievements section if there are newly unlocked achievements
+                    displayNewAchievements(newlyUnlockedAchievements);
                 }, 500);
             }
         };
         
         // Start the typewriter effect
         typeNextCharacter();
+    }
+    
+    // Display newly unlocked achievements in the game over screen
+    function displayNewAchievements(newlyUnlockedIds) {
+        if (!game.achievementSystem || !newlyUnlockedIds || newlyUnlockedIds.length === 0) {
+            return;
+        }
+        
+        const newAlbumsSection = document.getElementById('newAlbumsSection');
+        const newAlbumsGrid = document.getElementById('newAlbumsGrid');
+        const viewAlbumsButton = document.getElementById('viewAlbumsButton');
+        
+        if (!newAlbumsSection || !newAlbumsGrid || !viewAlbumsButton) {
+            console.error('Missing elements for displaying achievements');
+            return;
+        }
+        
+        // Clear any existing albums
+        newAlbumsGrid.innerHTML = '';
+        
+        // Get the newly unlocked achievements
+        const newlyUnlocked = game.achievementSystem.getNewlyUnlocked();
+        
+        // Create album elements for each newly unlocked achievement
+        newlyUnlocked.forEach(achievement => {
+            const album = document.createElement('div');
+            album.className = 'album newly-unlocked';
+            
+            const albumCover = document.createElement('div');
+            albumCover.className = `album-cover ${achievement.albumArt}`;
+            albumCover.style.backgroundColor = achievement.albumColor;
+            
+            // Add the album shine effect
+            const albumShine = document.createElement('div');
+            albumShine.className = 'album-shine';
+            albumCover.appendChild(albumShine);
+            
+            // Add tooltip
+            const tooltip = document.createElement('div');
+            tooltip.className = 'album-tooltip';
+            tooltip.textContent = `${achievement.title}: ${achievement.description}`;
+            
+            album.appendChild(albumCover);
+            album.appendChild(tooltip);
+            newAlbumsGrid.appendChild(album);
+        });
+        
+        // Show the section and button
+        newAlbumsSection.style.display = 'block';
+        viewAlbumsButton.style.display = 'block';
+        
+        // Add click handler for the view albums button
+        viewAlbumsButton.onclick = showRecordCollection;
     }
     
     // Show round complete screen
@@ -1705,5 +1916,135 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update the UI to reflect the new round
         updateUI();
+    }
+
+    // Show the record collection screen
+    function showRecordCollection() {
+        console.log('Showing record collection screen');
+        
+        if (!game.achievementSystem) {
+            console.error('Achievement system not initialized');
+            return;
+        }
+        
+        const recordCollection = document.getElementById('recordCollection');
+        const albumCollectionGrid = document.getElementById('albumCollectionGrid');
+        
+        if (!recordCollection || !albumCollectionGrid) {
+            console.error('Missing elements for record collection');
+            return;
+        }
+        
+        // Show the record collection screen
+        recordCollection.style.display = 'flex';
+        
+        // Get all achievements
+        const allAchievements = game.achievementSystem.getAllAchievements();
+        
+        // Display all achievements
+        displayAchievementsInCollection(allAchievements, 'all');
+        
+        // Set up tab functionality
+        const tabs = document.querySelectorAll('.collection-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Get the category
+                const category = this.getAttribute('data-category');
+                
+                // Filter achievements by category
+                let filteredAchievements = allAchievements;
+                if (category !== 'all') {
+                    filteredAchievements = allAchievements.filter(a => a.category === category);
+                }
+                
+                // Display filtered achievements
+                displayAchievementsInCollection(filteredAchievements, category);
+            });
+        });
+        
+        // Set up close button
+        const closeButton = document.getElementById('closeCollection');
+        if (closeButton) {
+            closeButton.onclick = hideRecordCollection;
+        }
+        
+        // Set up return to game button
+        const returnButton = document.getElementById('returnToGameButton');
+        if (returnButton) {
+            returnButton.onclick = hideRecordCollection;
+        }
+    }
+    
+    // Hide the record collection screen
+    function hideRecordCollection() {
+        console.log('Hiding record collection screen');
+        
+        const recordCollection = document.getElementById('recordCollection');
+        if (recordCollection) {
+            recordCollection.style.display = 'none';
+        }
+    }
+    
+    // Display achievements in the collection grid
+    function displayAchievementsInCollection(achievements, category) {
+        console.log(`Displaying ${achievements.length} achievements in category: ${category}`);
+        
+        const albumCollectionGrid = document.getElementById('albumCollectionGrid');
+        if (!albumCollectionGrid) {
+            console.error('Album collection grid not found');
+            return;
+        }
+        
+        // Clear existing albums
+        albumCollectionGrid.innerHTML = '';
+        
+        // Create album elements for each achievement
+        achievements.forEach(achievement => {
+            const album = document.createElement('div');
+            album.className = 'collection-album';
+            
+            const albumCover = document.createElement('div');
+            albumCover.className = `collection-album-cover ${achievement.albumArt}`;
+            
+            if (achievement.unlocked) {
+                // Unlocked album
+                albumCover.style.backgroundColor = achievement.albumColor;
+                
+                // Add shine effect for unlocked albums
+                const albumShine = document.createElement('div');
+                albumShine.className = 'album-shine';
+                albumCover.appendChild(albumShine);
+            } else {
+                // Locked album
+                albumCover.classList.add('locked-album');
+            }
+            
+            // Add album info (only visible for unlocked achievements)
+            if (achievement.unlocked) {
+                const albumInfo = document.createElement('div');
+                albumInfo.className = 'collection-album-info';
+                
+                const albumTitle = document.createElement('div');
+                albumTitle.className = 'collection-album-title';
+                albumTitle.textContent = achievement.title;
+                
+                const albumDescription = document.createElement('div');
+                albumDescription.className = 'collection-album-description';
+                albumDescription.textContent = achievement.description;
+                
+                albumInfo.appendChild(albumTitle);
+                albumInfo.appendChild(albumDescription);
+                album.appendChild(albumInfo);
+            }
+            
+            album.appendChild(albumCover);
+            albumCollectionGrid.appendChild(album);
+        });
     }
 });

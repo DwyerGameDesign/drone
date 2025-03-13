@@ -79,7 +79,41 @@
             <h2 id="gameOverTitle">Journey's End</h2>
             <div class="ending-type" id="endingType">BALANCED ENDING</div>
             <div class="game-over-message" id="gameOverMessage"></div>
+            
+            <!-- New section for achievements -->
+            <div class="new-albums-section" id="newAlbumsSection">
+                <h3>NEW ALBUMS RECORDED</h3>
+                <div class="album-grid" id="newAlbumsGrid">
+                    <!-- New albums will be added here by JavaScript -->
+                </div>
+            </div>
+            
             <button class="restart-button" id="restartButton">Start New Journey</button>
+            <button class="view-albums-button" id="viewAlbumsButton">View All Albums</button>
+        </div>
+        
+        <!-- Record Collection screen -->
+        <div class="record-collection-screen" id="recordCollection">
+            <div class="collection-header">
+                <h2>RECORD COLLECTION</h2>
+                <button class="close-collection" id="closeCollection">×</button>
+            </div>
+            
+            <div class="collection-tabs">
+                <div class="collection-tab active" data-category="all">All</div>
+                <div class="collection-tab" data-category="playthrough">Playthrough</div>
+                <div class="collection-tab" data-category="exploration">Exploration</div>
+                <div class="collection-tab" data-category="variety">Variety</div>
+                <div class="collection-tab" data-category="special">Special</div>
+                <div class="collection-tab" data-category="challenge">Challenge</div>
+                <div class="collection-tab" data-category="mastery">Mastery</div>
+            </div>
+            
+            <div class="album-collection-grid" id="albumCollectionGrid">
+                <!-- Albums will be added here by JavaScript -->
+            </div>
+            
+            <button class="return-to-game-button" id="returnToGameButton">Return to Game</button>
         </div>
         
         <!-- Menu panel -->
@@ -90,6 +124,7 @@
             </div>
             <div class="menu-items">
                 <div class="menu-item" id="restartGameMenu">Restart Game</div>
+                <div class="menu-item" id="recordCollectionMenu">Record Collection</div>
                 <div class="menu-item" id="aboutGameMenu">About</div>
                 <div class="menu-item" id="helpMenu">Help</div>
             </div>
@@ -99,6 +134,7 @@
     
     <script src="game.js"></script>
     <script src="journey-manager.js"></script>
+    <script src="achievements.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
