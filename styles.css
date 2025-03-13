@@ -145,6 +145,31 @@ header {
     background-color: var(--success-color);
 }
 
+.station.completed.fail {
+    background-color: var(--fail-color);
+    position: relative;
+}
+
+.station.completed.fail::before,
+.station.completed.fail::after {
+    content: '';
+    position: absolute;
+    width: 70%;
+    height: 2px;
+    background-color: white;
+    top: 50%;
+    left: 15%;
+    transform-origin: center;
+}
+
+.station.completed.fail::before {
+    transform: translateY(-50%) rotate(45deg);
+}
+
+.station.completed.fail::after {
+    transform: translateY(-50%) rotate(-45deg);
+}
+
 .track-line {
     height: 2px;
     background-color: #555;

@@ -1207,8 +1207,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Find the decision for this logical stop
                 const decision = game.decisionHistory.find(d => d.logicalStop === i);
                 if (decision) {
-                    // Add decision type class
-                    station.classList.add(decision.intendedType || 'standard');
+                    console.log(`Decision for logical stop ${i}:`, decision);
+                    
+                    // Check if the swing meter was successful
+                    if (decision.swingMeterResult === 'fail') {
+                        // If failed, add the fail class to show an X
+                        station.classList.add('fail');
+                    } else {
+                        // If successful, add the decision type class for proper coloring
+                        station.classList.add(decision.intendedType || 'standard');
+                    }
                 }
             }
             
