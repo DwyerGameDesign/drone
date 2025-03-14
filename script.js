@@ -1498,6 +1498,76 @@ document.addEventListener('DOMContentLoaded', function() {
         updateJourneyTrack();
     }
     
+    // Update the journey track in the game over screen
+    function updateGameOverJourneyTrack() {
+        console.log('Updating game over journey track');
+        
+        // Use the gameOverJourneyTrack element
+        const journeyTrack = document.getElementById('gameOverJourneyTrack');
+        if (!journeyTrack) {
+            console.error('Game over journey track element not found');
+            return;
+        }
+        
+        // Clear the track
+        journeyTrack.innerHTML = '';
+        
+        // Get the total number of stops in the journey
+        const totalStops = game.journeyManager.getTotalStops();
+        console.log('Total stops for game over track:', totalStops);
+        
+        if (!totalStops || totalStops <= 0) {
+            console.warn('Invalid total stops for game over track:', totalStops);
+            return;
+        }
+        
+        // Create track line elements between stations
+        for (let i = 1; i <= totalStops; i++) {
+            // Add station
+            const station = document.createElement('div');
+            station.className = 'station';
+            
+            // Add station number as data attribute
+            station.dataset.stop = i;
+            
+            // Add track line before station (except for first station)
+            if (i > 1) {
+                const trackLine = document.createElement('div');
+                trackLine.className = 'track-line';
+                journeyTrack.appendChild(trackLine);
+            }
+            
+            // Find the decision for this logical stop
+            const decision = game.decisionHistory.find(d => Number(d.stop) === i);
+            
+            if (decision) {
+                // Add completed class
+                station.classList.add('completed');
+                
+                // Check if the swing meter was successful
+                if (decision.success === false) {
+                    // If failed, add the fail class to show an X
+                    station.classList.add('fail');
+                } else if (decision.narrativeType) {
+                    // If successful, add the decision type class for proper coloring
+                    station.classList.add(decision.narrativeType);
+                } else {
+                    // Fallback to standard class if no narrative type
+                    station.classList.add('standard');
+                }
+            }
+            
+            // Add current class if this is the current stop (for incomplete journeys)
+            if (i === game.logicalStop && !game.gameOver) {
+                station.classList.add('current');
+            }
+            
+            journeyTrack.appendChild(station);
+        }
+        
+        console.log('Game over journey track updated');
+    }
+    
     // Handle the result of any interaction
     function handleInteractionResult(result) {
         console.log('Handling interaction result:', result);
@@ -1692,6 +1762,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
+        
+        // Update the journey track in the game over screen
+        updateGameOverJourneyTrack();
         
         // Get the game over message
         let gameOverMessage;
@@ -2097,7 +2170,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Display achievements in the collection grid
     function displayAchievementsInCollection(achievements, category) {
-        console.log(`Displaying ${achievements.length} achievements in category: ${category}`);
+        console.log('Displaying achievements in collection for category:', category);
         
         const albumCollectionGrid = document.getElementById('albumCollectionGrid');
         if (!albumCollectionGrid) {
@@ -2108,51 +2181,131 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear existing albums
         albumCollectionGrid.innerHTML = '';
         
-        // Create album elements for each achievement
-        achievements.forEach(achievement => {
+        // Filter achievements by category
+        let filteredAchievements = achievements;
+        if (category !== 'all') {
+            filteredAchievements = achievements.filter(a => a.category === category);
+        }
+        
+        // Sort achievements: unlocked first, then by ID
+        filteredAchievements.sort((a, b) => {
+            if (a.unlocked && !b.unlocked) return -1;
+            if (!a.unlocked && b.unlocked) return 1;
+            return a.id.localeCompare(b.id);
+        });
+        
+        // Add each achievement as an album
+        filteredAchievements.forEach(achievement => {
             const album = document.createElement('div');
             album.className = 'collection-album';
             
             const albumCover = document.createElement('div');
-            albumCover.className = `collection-album-cover ${achievement.albumArt}`;
+            albumCover.className = 'collection-album-cover ' + (achievement.shape || 'square');
+            albumCover.style.backgroundColor = achievement.color || '#333';
             
+            // Add shine effect
+            const shine = document.createElement('div');
+            shine.className = 'album-shine';
+            albumCover.appendChild(shine);
+            
+            // Add unlocked badge if unlocked
             if (achievement.unlocked) {
-                // Unlocked album
-                albumCover.style.backgroundColor = achievement.albumColor;
-                
-                // Add shine effect for unlocked albums
-                const albumShine = document.createElement('div');
-                albumShine.className = 'album-shine';
-                albumCover.appendChild(albumShine);
-                
-                // Add unlocked badge
-                const unlockedBadge = document.createElement('div');
-                unlockedBadge.className = 'unlocked-badge';
-                unlockedBadge.textContent = 'UNLOCKED';
-                album.appendChild(unlockedBadge);
+                const badge = document.createElement('div');
+                badge.className = 'unlocked-badge';
+                badge.textContent = 'UNLOCKED';
+                album.appendChild(badge);
             } else {
-                // Locked album
-                albumCover.classList.add('locked-album');
+                album.classList.add('locked-album');
             }
             
-            // Add album info (always visible for all achievements)
+            album.appendChild(albumCover);
+            
+            // Album info
             const albumInfo = document.createElement('div');
             albumInfo.className = 'collection-album-info';
             
             const albumTitle = document.createElement('div');
             albumTitle.className = 'collection-album-title';
-            albumTitle.textContent = achievement.title;
+            albumTitle.textContent = achievement.unlocked ? achievement.title : '???';
+            albumInfo.appendChild(albumTitle);
             
             const albumDescription = document.createElement('div');
             albumDescription.className = 'collection-album-description';
-            albumDescription.textContent = achievement.unlocked ? achievement.description : achievement.description.replace(/Complete|Choose|Fail|Visit/i, "???");
-            
-            albumInfo.appendChild(albumTitle);
+            albumDescription.textContent = achievement.unlocked ? achievement.description : 'This album is locked. Keep playing to discover it.';
             albumInfo.appendChild(albumDescription);
             
-            album.appendChild(albumCover);
             album.appendChild(albumInfo);
             albumCollectionGrid.appendChild(album);
         });
+    }
+
+    // Update the journey track in the game over screen
+    function updateGameOverJourneyTrack() {
+        console.log('Updating game over journey track');
+        
+        // Use the gameOverJourneyTrack element
+        const journeyTrack = document.getElementById('gameOverJourneyTrack');
+        if (!journeyTrack) {
+            console.error('Game over journey track element not found');
+            return;
+        }
+        
+        // Clear the track
+        journeyTrack.innerHTML = '';
+        
+        // Get the total number of stops in the journey
+        const totalStops = game.journeyManager.getTotalStops();
+        console.log('Total stops for game over track:', totalStops);
+        
+        if (!totalStops || totalStops <= 0) {
+            console.warn('Invalid total stops for game over track:', totalStops);
+            return;
+        }
+        
+        // Create track line elements between stations
+        for (let i = 1; i <= totalStops; i++) {
+            // Add station
+            const station = document.createElement('div');
+            station.className = 'station';
+            
+            // Add station number as data attribute
+            station.dataset.stop = i;
+            
+            // Add track line before station (except for first station)
+            if (i > 1) {
+                const trackLine = document.createElement('div');
+                trackLine.className = 'track-line';
+                journeyTrack.appendChild(trackLine);
+            }
+            
+            // Find the decision for this logical stop
+            const decision = game.decisionHistory.find(d => Number(d.stop) === i);
+            
+            if (decision) {
+                // Add completed class
+                station.classList.add('completed');
+                
+                // Check if the swing meter was successful
+                if (decision.success === false) {
+                    // If failed, add the fail class to show an X
+                    station.classList.add('fail');
+                } else if (decision.narrativeType) {
+                    // If successful, add the decision type class for proper coloring
+                    station.classList.add(decision.narrativeType);
+                } else {
+                    // Fallback to standard class if no narrative type
+                    station.classList.add('standard');
+                }
+            }
+            
+            // Add current class if this is the current stop (for incomplete journeys)
+            if (i === game.logicalStop && !game.gameOver) {
+                station.classList.add('current');
+            }
+            
+            journeyTrack.appendChild(station);
+        }
+        
+        console.log('Game over journey track updated');
     }
 });

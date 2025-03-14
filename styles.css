@@ -1543,3 +1543,31 @@ header {
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
+
+/* Game over journey track */
+.game-over-journey-track {
+    margin: 1rem auto;
+    max-width: 90%;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+}
+
+.game-over-journey-track .journey-label {
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.game-over-journey-track .track {
+    justify-content: space-between;
+}
+
+/* Responsive adjustments for game over screen */
+@media (max-width: 768px) {
+    .game-over-journey-track {
+        max-width: 95%;
+        padding: 0.5rem;
+    }
+}
