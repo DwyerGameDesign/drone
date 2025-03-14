@@ -1617,7 +1617,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Set the ending type based on the player's decisions
         const endingType = document.getElementById('endingType');
         if (endingType) {
-            // For success endings, determine the dominant path
+            // Get the ending type class based on the dominant path
+            let endingTypeClass = "mixed";
+            
             if (success) {
                 const counts = {
                     soul: game.decisionTypes.filter(type => type === "soul").length,
@@ -1625,33 +1627,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     success: game.decisionTypes.filter(type => type === "success").length
                 };
                 
-                console.log('Decision type counts for ending:', counts);
-                
-                // Determine the dominant path
-                let dominant = "mixed";
                 if (counts.soul > counts.connections && counts.soul > counts.success) {
-                    dominant = "soul";
+                    endingTypeClass = "soul";
                 } else if (counts.connections > counts.soul && counts.connections > counts.success) {
-                    dominant = "connections";
+                    endingTypeClass = "connections";
                 } else if (counts.success > counts.soul && counts.success > counts.connections) {
-                    dominant = "success";
-                }
-                
-                // Set the ending type text and class
-                endingType.className = 'ending-type ' + dominant;
-                
-                switch (dominant) {
-                    case "soul":
-                        endingType.textContent = "AUTHENTIC SELF ENDING";
-                        break;
-                    case "connections":
-                        endingType.textContent = "MEANINGFUL BONDS ENDING";
-                        break;
-                    case "success":
-                        endingType.textContent = "PROFESSIONAL ACHIEVEMENT ENDING";
-                        break;
-                    default:
-                        endingType.textContent = "BALANCED GROWTH ENDING";
+                    endingTypeClass = "success";
                 }
             } else {
                 // For failure endings, determine the dominant attempt pattern
@@ -1659,42 +1640,76 @@ document.addEventListener('DOMContentLoaded', function() {
                 const connectionsAttempts = game.decisionHistory.filter(d => d.intendedType === "connections").length;
                 const successAttempts = game.decisionHistory.filter(d => d.intendedType === "success").length;
                 
-                console.log('Decision attempts for ending:', { soul: soulAttempts, connections: connectionsAttempts, success: successAttempts });
-                
-                // Determine dominant attempt pattern
-                let dominantAttempt = "mixed";
                 if (soulAttempts > connectionsAttempts && soulAttempts > successAttempts) {
-                    dominantAttempt = "soul";
+                    endingTypeClass = "soul";
                 } else if (connectionsAttempts > soulAttempts && connectionsAttempts > successAttempts) {
-                    dominantAttempt = "connections";
+                    endingTypeClass = "connections";
                 } else if (successAttempts > soulAttempts && successAttempts > connectionsAttempts) {
-                    dominantAttempt = "success";
+                    endingTypeClass = "success";
                 }
+            }
+            
+            // Set the ending type class
+            endingType.className = 'ending-type ' + endingTypeClass;
+            
+            // Get the ending type text from the game
+            if (typeof game.getEndingType === 'function') {
+                const endingTypeText = game.getEndingType(success);
+                console.log('Ending type from game:', endingTypeText);
                 
-                // Set the ending type text and class
-                endingType.className = 'ending-type ' + dominantAttempt;
-                
-                switch (dominantAttempt) {
-                    case "soul":
-                        endingType.textContent = "LOST AUTHENTICITY ENDING";
-                        break;
-                    case "connections":
-                        endingType.textContent = "BROKEN BONDS ENDING";
-                        break;
-                    case "success":
-                        endingType.textContent = "HOLLOW ACHIEVEMENTS ENDING";
-                        break;
-                    default:
-                        endingType.textContent = "DIRECTIONLESS ENDING";
+                // Use the ending type text
+                endingType.textContent = endingTypeText;
+            } else {
+                // Fallback to hardcoded titles if getEndingType is not available
+                if (success) {
+                    switch (endingTypeClass) {
+                        case "soul":
+                            endingType.textContent = "AUTHENTIC SELF ENDING";
+                            break;
+                        case "connections":
+                            endingType.textContent = "MEANINGFUL BONDS ENDING";
+                            break;
+                        case "success":
+                            endingType.textContent = "PROFESSIONAL ACHIEVEMENT ENDING";
+                            break;
+                        default:
+                            endingType.textContent = "BALANCED GROWTH ENDING";
+                    }
+                } else {
+                    switch (endingTypeClass) {
+                        case "soul":
+                            endingType.textContent = "LOST AUTHENTICITY ENDING";
+                            break;
+                        case "connections":
+                            endingType.textContent = "BROKEN BONDS ENDING";
+                            break;
+                        case "success":
+                            endingType.textContent = "HOLLOW ACHIEVEMENTS ENDING";
+                            break;
+                        default:
+                            endingType.textContent = "DIRECTIONLESS ENDING";
+                    }
                 }
             }
         }
         
         // Get the game over message
         let gameOverMessage;
+        let endingTypeText;
         try {
             gameOverMessage = game.getGameOverMessage(success);
             console.log('Game over message:', gameOverMessage);
+            
+            // Get the ending type text from the game
+            if (typeof game.getEndingType === 'function') {
+                endingTypeText = game.getEndingType(success);
+                console.log('Ending type from game:', endingTypeText);
+                
+                // Use the ending type text if available
+                if (endingTypeText && endingType) {
+                    endingType.textContent = endingTypeText;
+                }
+            }
         } catch (error) {
             console.error('Error getting game over message:', error);
             // Fallback message if there's an error

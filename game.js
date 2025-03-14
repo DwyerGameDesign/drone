@@ -136,6 +136,10 @@ class DroneManGame {
             })
             .then(data => {
                 console.log('Endings data loaded successfully');
+                
+                // Ensure each ending has a title property
+                this.ensureEndingTitles(data);
+                
                 this.endingsData = data;
                 
                 // Debug: Log the structure of the endings data
@@ -147,58 +151,22 @@ class DroneManGame {
             .catch(error => {
                 console.error('Error loading endings data:', error);
                 
-                // Create fallback endings data
+                // Create minimal fallback structure with error messages
                 this.endingsData = {
-                    success: {
-                        patterns: {
-                            all_soul: { message: "You've fully embraced your authentic self, leaving behind the corporate drone completely." },
-                            all_connections: { message: "You've built a network of deep, meaningful relationships that will sustain you for life." },
-                            all_success: { message: "You've achieved remarkable professional success while maintaining your identity." },
-                            soul_heavy: { message: "Your journey of self-discovery has transformed you into someone barely recognizable to your former self." },
-                            connections_heavy: { message: "The connections you've made have created a support network that makes life's challenges manageable." },
-                            success_heavy: { message: "Your drive for achievement has paid off, bringing you recognition while preserving your humanity." },
-                            soul_connections_balanced: { message: "You've found a beautiful balance between personal authenticity and meaningful relationships." },
-                            soul_success_balanced: { message: "You've managed to achieve success while staying true to yourself." },
-                            connections_success_balanced: { message: "Your professional achievements are matched by the quality of your relationships." },
-                            perfect_balance: { message: "You've achieved a rare harmony between authenticity, connection, and achievement." }
-                        },
-                        special_conditions: {
-                            late_bloomer: { message: "After years of conformity, you finally discovered what truly matters to you." },
-                            early_decided: { message: "You knew what you wanted from the beginning and never wavered from your path." },
-                            transformation_journey: { message: "Your journey has been one of profound transformation and growth." },
-                            unexpected_turn: { message: "Your life took an unexpected turn that changed everything for the better." }
-                        },
-                        dominant: {
-                            soul: { message: "You've reconnected with your authentic self. The corporate drone is gone forever." },
-                            connections: { message: "You've built a network of meaningful relationships that sustain you through life's challenges." },
-                            success: { message: "You've achieved the success you always wanted while maintaining your humanity." },
-                            mixed: { message: "Your journey has changed you in subtle but significant ways, creating a more balanced life." }
-                        }
-                    },
-                    failure: {
-                        early: {
-                            soul: { message: "Your journey to find yourself ended before it truly began." },
-                            connections: { message: "Your attempt to connect with others was cut short." },
-                            success: { message: "Your pursuit of achievement was halted prematurely." },
-                            mixed: { message: "Your journey ended before you could find your path." }
-                        },
-                        middle: {
-                            soul: { message: "You were halfway to finding yourself when your journey ended." },
-                            connections: { message: "The connections you were building collapsed midway." },
-                            success: { message: "Your climb toward success was interrupted halfway up." },
-                            mixed: { message: "Your journey was cut short before you could see it through." }
-                        },
-                        late: {
-                            soul: { message: "You were so close to becoming whole when your journey ended." },
-                            connections: { message: "The community you built was almost strong enough." },
-                            success: { message: "The peak was within sight when your journey ended." },
-                            mixed: { message: "Your journey ended just before completion." }
-                        }
-                    }
+                    success: { patterns: {}, special_conditions: {}, dominant: {} },
+                    failure: { early: {}, middle: {}, late: {} }
                 };
                 
-                console.log('Using fallback endings data');
+                console.log('Using minimal fallback endings data structure');
             });
+    }
+    
+    // Ensure each ending has a title property
+    ensureEndingTitles(data) {
+        // This function is no longer needed since we're using "Title Not Found" 
+        // as a fallback instead of adding titles
+        console.log('ensureEndingTitles is deprecated - using "Title Not Found" for missing titles');
+        return;
     }
     
     // Start the game
@@ -712,6 +680,13 @@ class DroneManGame {
     getGameOverMessage(success) {
         console.log('Getting game over message, success:', success, 'gameOverReason:', this.gameOverReason);
         
+        // Error message for missing ending text
+        const errorMessage = "Ending Text Not Found";
+        
+        // Generic fallback messages
+        const genericSuccessMessage = "Your journey has changed you in subtle but significant ways. The corporate drone is gone, replaced by someone more aware, more alive.";
+        const genericFailureMessage = "Your journey has come to an abrupt end. A moment's hesitation, a wrong choice, and everything changed.";
+        
         if (success) {
             // Calculate stats for decision patterns
             const totalDecisions = this.decisionHistory.length;
@@ -732,35 +707,35 @@ class DroneManGame {
             
             // Make sure we have endings data
             if (!this.endingsData || !this.endingsData.success) {
-                console.warn('No endings data found, using fallback message');
-                return "Your journey has changed you in subtle but significant ways. The corporate drone is gone, replaced by someone more aware, more alive.";
+                console.warn('No endings data found, using generic success message');
+                return genericSuccessMessage;
             }
             
             // Check for pure paths (all decisions of one type)
             if (soulPercentage === 1 && totalDecisions > 0) {
-                return this.endingsData.success.patterns.all_soul?.message || "You've fully embraced your authentic self, leaving behind the corporate drone completely.";
+                return this.endingsData.success.patterns.all_soul?.message || genericSuccessMessage;
             } else if (connectionsPercentage === 1 && totalDecisions > 0) {
-                return this.endingsData.success.patterns.all_connections?.message || "You've built a network of deep, meaningful relationships that will sustain you for life.";
+                return this.endingsData.success.patterns.all_connections?.message || genericSuccessMessage;
             } else if (successPercentage === 1 && totalDecisions > 0) {
-                return this.endingsData.success.patterns.all_success?.message || "You've achieved remarkable professional success while maintaining your identity.";
+                return this.endingsData.success.patterns.all_success?.message || genericSuccessMessage;
             }
             
             // Check for heavily weighted paths (e.g., 80%+ of one type)
             if (soulPercentage >= 0.8 && totalDecisions > 0) {
-                return this.endingsData.success.patterns.soul_heavy?.message || "Your journey of self-discovery has transformed you into someone barely recognizable to your former self.";
+                return this.endingsData.success.patterns.soul_heavy?.message || genericSuccessMessage;
             } else if (connectionsPercentage >= 0.8 && totalDecisions > 0) {
-                return this.endingsData.success.patterns.connections_heavy?.message || "The connections you've made have created a support network that makes life's challenges manageable.";
+                return this.endingsData.success.patterns.connections_heavy?.message || genericSuccessMessage;
             } else if (successPercentage >= 0.8 && totalDecisions > 0) {
-                return this.endingsData.success.patterns.success_heavy?.message || "Your drive for achievement has paid off, bringing you recognition while preserving your humanity.";
+                return this.endingsData.success.patterns.success_heavy?.message || genericSuccessMessage;
             }
             
             // Check for balanced dual paths
             if (Math.abs(soulPercentage - connectionsPercentage) < 0.2 && successPercentage < 0.2 && totalDecisions > 0) {
-                return this.endingsData.success.patterns.soul_connections_balanced?.message || "You've found a beautiful balance between personal authenticity and meaningful relationships.";
+                return this.endingsData.success.patterns.soul_connections_balanced?.message || genericSuccessMessage;
             } else if (Math.abs(soulPercentage - successPercentage) < 0.2 && connectionsPercentage < 0.2 && totalDecisions > 0) {
-                return this.endingsData.success.patterns.soul_success_balanced?.message || "You've managed to achieve success while staying true to yourself.";
+                return this.endingsData.success.patterns.soul_success_balanced?.message || genericSuccessMessage;
             } else if (Math.abs(connectionsPercentage - successPercentage) < 0.2 && soulPercentage < 0.2 && totalDecisions > 0) {
-                return this.endingsData.success.patterns.connections_success_balanced?.message || "Your professional achievements are matched by the quality of your relationships.";
+                return this.endingsData.success.patterns.connections_success_balanced?.message || genericSuccessMessage;
             }
             
             // Check for perfect balance
@@ -768,7 +743,7 @@ class DroneManGame {
                 Math.abs(connectionsPercentage - 1/3) < 0.1 && 
                 Math.abs(successPercentage - 1/3) < 0.1 && 
                 totalDecisions >= 3) {
-                return this.endingsData.success.patterns.perfect_balance?.message || "You've achieved a rare harmony between authenticity, connection, and achievement.";
+                return this.endingsData.success.patterns.perfect_balance?.message || genericSuccessMessage;
             }
             
             // Check for special narrative patterns
@@ -784,7 +759,7 @@ class DroneManGame {
                 
                 if (firstHalfSuccessCount / firstHalfDecisions.length >= 0.7 && 
                     secondHalfTransformativeCount / secondHalfDecisions.length >= 0.7) {
-                    return this.endingsData.success.special_conditions.late_bloomer?.message || "After years of conformity, you finally discovered what truly matters to you.";
+                    return this.endingsData.success.special_conditions.late_bloomer?.message || genericSuccessMessage;
                 }
                 
                 // Early Decided: First decisions set the pattern for the rest
@@ -792,7 +767,7 @@ class DroneManGame {
                 const sameTypeCount = this.decisionTypes.filter(type => type === firstType).length;
                 
                 if (sameTypeCount / totalDecisions >= 0.7) {
-                    return this.endingsData.success.special_conditions.early_decided?.message || "You knew what you wanted from the beginning and never wavered from your path.";
+                    return this.endingsData.success.special_conditions.early_decided?.message || genericSuccessMessage;
                 }
                 
                 // Transformation Journey: Clear progression from one type to another
@@ -807,7 +782,7 @@ class DroneManGame {
                 
                 if (firstThirdType !== lastThirdDominant && 
                     lastThirdTypes.filter(type => type === lastThirdDominant).length / lastThirdTypes.length >= 0.7) {
-                    return this.endingsData.success.special_conditions.transformation_journey?.message || "Your journey has been one of profound transformation and growth.";
+                    return this.endingsData.success.special_conditions.transformation_journey?.message || genericSuccessMessage;
                 }
                 
                 // Unexpected Turn: Pattern breaks dramatically at some point
@@ -831,7 +806,7 @@ class DroneManGame {
                     if (beforeDominantType !== afterDominantType && 
                         beforeTypes.filter(type => type === beforeDominantType).length / beforeTypes.length >= 0.7 &&
                         afterTypes.filter(type => type === afterDominantType).length / afterTypes.length >= 0.7) {
-                        return this.endingsData.success.special_conditions.unexpected_turn?.message || "Your life took an unexpected turn that changed everything for the better.";
+                        return this.endingsData.success.special_conditions.unexpected_turn?.message || genericSuccessMessage;
                     }
                 }
             }
@@ -846,16 +821,8 @@ class DroneManGame {
                 dominant = "success";
             }
             
-            // Add fallback messages for each dominant type
-            const dominantMessages = {
-                soul: "You've reconnected with your authentic self. The corporate drone is gone forever.",
-                connections: "You've built a network of meaningful relationships that sustain you through life's challenges.",
-                success: "You've achieved the success you always wanted while maintaining your humanity.",
-                mixed: "Your journey has changed you in subtle but significant ways, creating a more balanced life."
-            };
-            
-            // Check if the path exists and has a message, otherwise use fallback
-            return (this.endingsData.success.dominant[dominant]?.message || dominantMessages[dominant]);
+            // Return the message from the dominant type or fallback
+            return this.endingsData.success.dominant[dominant]?.message || genericSuccessMessage;
         } else {
             // Get the stop where the player failed
             const failedDecision = this.decisionHistory[this.decisionHistory.length - 1];
@@ -867,8 +834,8 @@ class DroneManGame {
             
             // Make sure we have endings data
             if (!this.endingsData || !this.endingsData.failure) {
-                console.warn('No failure endings data found, using fallback message');
-                return "Your journey has come to an abrupt end. A moment's hesitation, a wrong choice, and everything changed.";
+                console.warn('No failure endings data found, using generic failure message');
+                return genericFailureMessage;
             }
             
             // Determine the stage of the journey (early, middle, late)
@@ -904,29 +871,7 @@ class DroneManGame {
             
             console.log('Dominant type for failure ending:', dominantType, 'Stage:', stage);
             
-            // Add fallback messages for each stage and type
-            const fallbackMessages = {
-                early: {
-                    soul: "Your journey to find yourself ended before it truly began.",
-                    connections: "Your attempt to connect with others was cut short.",
-                    success: "Your pursuit of achievement was halted prematurely.",
-                    mixed: "Your journey ended before you could find your path."
-                },
-                middle: {
-                    soul: "You were halfway to finding yourself when your journey ended.",
-                    connections: "The connections you were building collapsed midway.",
-                    success: "Your climb toward success was interrupted halfway up.",
-                    mixed: "Your journey was cut short before you could see it through."
-                },
-                late: {
-                    soul: "You were so close to becoming whole when your journey ended.",
-                    connections: "The community you built was almost strong enough.",
-                    success: "The peak was within sight when your journey ended.",
-                    mixed: "Your journey ended just before completion."
-                }
-            };
-            
-            // Check if the path exists and has a message
+            // Try to get the message from the failure stage and type
             try {
                 // Debug the structure to see what's missing
                 console.log('Checking failure ending path:', 
@@ -937,13 +882,11 @@ class DroneManGame {
                             `Missing dominantType "${dominantType}"`) : 
                         `Missing stage "${stage}"`);
                 
-                // Return the message with fallback
-                return (this.endingsData.failure[stage]?.[dominantType]?.message || 
-                        fallbackMessages[stage]?.[dominantType] || 
-                        "Your journey has come to an abrupt end. A moment's hesitation, a wrong choice, and everything changed.");
+                // Return the message or fallback
+                return this.endingsData.failure[stage]?.[dominantType]?.message || genericFailureMessage;
             } catch (error) {
                 console.error('Error getting failure message:', error);
-                return "Your journey has come to an abrupt end. A moment's hesitation, a wrong choice, and everything changed.";
+                return genericFailureMessage;
             }
         }
     }
@@ -989,6 +932,218 @@ class DroneManGame {
         this.initializeAchievementSystem();
         
         console.log('Game initialized successfully');
+    }
+
+    // Get ending type title
+    getEndingType(success) {
+        console.log('Getting ending type, success:', success);
+        
+        // Generic fallback titles
+        const genericSuccessTitle = "BALANCED GROWTH ENDING";
+        const genericFailureTitle = "JOURNEY DERAILED";
+        
+        // Use the same pattern matching logic as getGameOverMessage
+        if (success) {
+            // Calculate stats for decision patterns
+            const totalDecisions = this.decisionHistory.length;
+            const soulCount = this.decisionTypes.filter(type => type === "soul").length;
+            const connectionsCount = this.decisionTypes.filter(type => type === "connections").length;
+            const successCount = this.decisionTypes.filter(type => type === "success").length;
+            
+            const soulPercentage = totalDecisions > 0 ? soulCount / totalDecisions : 0;
+            const connectionsPercentage = totalDecisions > 0 ? connectionsCount / totalDecisions : 0;
+            const successPercentage = totalDecisions > 0 ? successCount / totalDecisions : 0;
+            
+            // Make sure we have endings data
+            if (!this.endingsData || !this.endingsData.success) {
+                console.warn('No endings data found for ending type, using generic success title');
+                return genericSuccessTitle;
+            }
+            
+            // Check for pure paths (all decisions of one type)
+            if (soulPercentage === 1 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.all_soul?.title || "PURE AUTHENTICITY ENDING";
+            } else if (connectionsPercentage === 1 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.all_connections?.title || "PURE CONNECTIONS ENDING";
+            } else if (successPercentage === 1 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.all_success?.title || "PURE ACHIEVEMENT ENDING";
+            }
+            
+            // Check for heavily weighted paths (e.g., 80%+ of one type)
+            if (soulPercentage >= 0.8 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.soul_heavy?.title || "SOUL-FOCUSED ENDING";
+            } else if (connectionsPercentage >= 0.8 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.connections_heavy?.title || "CONNECTIONS-FOCUSED ENDING";
+            } else if (successPercentage >= 0.8 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.success_heavy?.title || "ACHIEVEMENT-FOCUSED ENDING";
+            }
+            
+            // Check for balanced dual paths
+            if (Math.abs(soulPercentage - connectionsPercentage) < 0.2 && successPercentage < 0.2 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.soul_connections_balanced?.title || "AUTHENTIC RELATIONSHIPS ENDING";
+            } else if (Math.abs(soulPercentage - successPercentage) < 0.2 && connectionsPercentage < 0.2 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.soul_success_balanced?.title || "AUTHENTIC ACHIEVEMENT ENDING";
+            } else if (Math.abs(connectionsPercentage - successPercentage) < 0.2 && soulPercentage < 0.2 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.connections_success_balanced?.title || "CONNECTED ACHIEVEMENT ENDING";
+            }
+            
+            // Check for perfect balance
+            if (Math.abs(soulPercentage - 1/3) < 0.1 && 
+                Math.abs(connectionsPercentage - 1/3) < 0.1 && 
+                Math.abs(successPercentage - 1/3) < 0.1 && 
+                totalDecisions >= 3) {
+                return this.endingsData.success.patterns.perfect_balance?.title || "PERFECT HARMONY ENDING";
+            }
+            
+            // Check for special narrative patterns
+            if (totalDecisions >= 4) {
+                // Late Bloomer pattern
+                const firstHalfDecisions = this.decisionTypes.slice(0, Math.floor(totalDecisions/2));
+                const secondHalfDecisions = this.decisionTypes.slice(Math.floor(totalDecisions/2));
+                const firstHalfSuccessCount = firstHalfDecisions.filter(type => type === "success").length;
+                const secondHalfTransformativeCount = secondHalfDecisions.filter(type => type === "soul" || type === "connections").length;
+                
+                if (firstHalfSuccessCount / firstHalfDecisions.length >= 0.7 && 
+                    secondHalfTransformativeCount / secondHalfDecisions.length >= 0.7) {
+                    return this.endingsData.success.special_conditions.late_bloomer?.title || "LATE BLOOMER ENDING";
+                }
+                
+                // Early Decided pattern
+                const firstType = this.decisionTypes[0];
+                const sameTypeCount = this.decisionTypes.filter(type => type === firstType).length;
+                if (sameTypeCount / totalDecisions >= 0.7) {
+                    return this.endingsData.success.special_conditions.early_decided?.title || "EARLY DECIDED ENDING";
+                }
+                
+                // Transformation Journey pattern
+                const firstThirdType = this.decisionTypes.slice(0, Math.floor(totalDecisions/3))[0];
+                const lastThirdTypes = this.decisionTypes.slice(Math.floor(2*totalDecisions/3));
+                const lastThirdDominantType = lastThirdTypes.reduce((acc, type) => {
+                    acc[type] = (acc[type] || 0) + 1;
+                    return acc;
+                }, {});
+                
+                const lastThirdDominant = Object.entries(lastThirdDominantType).sort((a, b) => b[1] - a[1])[0][0];
+                if (firstThirdType !== lastThirdDominant && 
+                    lastThirdTypes.filter(type => type === lastThirdDominant).length / lastThirdTypes.length >= 0.7) {
+                    return this.endingsData.success.special_conditions.transformation_journey?.title || "TRANSFORMATION JOURNEY ENDING";
+                }
+                
+                // Unexpected Turn pattern
+                for (let i = 1; i < totalDecisions; i++) {
+                    const beforeTypes = this.decisionTypes.slice(0, i);
+                    const afterTypes = this.decisionTypes.slice(i);
+                    
+                    const beforeDominant = beforeTypes.reduce((acc, type) => {
+                        acc[type] = (acc[type] || 0) + 1;
+                        return acc;
+                    }, {});
+                    
+                    const afterDominant = afterTypes.reduce((acc, type) => {
+                        acc[type] = (acc[type] || 0) + 1;
+                        return acc;
+                    }, {});
+                    
+                    const beforeDominantType = Object.entries(beforeDominant).sort((a, b) => b[1] - a[1])[0][0];
+                    const afterDominantType = Object.entries(afterDominant).sort((a, b) => b[1] - a[1])[0][0];
+                    
+                    if (beforeDominantType !== afterDominantType && 
+                        beforeTypes.filter(type => type === beforeDominantType).length / beforeTypes.length >= 0.7 &&
+                        afterTypes.filter(type => type === afterDominantType).length / afterTypes.length >= 0.7) {
+                        return this.endingsData.success.special_conditions.unexpected_turn?.title || "UNEXPECTED TURN ENDING";
+                    }
+                }
+            }
+            
+            // Fall back to dominant type endings
+            let dominant = "mixed";
+            if (soulCount > connectionsCount && soulCount > successCount) {
+                dominant = "soul";
+            } else if (connectionsCount > soulCount && connectionsCount > successCount) {
+                dominant = "connections";
+            } else if (successCount > soulCount && successCount > connectionsCount) {
+                dominant = "success";
+            }
+            
+            // Return the title from the dominant type or fallback
+            return this.endingsData.success.dominant[dominant]?.title || 
+                   (dominant === "soul" ? "AUTHENTIC SELF ENDING" : 
+                    dominant === "connections" ? "MEANINGFUL BONDS ENDING" : 
+                    dominant === "success" ? "PROFESSIONAL ACHIEVEMENT ENDING" : 
+                    genericSuccessTitle);
+        } else {
+            // Get the stop where the player failed
+            const failedDecision = this.decisionHistory[this.decisionHistory.length - 1];
+            const failedStop = failedDecision ? failedDecision.stop : 0;
+            const failedType = failedDecision ? failedDecision.intendedType : "unknown";
+            const totalStops = this.journeyManager.getTotalStops();
+            
+            // Make sure we have endings data
+            if (!this.endingsData || !this.endingsData.failure) {
+                console.warn('No failure endings data found for ending type, using generic failure title');
+                return genericFailureTitle;
+            }
+            
+            // Determine the stage of the journey (early, middle, late)
+            let stage = "middle";
+            const progressPercentage = failedStop / totalStops;
+            
+            if (progressPercentage <= 0.33) {
+                stage = "early";
+            } else if (progressPercentage >= 0.67) {
+                stage = "late";
+            }
+            
+            // Determine the dominant type based on decisions made so far
+            let dominantType = "mixed";
+            const soulCount = this.decisionTypes.filter(type => type === "soul").length;
+            const connectionsCount = this.decisionTypes.filter(type => type === "connections").length;
+            const successCount = this.decisionTypes.filter(type => type === "success").length;
+            
+            if (soulCount > connectionsCount && soulCount > successCount) {
+                dominantType = "soul";
+            } else if (connectionsCount > soulCount && connectionsCount > successCount) {
+                dominantType = "connections";
+            } else if (successCount > soulCount && successCount > connectionsCount) {
+                dominantType = "success";
+            }
+            
+            // If no decisions made yet, use the failed type
+            if (this.decisionTypes.length === 0 && failedType && failedType !== "unknown") {
+                dominantType = failedType;
+            }
+            
+            // Return the title from the failure stage and type or fallback
+            try {
+                const stageTitles = {
+                    early: {
+                        soul: "LOST AUTHENTICITY ENDING",
+                        connections: "BROKEN BONDS ENDING",
+                        success: "HOLLOW ACHIEVEMENTS ENDING",
+                        mixed: "DIRECTIONLESS ENDING"
+                    },
+                    middle: {
+                        soul: "INCOMPLETE AUTHENTICITY ENDING",
+                        connections: "FRAGILE BONDS ENDING",
+                        success: "STALLED ACHIEVEMENT ENDING",
+                        mixed: "INTERRUPTED JOURNEY ENDING"
+                    },
+                    late: {
+                        soul: "ALMOST AUTHENTIC ENDING",
+                        connections: "ALMOST CONNECTED ENDING",
+                        success: "ALMOST ACHIEVED ENDING",
+                        mixed: "NEARLY COMPLETE ENDING"
+                    }
+                };
+                
+                return this.endingsData.failure[stage]?.[dominantType]?.title || 
+                       stageTitles[stage]?.[dominantType] || 
+                       genericFailureTitle;
+            } catch (error) {
+                console.error('Error getting failure ending type:', error);
+                return genericFailureTitle;
+            }
+        }
     }
 }
 
