@@ -184,9 +184,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize journey track
         updateJourneyTrack();
         
-        // Make sure the swing meter is reset and ready
-        resetSwingMeter();
-        
         // Start the game
         const result = game.startGame();
         
@@ -483,11 +480,8 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.choiceDescription.textContent = '';
         }
         
-        // Hide all interaction elements except the swing meter
+        // Hide all interaction elements
         hideAllInteractions();
-        
-        // Make sure the swing meter is visible
-        elements.swingMeterContainer.style.display = 'block';
         
         // Create a temporary div to store the full message
         const tempDiv = document.createElement('div');
@@ -531,14 +525,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Hide choice container
         elements.choiceContainer.style.display = 'none';
         
-        // Don't hide the swing meter container, just make sure it's properly initialized
-        if (elements.swingMeterContainer.style.display === 'none') {
-            elements.swingMeterContainer.style.display = 'block';
-            // Make sure the tap instruction is visible
-            if (elements.tapInstruction) {
-                elements.tapInstruction.style.display = 'block';
-            }
-        }
+        // Hide swing meter container
+        elements.swingMeterContainer.style.display = 'none';
     }
     
     // Display the appropriate interaction based on narrative type
@@ -954,9 +942,23 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('Result text to display:', resultText);
         
-        // Hide only the swing meter, not the entire container
+        // Hide the swing meter
         const swingMeter = document.querySelector('.swing-meter');
-        swingMeter.style.display = 'none';
+        if (swingMeter) {
+            swingMeter.style.display = 'none';
+        }
+        
+        // Hide the difficulty meters
+        const difficultyMeters = document.querySelector('.difficulty-meters');
+        if (difficultyMeters) {
+            difficultyMeters.style.display = 'none';
+        }
+        
+        // Hide the rhythm label
+        const rhythmLabel = document.querySelector('.rhythm-label');
+        if (rhythmLabel) {
+            rhythmLabel.style.display = 'none';
+        }
         
         // Keep the choice description visible
         // Do NOT hide the choice description
