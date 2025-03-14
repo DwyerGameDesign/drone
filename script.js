@@ -765,17 +765,27 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update the good zone width and position
         const goodZone = document.querySelector('.meter-zone.good');
         if (goodZone) {
+            // Calculate the left edge of the good zone
+            const goodZoneLeft = goodZonePosition - (goodZoneWidth / 2);
             goodZone.style.width = `${goodZoneWidth}%`;
-            goodZone.style.left = `${goodZonePosition - (goodZoneWidth / 2)}%`;
-        }
-        
-        // Update the critical zone width and position
-        const criticalZone = document.querySelector('.meter-zone.critical');
-        if (criticalZone) {
-            criticalZone.style.width = `${criticalZoneWidth}%`;
-            // Critical zone is always centered within the good zone
-            criticalZone.style.left = `${goodZonePosition}%`;
-            criticalZone.style.transform = 'translateX(-50%)';
+            goodZone.style.left = `${goodZoneLeft}%`;
+            
+            // Update the critical zone width and position
+            const criticalZone = document.querySelector('.meter-zone.critical');
+            if (criticalZone) {
+                criticalZone.style.width = `${criticalZoneWidth}%`;
+                // Position the critical zone exactly in the center of the good zone
+                // Remove the transform from the style and set the exact center position
+                criticalZone.style.transform = '';
+                
+                // Calculate the exact center of the good zone
+                const goodZoneCenter = goodZoneLeft + (goodZoneWidth / 2);
+                // Position the critical zone so its center is at the good zone's center
+                const criticalZoneLeft = goodZoneCenter - (criticalZoneWidth / 2);
+                criticalZone.style.left = `${criticalZoneLeft}%`;
+                
+                console.log(`Good zone center: ${goodZoneCenter}%, Critical zone left: ${criticalZoneLeft}%`);
+            }
         }
         
         // Create the solid indicator bar if it doesn't exist
@@ -871,15 +881,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (criticalZone && criticalZone.style.left && criticalZone.style.width) {
-            // Critical zone is centered at the position specified by left
-            const criticalZonePosition = parseFloat(criticalZone.style.left);
-            const criticalZoneWidth = parseFloat(criticalZone.style.width);
-            criticalZoneStart = criticalZonePosition - (criticalZoneWidth / 2);
-            criticalZoneEnd = criticalZoneStart + criticalZoneWidth;
+            criticalZoneStart = parseFloat(criticalZone.style.left);
+            criticalZoneEnd = criticalZoneStart + parseFloat(criticalZone.style.width);
         }
         
-        console.log(`Good zone: ${goodZoneStart}% to ${goodZoneEnd}%`);
-        console.log(`Critical zone: ${criticalZoneStart}% to ${criticalZoneEnd}%`);
+        // Calculate the center points for debugging
+        const goodZoneCenter = goodZoneStart + ((goodZoneEnd - goodZoneStart) / 2);
+        const criticalZoneCenter = criticalZoneStart + ((criticalZoneEnd - criticalZoneStart) / 2);
+        
+        console.log(`Good zone: ${goodZoneStart}% to ${goodZoneEnd}%, center: ${goodZoneCenter}%`);
+        console.log(`Critical zone: ${criticalZoneStart}% to ${criticalZoneEnd}%, center: ${criticalZoneCenter}%`);
         
         // Determine the result based on compensated position
         let result = 'fail';

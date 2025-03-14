@@ -393,8 +393,6 @@ header {
     width: 6%;
     position: absolute;
     top: 0;
-    left: 50%;
-    transform: translateX(-50%);
     height: 100%;
     z-index: 2;
     box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
