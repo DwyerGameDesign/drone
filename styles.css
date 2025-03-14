@@ -345,12 +345,29 @@ header {
     padding: 1rem;
     background-color: var(--secondary-color);
     border-radius: 0.5rem;
-    border-top: 4px solid #999;
+    border-left: 4px solid #999;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     position: relative;
     cursor: pointer;
-    min-height: 160px; /* Increased from 120px to provide more space */
+    min-height: 160px;
     height: auto;
+}
+
+/* Add color-specific classes for swing meter container */
+.swing-meter-container.soul {
+    border-left-color: var(--soul-color);
+}
+
+.swing-meter-container.connections {
+    border-left-color: var(--connections-color);
+}
+
+.swing-meter-container.success {
+    border-left-color: var(--success-color);
+}
+
+.swing-meter-container.fail {
+    border-left-color: var(--fail-color);
 }
 
 .choice-description {
@@ -442,11 +459,11 @@ header {
     opacity: 0;
     transform: translateY(10px);
     transition: opacity 0.3s, transform 0.3s;
-    border-left: 4px solid transparent;
+    border-left: 4px solid #999;
     cursor: pointer;
     position: relative;
     height: auto;
-    min-height: 160px; /* Increased to match swing-meter-container */
+    min-height: 160px;
     max-height: none;
     overflow-y: visible;
 }
@@ -1011,10 +1028,10 @@ header {
     }
     
     .swing-meter-container {
-        min-height: 180px; /* Increased from 140px */
-        padding: 1.5rem;
+        min-height: 180px;
+        padding: 1.25rem;
         border-radius: 0.75rem;
-        border-top-width: 6px;
+        border-left-width: 6px;
         margin-top: 1.5rem;
     }
     
@@ -1035,7 +1052,7 @@ header {
     
     /* Desktop styles for meter result container */
     .meter-result-container {
-        min-height: 180px; /* Increased from 140px */
+        min-height: 180px;
         padding: 1.25rem;
         border-radius: 0.75rem;
         border-left-width: 6px;
