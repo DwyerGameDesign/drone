@@ -6,18 +6,48 @@
       "narrative": "6:40 AM. The platform is cold and quiet as you wait for the train—the same one you've taken every weekday for years. You pull your beige trenchcoat tighter, scanning the empty platform. A distant rumble signals the approaching train, just like yesterday and countless days before.",
       "choices": [
         {
-          "text": "Return to your usual routine",
-          "decisionType": "success",
-          "title": "Practical Choice",
+          "text": "Think about the life you once dreamed of",
+          "decisionType": "soul",
+          "title": "Inner Reflection",
           "swingMeterType": "standard",
-          "meterContext": "Standing before the departures board, you weigh the comfort of the familiar...",
-          "resultGood": "You find unexpected comfort in returning to your routine with fresh perspective.",
-          "resultOkay": "You choose the path of least resistance, relief mixing with faint disappointment.",
-          "resultFail": "The routine feels like a prison of your own making, yet you cannot break free.",
+          "meterContext": "As the train approaches, your mind begins to drift to forgotten dreams...",
+          "resultGood": "Old dreams resurface—art you created, places unseen. Something long dormant stirs within you.",
+          "resultOkay": "The details are fuzzy, but you find comfort in remembering dreams beyond this daily commute.",
+          "resultFail": "Those childish dreams feel distant now. Reality has worn them down. Better focus on today.",
+          "effects": {
+            "soul": 1,
+            "connections": 0,
+            "money": 0
+          }
+        },
+        {
+          "text": "Observe the world around you",
+          "decisionType": "connections",
+          "title": "Social Awareness",
+          "swingMeterType": "standard",
+          "meterContext": "You look around at the other commuters gathering on the platform...",
+          "resultGood": "You notice overlooked details—an elderly woman's kind eyes, a nervous young man. Everyone has a story. Including you.",
+          "resultOkay": "Faces seem less anonymous today. You share a knowing nod with another commuter about the morning routine.",
+          "resultFail": "Everyone looks tired. More drones heading to their hives. Nothing worth noting.",
+          "effects": {
+            "soul": 0,
+            "connections": 1,
+            "money": 0
+          }
+        },
+        {
+          "text": "Review your upcoming work presentation",
+          "decisionType": "success",
+          "title": "Career Focus",
+          "swingMeterType": "standard",
+          "meterContext": "You mentally rehearse the key points of today's presentation...",
+          "resultGood": "The structure crystallizes in your mind. You've got this. Your preparation might finally get you noticed.",
+          "resultOkay": "You review the main points, though details remain fuzzy. It should be adequate, as always.",
+          "resultFail": "Your thoughts scatter as anxiety creeps in. Another day of barely staying afloat.",
           "effects": {
             "soul": -1,
             "connections": 0,
-            "money": 0
+            "money": 1
           }
         }
       ]
@@ -618,48 +648,18 @@
           }
         },
         {
-          "text": "Think about the life you once dreamed of",
-          "decisionType": "soul",
-          "title": "Inner Reflection",
-          "swingMeterType": "standard",
-          "meterContext": "As the train approaches, your mind begins to drift to forgotten dreams...",
-          "resultGood": "Old dreams resurface—art you created, places unseen. Something long dormant stirs within you.",
-          "resultOkay": "The details are fuzzy, but you find comfort in remembering dreams beyond this daily commute.",
-          "resultFail": "Those childish dreams feel distant now. Reality has worn them down. Better focus on today.",
-          "effects": {
-            "soul": 1,
-            "connections": 0,
-            "money": 0
-          }
-        },
-        {
-          "text": "Observe the world around you",
-          "decisionType": "connections",
-          "title": "Social Awareness",
-          "swingMeterType": "standard",
-          "meterContext": "You look around at the other commuters gathering on the platform...",
-          "resultGood": "You notice overlooked details—an elderly woman's kind eyes, a nervous young man. Everyone has a story. Including you.",
-          "resultOkay": "Faces seem less anonymous today. You share a knowing nod with another commuter about the morning routine.",
-          "resultFail": "Everyone looks tired. More drones heading to their hives. Nothing worth noting.",
-          "effects": {
-            "soul": 0,
-            "connections": 1,
-            "money": 0
-          }
-        },
-        {
-          "text": "Review your upcoming work presentation",
+          "text": "Return to your usual routine",
           "decisionType": "success",
-          "title": "Career Focus",
+          "title": "Practical Choice",
           "swingMeterType": "standard",
-          "meterContext": "You mentally rehearse the key points of today's presentation...",
-          "resultGood": "The structure crystallizes in your mind. You've got this. Your preparation might finally get you noticed.",
-          "resultOkay": "You review the main points, though details remain fuzzy. It should be adequate, as always.",
-          "resultFail": "Your thoughts scatter as anxiety creeps in. Another day of barely staying afloat.",
+          "meterContext": "Standing before the departures board, you weigh the comfort of the familiar...",
+          "resultGood": "You find unexpected comfort in returning to your routine with fresh perspective.",
+          "resultOkay": "You choose the path of least resistance, relief mixing with faint disappointment.",
+          "resultFail": "The routine feels like a prison of your own making, yet you cannot break free.",
           "effects": {
             "soul": -1,
             "connections": 0,
-            "money": 1
+            "money": 0
           }
         }
       ]
