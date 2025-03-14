@@ -774,6 +774,9 @@ document.addEventListener('DOMContentLoaded', function() {
         swingSpeed = 1 * speedModifier;
         console.log(`Applied speed: ${swingSpeed.toFixed(2)}`);
         
+        // Make sure difficulty meters are updated
+        updateDifficultyMeters();
+        
         // Start the animation
         isSwingMeterMoving = true;
         swingPosition = 0;
@@ -1245,158 +1248,135 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Restore the swing meter container structure if it was cleared
-        if (!document.querySelector('.swing-meter')) {
-            // Add the Inner Rhythm label
-            const rhythmLabel = document.createElement('div');
-            rhythmLabel.className = 'rhythm-label';
-            rhythmLabel.textContent = 'INNER RHYTHM';
-            elements.swingMeterContainer.appendChild(rhythmLabel);
-            
-            // Recreate the swing meter structure, but preserve the choice description
-            const swingMeter = document.createElement('div');
-            swingMeter.className = 'swing-meter';
-            
-            const meterBackground = document.createElement('div');
-            meterBackground.id = 'meterBackground';
-            meterBackground.className = 'meter-background';
-            
-            // Calculate the good zone width based on the width modifier
-            const goodZoneWidth = baseGoodZoneWidth * widthModifier;
-            // Calculate the poor zones width (they should be equal and fill the remaining space)
-            const poorZoneWidth = (100 - goodZoneWidth) / 2;
-            
-            console.log(`Creating zones - Good: ${goodZoneWidth.toFixed(2)}%, Poor: ${poorZoneWidth.toFixed(2)}% each`);
-            
-            const poorStartZone = document.createElement('div');
-            poorStartZone.className = 'meter-zone poor-start';
-            poorStartZone.style.width = `${poorZoneWidth}%`;
-            
-            const goodZone = document.createElement('div');
-            goodZone.className = 'meter-zone good';
-            goodZone.style.width = `${goodZoneWidth}%`;
-            
-            const poorEndZone = document.createElement('div');
-            poorEndZone.className = 'meter-zone poor-end';
-            poorEndZone.style.width = `${poorZoneWidth}%`;
-            
-            const indicatorBar = document.createElement('div');
-            indicatorBar.className = 'meter-indicator-bar';
-            
-            const tapMarker = document.createElement('div');
-            tapMarker.className = 'tap-marker';
-            
-            meterBackground.appendChild(poorStartZone);
-            meterBackground.appendChild(goodZone);
-            meterBackground.appendChild(poorEndZone);
-            meterBackground.appendChild(indicatorBar);
-            meterBackground.appendChild(tapMarker);
-            
-            swingMeter.appendChild(meterBackground);
-            elements.swingMeterContainer.appendChild(swingMeter);
-            
-            // Add difficulty meters
-            const difficultyMeters = document.createElement('div');
-            difficultyMeters.className = 'difficulty-meters';
-            
-            // Tempo meter
-            const tempoContainer = document.createElement('div');
-            tempoContainer.className = 'meter-container';
-            
-            const tempoLabel = document.createElement('div');
-            tempoLabel.className = 'meter-label';
-            tempoLabel.textContent = 'TEMPO';
-            
-            const tempoMeter = document.createElement('div');
-            tempoMeter.className = 'difficulty-meter tempo-meter';
-            
-            const tempoValue = document.createElement('div');
-            tempoValue.className = 'meter-value';
-            tempoValue.style.width = `${(speedModifier - 0.5) / 2 * 100}%`;
-            
-            tempoMeter.appendChild(tempoValue);
-            tempoContainer.appendChild(tempoLabel);
-            tempoContainer.appendChild(tempoMeter);
-            
-            // Precision meter
-            const precisionContainer = document.createElement('div');
-            precisionContainer.className = 'meter-container';
-            
-            const precisionLabel = document.createElement('div');
-            precisionLabel.className = 'meter-label';
-            precisionLabel.textContent = 'PRECISION';
-            
-            const precisionMeter = document.createElement('div');
-            precisionMeter.className = 'difficulty-meter precision-meter';
-            
-            const precisionValue = document.createElement('div');
-            precisionValue.className = 'meter-value';
-            precisionValue.style.width = `${(widthModifier - 0.4) / 1.1 * 100}%`;
-            
-            precisionMeter.appendChild(precisionValue);
-            precisionContainer.appendChild(precisionLabel);
-            precisionContainer.appendChild(precisionMeter);
-            
-            difficultyMeters.appendChild(tempoContainer);
-            difficultyMeters.appendChild(precisionContainer);
-            elements.swingMeterContainer.appendChild(difficultyMeters);
-            
-            const tapInstruction = document.createElement('div');
-            tapInstruction.className = 'tap-instruction';
-            tapInstruction.textContent = 'Tap anywhere to stop';
-            elements.swingMeterContainer.appendChild(tapInstruction);
-            elements.tapInstruction = tapInstruction;
-        } else {
-            // Restore the swing meter
-            const swingMeter = document.querySelector('.swing-meter');
-            if (swingMeter) {
-                swingMeter.style.display = 'block';
-                swingMeter.classList.remove('fade-out');
-                
-                // Update the zone widths based on current modifiers
-                const goodZoneWidth = baseGoodZoneWidth * widthModifier;
-                const poorZoneWidth = (100 - goodZoneWidth) / 2;
-                
-                const goodZone = swingMeter.querySelector('.meter-zone.good');
-                const poorStartZone = swingMeter.querySelector('.meter-zone.poor-start');
-                const poorEndZone = swingMeter.querySelector('.meter-zone.poor-end');
-                
-                if (goodZone && poorStartZone && poorEndZone) {
-                    goodZone.style.width = `${goodZoneWidth}%`;
-                    poorStartZone.style.width = `${poorZoneWidth}%`;
-                    poorEndZone.style.width = `${poorZoneWidth}%`;
-                    console.log(`Updated zones - Good: ${goodZoneWidth.toFixed(2)}%, Poor: ${poorZoneWidth.toFixed(2)}% each`);
-                }
-            }
-            
-            // Update difficulty meters
-            const tempoValue = document.querySelector('.tempo-meter .meter-value');
-            if (tempoValue) {
-                tempoValue.style.width = `${(speedModifier - 0.5) / 2 * 100}%`;
-            }
-            
-            const precisionValue = document.querySelector('.precision-meter .meter-value');
-            if (precisionValue) {
-                precisionValue.style.width = `${(widthModifier - 0.4) / 1.1 * 100}%`;
-            }
+        // Remove existing rhythm label and difficulty meters
+        const existingRhythmLabel = document.querySelector('.rhythm-label');
+        if (existingRhythmLabel) {
+            existingRhythmLabel.remove();
         }
+        
+        const existingDifficultyMeters = document.querySelector('.difficulty-meters');
+        if (existingDifficultyMeters) {
+            existingDifficultyMeters.remove();
+        }
+        
+        // Clear the swing meter container but preserve the choice description
+        const choiceDescription = elements.choiceDescription.cloneNode(true);
+        const choiceDescriptionText = elements.choiceDescription.textContent;
+        elements.swingMeterContainer.innerHTML = '';
+        elements.swingMeterContainer.appendChild(choiceDescription);
+        elements.choiceDescription = choiceDescription;
+        elements.choiceDescription.textContent = choiceDescriptionText;
+        
+        // Add the Inner Rhythm label at the beginning
+        const rhythmLabel = document.createElement('div');
+        rhythmLabel.className = 'rhythm-label';
+        rhythmLabel.textContent = 'INNER RHYTHM';
+        elements.swingMeterContainer.insertBefore(rhythmLabel, elements.swingMeterContainer.firstChild);
+        
+        // Recreate the swing meter structure
+        const swingMeter = document.createElement('div');
+        swingMeter.className = 'swing-meter';
+        
+        const meterBackground = document.createElement('div');
+        meterBackground.id = 'meterBackground';
+        meterBackground.className = 'meter-background';
+        
+        // Calculate the good zone width based on the width modifier
+        const goodZoneWidth = baseGoodZoneWidth * widthModifier;
+        // Calculate the poor zones width (they should be equal and fill the remaining space)
+        const poorZoneWidth = (100 - goodZoneWidth) / 2;
+        
+        console.log(`Creating zones - Good: ${goodZoneWidth.toFixed(2)}%, Poor: ${poorZoneWidth.toFixed(2)}% each`);
+        
+        const poorStartZone = document.createElement('div');
+        poorStartZone.className = 'meter-zone poor-start';
+        poorStartZone.style.width = `${poorZoneWidth}%`;
+        
+        const goodZone = document.createElement('div');
+        goodZone.className = 'meter-zone good';
+        goodZone.style.width = `${goodZoneWidth}%`;
+        
+        const poorEndZone = document.createElement('div');
+        poorEndZone.className = 'meter-zone poor-end';
+        poorEndZone.style.width = `${poorZoneWidth}%`;
+        
+        const indicatorBar = document.createElement('div');
+        indicatorBar.className = 'meter-indicator-bar';
+        
+        const tapMarker = document.createElement('div');
+        tapMarker.className = 'tap-marker';
+        
+        meterBackground.appendChild(poorStartZone);
+        meterBackground.appendChild(goodZone);
+        meterBackground.appendChild(poorEndZone);
+        meterBackground.appendChild(indicatorBar);
+        meterBackground.appendChild(tapMarker);
+        
+        swingMeter.appendChild(meterBackground);
+        elements.swingMeterContainer.appendChild(swingMeter);
+        
+        // Add difficulty meters
+        const difficultyMeters = document.createElement('div');
+        difficultyMeters.className = 'difficulty-meters';
+        
+        // Tempo meter
+        const tempoContainer = document.createElement('div');
+        tempoContainer.className = 'meter-container';
+        
+        const tempoLabel = document.createElement('div');
+        tempoLabel.className = 'meter-label';
+        tempoLabel.textContent = 'TEMPO';
+        
+        const tempoMeter = document.createElement('div');
+        tempoMeter.className = 'difficulty-meter tempo-meter';
+        
+        const tempoValue = document.createElement('div');
+        tempoValue.className = 'meter-value';
+        tempoValue.style.width = `${(speedModifier - 0.5) / 2 * 100}%`;
+        
+        tempoMeter.appendChild(tempoValue);
+        tempoContainer.appendChild(tempoLabel);
+        tempoContainer.appendChild(tempoMeter);
+        
+        // Precision meter
+        const precisionContainer = document.createElement('div');
+        precisionContainer.className = 'meter-container';
+        
+        const precisionLabel = document.createElement('div');
+        precisionLabel.className = 'meter-label';
+        precisionLabel.textContent = 'PRECISION';
+        
+        const precisionMeter = document.createElement('div');
+        precisionMeter.className = 'difficulty-meter precision-meter';
+        
+        const precisionValue = document.createElement('div');
+        precisionValue.className = 'meter-value';
+        precisionValue.style.width = `${(widthModifier - 0.4) / 1.1 * 100}%`;
+        
+        precisionMeter.appendChild(precisionValue);
+        precisionContainer.appendChild(precisionLabel);
+        precisionContainer.appendChild(precisionMeter);
+        
+        difficultyMeters.appendChild(tempoContainer);
+        difficultyMeters.appendChild(precisionContainer);
+        elements.swingMeterContainer.appendChild(difficultyMeters);
+        
+        const tapInstruction = document.createElement('div');
+        tapInstruction.className = 'tap-instruction';
+        tapInstruction.textContent = 'Tap anywhere to stop';
+        elements.swingMeterContainer.appendChild(tapInstruction);
+        elements.tapInstruction = tapInstruction;
         
         // Reset the indicator bar
-        const indicatorBar = document.querySelector('.meter-indicator-bar');
-        if (indicatorBar) {
-            indicatorBar.style.transition = 'left 0.1s linear'; // Restore transition
-            indicatorBar.style.left = '0%';
-            indicatorBar.classList.remove('good', 'okay', 'fail');
-            indicatorBar.style.backgroundColor = 'white'; // Reset to default white color
-        }
+        indicatorBar.style.transition = 'left 0.1s linear'; // Restore transition
+        indicatorBar.style.left = '0%';
+        indicatorBar.classList.remove('good', 'okay', 'fail');
+        indicatorBar.style.backgroundColor = 'white'; // Reset to default white color
         
         // Reset the tap marker
-        const tapMarker = document.querySelector('.tap-marker');
-        if (tapMarker) {
-            tapMarker.style.display = 'none';
-            tapMarker.classList.remove('good', 'okay', 'fail');
-            tapMarker.style.backgroundColor = 'white'; // Reset to default white color
-        }
+        tapMarker.style.display = 'none';
+        tapMarker.classList.remove('good', 'okay', 'fail');
+        tapMarker.style.backgroundColor = 'white'; // Reset to default white color
         
         // Reset tap button
         if (elements.tapButton) {
@@ -1407,6 +1387,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (elements.tapInstruction) {
             elements.tapInstruction.style.display = 'block';
         }
+        
+        // Update UI meters
+        updateDifficultyMeters();
     }
     
     // Update the decision track
