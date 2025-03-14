@@ -6,19 +6,25 @@ class JourneyManager {
         // Define the stage categories
         this.stageCategories = {
             fixed_start: [1],
-            early: [2, 3, 4, 5],
-            middle: [6, 7, 8, 9, 10],
-            late: [11, 12, 13, 14],
+            early_1: [2, 3],
+            early_2: [4, 5],
+            middle_1: [6, 7],
+            middle_2: [8, 9],
+            late_1: [10, 11],
+            late_2: [12, 13, 14],
             fixed_end: [15]
         };
         
         // Define the journey structure
         this.journeyStructure = [
             'fixed_start',  // Stage 1: Fixed Beginning (Stop 1)
-            'early',        // Stage 2: Early Journey (Random from Stops 2-5)
-            'middle',       // Stage 3: Middle Journey (Random from Stops 6-10)
-            'late',         // Stage 4: Late Journey (Random from Stops 11-14)
-            'fixed_end'     // Stage 5: Fixed Conclusion (Stop 15)
+            'early_1',      // Stage 2: Early Journey 1 (Random from Stops 2-3)
+            'early_2',      // Stage 3: Early Journey 2 (Random from Stops 4-5)
+            'middle_1',     // Stage 4: Middle Journey 1 (Random from Stops 6-7)
+            'middle_2',     // Stage 5: Middle Journey 2 (Random from Stops 8-9)
+            'late_1',       // Stage 6: Late Journey 1 (Random from Stops 10-11)
+            'late_2',       // Stage 7: Late Journey 2 (Random from Stops 12-14)
+            'fixed_end'     // Stage 8: Fixed Conclusion (Stop 15)
         ];
         
         // Store the selected stops for the current journey

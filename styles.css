@@ -111,6 +111,7 @@ header {
     padding: 0.75rem 0.5rem;
     position: relative;
     z-index: 5;
+    justify-content: center; /* Center the track */
 }
 
 .journey-track::-webkit-scrollbar {
@@ -129,18 +130,19 @@ header {
 .track {
     display: flex;
     align-items: center;
-    flex-grow: 1;
-    min-width: min-content;
+    justify-content: space-between; /* Distribute stations evenly */
+    width: 100%; /* Take full width */
+    max-width: 600px; /* Limit maximum width */
 }
 
 .station {
-    width: 1rem;
-    height: 1rem;
+    width: 1.1rem;
+    height: 1.1rem;
     border-radius: 50%;
     background-color: #555;
-    margin: 0 0.5rem;
     position: relative;
     flex-shrink: 0;
+    margin: 0; /* Remove margin to allow track-line to control spacing */
 }
 
 .station.current {
@@ -196,7 +198,8 @@ header {
     height: 2px;
     background-color: #555;
     flex-grow: 1;
-    min-width: 1rem;
+    min-width: 0.5rem; /* Smaller minimum width */
+    max-width: none; /* Allow track lines to fill available space */
 }
 
 /* Narrative card styles */

@@ -1441,14 +1441,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(`Added station ${i} with classes:`, station.className);
         }
         
-        // Scroll to current station
-        const currentStation = journeyTrack.querySelector('.station.current');
-        if (currentStation) {
-            setTimeout(() => {
-                const scrollPosition = currentStation.offsetLeft - (journeyTrack.offsetWidth / 2) + (currentStation.offsetWidth / 2);
-                journeyTrack.scrollLeft = Math.max(0, scrollPosition);
-            }, 100);
-        }
+        // No need to scroll since all stops are visible at once
         
         // Debug the journey track
         debugJourneyTrack();
