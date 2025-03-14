@@ -134,6 +134,9 @@ document.addEventListener('DOMContentLoaded', function() {
         speedModifier = 1.0;
         widthModifier = 1.0;
         console.log('Reset difficulty modifiers to default values');
+        
+        // Update UI meters
+        updateDifficultyMeters();
     }
     
     // Initialize the game
@@ -1244,6 +1247,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Restore the swing meter container structure if it was cleared
         if (!document.querySelector('.swing-meter')) {
+            // Add the Inner Rhythm label
+            const rhythmLabel = document.createElement('div');
+            rhythmLabel.className = 'rhythm-label';
+            rhythmLabel.textContent = 'INNER RHYTHM';
+            elements.swingMeterContainer.appendChild(rhythmLabel);
+            
             // Recreate the swing meter structure, but preserve the choice description
             const swingMeter = document.createElement('div');
             swingMeter.className = 'swing-meter';
@@ -1286,6 +1295,52 @@ document.addEventListener('DOMContentLoaded', function() {
             swingMeter.appendChild(meterBackground);
             elements.swingMeterContainer.appendChild(swingMeter);
             
+            // Add difficulty meters
+            const difficultyMeters = document.createElement('div');
+            difficultyMeters.className = 'difficulty-meters';
+            
+            // Tempo meter
+            const tempoContainer = document.createElement('div');
+            tempoContainer.className = 'meter-container';
+            
+            const tempoLabel = document.createElement('div');
+            tempoLabel.className = 'meter-label';
+            tempoLabel.textContent = 'TEMPO';
+            
+            const tempoMeter = document.createElement('div');
+            tempoMeter.className = 'difficulty-meter tempo-meter';
+            
+            const tempoValue = document.createElement('div');
+            tempoValue.className = 'meter-value';
+            tempoValue.style.width = `${(speedModifier - 0.5) / 2 * 100}%`;
+            
+            tempoMeter.appendChild(tempoValue);
+            tempoContainer.appendChild(tempoLabel);
+            tempoContainer.appendChild(tempoMeter);
+            
+            // Precision meter
+            const precisionContainer = document.createElement('div');
+            precisionContainer.className = 'meter-container';
+            
+            const precisionLabel = document.createElement('div');
+            precisionLabel.className = 'meter-label';
+            precisionLabel.textContent = 'PRECISION';
+            
+            const precisionMeter = document.createElement('div');
+            precisionMeter.className = 'difficulty-meter precision-meter';
+            
+            const precisionValue = document.createElement('div');
+            precisionValue.className = 'meter-value';
+            precisionValue.style.width = `${(widthModifier - 0.4) / 1.1 * 100}%`;
+            
+            precisionMeter.appendChild(precisionValue);
+            precisionContainer.appendChild(precisionLabel);
+            precisionContainer.appendChild(precisionMeter);
+            
+            difficultyMeters.appendChild(tempoContainer);
+            difficultyMeters.appendChild(precisionContainer);
+            elements.swingMeterContainer.appendChild(difficultyMeters);
+            
             const tapInstruction = document.createElement('div');
             tapInstruction.className = 'tap-instruction';
             tapInstruction.textContent = 'Tap anywhere to stop';
@@ -1312,6 +1367,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     poorEndZone.style.width = `${poorZoneWidth}%`;
                     console.log(`Updated zones - Good: ${goodZoneWidth.toFixed(2)}%, Poor: ${poorZoneWidth.toFixed(2)}% each`);
                 }
+            }
+            
+            // Update difficulty meters
+            const tempoValue = document.querySelector('.tempo-meter .meter-value');
+            if (tempoValue) {
+                tempoValue.style.width = `${(speedModifier - 0.5) / 2 * 100}%`;
+            }
+            
+            const precisionValue = document.querySelector('.precision-meter .meter-value');
+            if (precisionValue) {
+                precisionValue.style.width = `${(widthModifier - 0.4) / 1.1 * 100}%`;
             }
         }
         
@@ -2410,6 +2476,28 @@ document.addEventListener('DOMContentLoaded', function() {
         // Calculate the actual swing speed
         swingSpeed = 1 * speedModifier;
         
+        // Update UI meters
+        updateDifficultyMeters();
+        
         console.log(`Final modifiers - Speed: ${speedModifier.toFixed(2)}x, Width: ${widthModifier.toFixed(2)}x`);
+    }
+
+    // Update the difficulty meters in the UI
+    function updateDifficultyMeters() {
+        // Update tempo meter
+        const tempoValue = document.querySelector('.tempo-meter .meter-value');
+        if (tempoValue) {
+            // Convert speedModifier to a percentage (0.5 to 2.5 range maps to 0-100%)
+            const tempoPercentage = (speedModifier - 0.5) / 2 * 100;
+            tempoValue.style.width = `${tempoPercentage}%`;
+        }
+        
+        // Update precision meter
+        const precisionValue = document.querySelector('.precision-meter .meter-value');
+        if (precisionValue) {
+            // Convert widthModifier to a percentage (0.4 to 1.5 range maps to 0-100%)
+            const precisionPercentage = (widthModifier - 0.4) / 1.1 * 100;
+            precisionValue.style.width = `${precisionPercentage}%`;
+        }
     }
 });
