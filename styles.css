@@ -1489,10 +1489,9 @@ header {
 .collection-album-description {
     color: rgba(255, 255, 255, 0.8);
     font-size: 12px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
     overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 36px; /* Approximately 2 lines of text */
     min-height: 36px;
 }
 
