@@ -385,17 +385,6 @@ header {
 .meter-zone.good {
     background-color: #2ecc71;
     width: 20%;
-    position: relative;
-}
-
-.meter-zone.critical {
-    background-color: white;
-    width: 6%;
-    position: absolute;
-    top: 0;
-    height: 100%;
-    z-index: 2;
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
 }
 
 .meter-zone.poor-end {
@@ -412,25 +401,6 @@ header {
     background-color: white;
     transition: left 0.1s linear;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
-    z-index: 3;
-}
-
-.meter-indicator-bar.critical {
-    background-color: white !important;
-    box-shadow: 0 0 10px white, 0 0 20px rgba(255, 255, 255, 0.5) !important;
-    animation: criticalPulse 1s infinite;
-}
-
-@keyframes criticalPulse {
-    0% {
-        box-shadow: 0 0 10px white, 0 0 20px rgba(255, 255, 255, 0.5);
-    }
-    50% {
-        box-shadow: 0 0 15px white, 0 0 30px rgba(255, 255, 255, 0.7);
-    }
-    100% {
-        box-shadow: 0 0 10px white, 0 0 20px rgba(255, 255, 255, 0.5);
-    }
 }
 
 .tap-marker {
@@ -1569,72 +1539,4 @@ header {
     background-color: #ffcc00;
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-}
-
-/* Star effect for critical success in journey track */
-.station.completed.critical {
-    position: relative;
-    z-index: 2;
-}
-
-.station.completed.critical::before {
-    content: '';
-    position: absolute;
-    width: 150%;
-    height: 150%;
-    background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: -1;
-    border-radius: 50%;
-    animation: pulseStar 2s infinite;
-}
-
-@keyframes pulseStar {
-    0% {
-        transform: translate(-50%, -50%) scale(0.8);
-        opacity: 0.3;
-    }
-    50% {
-        transform: translate(-50%, -50%) scale(1.2);
-        opacity: 0.7;
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(0.8);
-        opacity: 0.3;
-    }
-}
-
-/* Critical hit text effect */
-.critical-hit-text {
-    position: absolute;
-    top: -30px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: white;
-    font-weight: bold;
-    font-size: 18px;
-    text-shadow: 0 0 10px white;
-    animation: criticalTextFade 1.5s forwards;
-    z-index: 10;
-}
-
-@keyframes criticalTextFade {
-    0% {
-        opacity: 0;
-        transform: translate(-50%, 0);
-    }
-    20% {
-        opacity: 1;
-        transform: translate(-50%, -10px);
-    }
-    80% {
-        opacity: 1;
-        transform: translate(-50%, -10px);
-    }
-    100% {
-        opacity: 0;
-        transform: translate(-50%, -20px);
-    }
 }

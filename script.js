@@ -114,22 +114,17 @@ document.addEventListener('DOMContentLoaded', function() {
         journeyTrack: document.getElementById('journeyTrack')
     };
     
-    // Global variables
     // Typewriter effect variables
     let isTyping = false;
     let skipTyping = false;
-    let typingSpeed = 30; // ms per character
+    const typingSpeed = 30; // ms per character
     
     // Swing meter variables
     let isSwingMeterMoving = false;
     let swingPosition = 0;
+    let swingSpeed = 1;
     let swingDirection = 1;
-    let swingSpeed = 1.5; // Base speed
     let currentSelectedChoice = null;
-    let baseGoodZoneWidth = 20; // Base width percentage for good zone
-    let baseCriticalZoneWidth = 6; // Base width percentage for critical zone
-    let goodZonePosition = 50; // Default center position (percentage)
-    let criticalHitDetected = false; // Track if player hit the critical zone
     
     // Initialize the game
     function initGame() {
@@ -727,67 +722,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function startSwingMeter() {
         console.log('Starting swing meter');
         
-        // Reset critical hit detection
-        criticalHitDetected = false;
-        
-        // Calculate difficulty based on current logical stop
-        const totalStops = game.journeyManager.getTotalStops();
-        const currentStop = game.logicalStop;
-        const progressRatio = currentStop / totalStops;
-        
-        console.log(`Current stop: ${currentStop}/${totalStops}, Progress ratio: ${progressRatio}`);
-        
-        // Adjust speed based on progress (1.5x to 3x base speed)
-        swingSpeed = 1.5 + (progressRatio * 1.5);
-        console.log(`Adjusted swing speed: ${swingSpeed}`);
-        
-        // Adjust good zone width based on progress (20% down to 12%)
-        const goodZoneWidth = Math.max(12, baseGoodZoneWidth - (progressRatio * 8));
-        const criticalZoneWidth = Math.max(3, baseCriticalZoneWidth - (progressRatio * 3));
-        
-        // Adjust zone position based on progress
-        // Early stops: center (50%)
-        // Middle stops: slight variation (40-60%)
-        // Late stops: random position (30-70%)
-        if (progressRatio < 0.3) {
-            // Early stops - center
-            goodZonePosition = 50;
-        } else if (progressRatio < 0.7) {
-            // Middle stops - slight variation
-            goodZonePosition = 40 + (Math.random() * 20);
-        } else {
-            // Late stops - more random
-            goodZonePosition = 30 + (Math.random() * 40);
-        }
-        
-        console.log(`Adjusted good zone width: ${goodZoneWidth}%, position: ${goodZonePosition}%`);
-        
-        // Update the good zone width and position
-        const goodZone = document.querySelector('.meter-zone.good');
-        if (goodZone) {
-            // Calculate the left edge of the good zone
-            const goodZoneLeft = goodZonePosition - (goodZoneWidth / 2);
-            goodZone.style.width = `${goodZoneWidth}%`;
-            goodZone.style.left = `${goodZoneLeft}%`;
-            
-            // Update the critical zone width and position
-            const criticalZone = document.querySelector('.meter-zone.critical');
-            if (criticalZone) {
-                criticalZone.style.width = `${criticalZoneWidth}%`;
-                // Position the critical zone exactly in the center of the good zone
-                // Remove the transform from the style and set the exact center position
-                criticalZone.style.transform = '';
-                
-                // Calculate the exact center of the good zone
-                const goodZoneCenter = goodZoneLeft + (goodZoneWidth / 2);
-                // Position the critical zone so its center is at the good zone's center
-                const criticalZoneLeft = goodZoneCenter - (criticalZoneWidth / 2);
-                criticalZone.style.left = `${criticalZoneLeft}%`;
-                
-                console.log(`Good zone center: ${goodZoneCenter}%, Critical zone left: ${criticalZoneLeft}%`);
-            }
-        }
-        
         // Create the solid indicator bar if it doesn't exist
         let indicatorBar = document.querySelector('.meter-indicator-bar');
         if (!indicatorBar) {
@@ -866,56 +800,13 @@ document.addEventListener('DOMContentLoaded', function() {
             indicatorBar.style.left = compensatedPosition + '%';
         }
         
-        // Get the current good zone position and width
-        const goodZone = document.querySelector('.meter-zone.good');
-        const criticalZone = document.querySelector('.meter-zone.critical');
-        
-        let goodZoneStart = 40; // Default
-        let goodZoneEnd = 60; // Default
-        let criticalZoneStart = 47; // Default
-        let criticalZoneEnd = 53; // Default
-        
-        if (goodZone && goodZone.style.left && goodZone.style.width) {
-            goodZoneStart = parseFloat(goodZone.style.left);
-            goodZoneEnd = goodZoneStart + parseFloat(goodZone.style.width);
-        }
-        
-        if (criticalZone && criticalZone.style.left && criticalZone.style.width) {
-            criticalZoneStart = parseFloat(criticalZone.style.left);
-            criticalZoneEnd = criticalZoneStart + parseFloat(criticalZone.style.width);
-        }
-        
-        // Calculate the center points for debugging
-        const goodZoneCenter = goodZoneStart + ((goodZoneEnd - goodZoneStart) / 2);
-        const criticalZoneCenter = criticalZoneStart + ((criticalZoneEnd - criticalZoneStart) / 2);
-        
-        console.log(`Good zone: ${goodZoneStart}% to ${goodZoneEnd}%, center: ${goodZoneCenter}%`);
-        console.log(`Critical zone: ${criticalZoneStart}% to ${criticalZoneEnd}%, center: ${criticalZoneCenter}%`);
-        
         // Determine the result based on compensated position
+        // With our current layout:
+        // 0-40%: poor-start (fail)
+        // 40-60%: good
+        // 60-100%: poor-end (fail)
         let result = 'fail';
-        
-        // Check for critical hit first
-        if (compensatedPosition >= criticalZoneStart && compensatedPosition < criticalZoneEnd) {
-            result = 'critical';
-            criticalHitDetected = true;
-            console.log('CRITICAL HIT!');
-            
-            // Show critical hit text
-            const criticalText = document.createElement('div');
-            criticalText.className = 'critical-hit-text';
-            criticalText.textContent = 'CRITICAL!';
-            elements.swingMeterContainer.appendChild(criticalText);
-            
-            // Remove the text after animation completes
-            setTimeout(() => {
-                if (criticalText.parentNode) {
-                    criticalText.parentNode.removeChild(criticalText);
-                }
-            }, 1500);
-        } 
-        // Then check for good hit
-        else if (compensatedPosition >= goodZoneStart && compensatedPosition < goodZoneEnd) {
+        if (compensatedPosition >= 40 && compensatedPosition < 60) {
             result = 'good';
         }
         
@@ -932,11 +823,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             // Set color based on decision type and result
             const decisionType = currentSelectedChoice.type;
-            
-            if (result === 'critical') {
-                tapMarker.style.backgroundColor = 'white'; // White for critical
-                tapMarker.style.boxShadow = '0 0 10px white'; // Add glow for critical
-            } else if (result === 'good') {
+            if (result === 'good') {
                 switch(decisionType) {
                     case 'soul':
                         tapMarker.style.backgroundColor = '#2A66C9'; // Blue for soul good
@@ -956,14 +843,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update the indicator bar color based on result and decision type
         if (indicatorBar) {
             // Remove any existing result classes
-            indicatorBar.classList.remove('good', 'okay', 'fail', 'critical');
+            indicatorBar.classList.remove('good', 'okay', 'fail');
             
             if (result === 'fail') {
                 indicatorBar.style.backgroundColor = '#e74c3c'; // Red for fail
-            } else if (result === 'critical') {
-                indicatorBar.style.backgroundColor = 'white'; // White for critical
-                indicatorBar.style.boxShadow = '0 0 10px white'; // Add glow for critical
-                indicatorBar.classList.add('critical');
             } else {
                 // Set color based on decision type and result
                 const decisionType = currentSelectedChoice.type;
@@ -983,12 +866,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             }
-        }
-        
-        // For critical hits, we still want to show the "good" result text
-        // but we'll track the critical hit separately
-        if (result === 'critical') {
-            result = 'good'; // Use good result text
         }
         
         // Show the result of the swing meter
@@ -1106,16 +983,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Get the narrative type from the selected choice
                     const narrativeType = currentSelectedChoice.type || 'neutral';
                     
-                    console.log(`Calling handleSwingMeter with success=${success}, narrativeType=${narrativeType}, critical=${criticalHitDetected}`);
+                    console.log(`Calling handleSwingMeter with success=${success}, narrativeType=${narrativeType}`);
                     
                     // Track the decision in the achievement system
                     if (game.achievementSystem) {
-                        console.log(`Tracking decision in achievement system: Stop=${game.logicalStop}, Type=${narrativeType}, Success=${success}, Critical=${criticalHitDetected}`);
+                        console.log(`Tracking decision in achievement system: Stop=${game.logicalStop}, Type=${narrativeType}, Success=${success}`);
                         game.achievementSystem.trackDecision(game.logicalStop, narrativeType, success);
                     }
                     
                     // Call the game's handleSwingMeter method with the success and narrative type
-                    const gameResult = game.handleSwingMeter(success, narrativeType, criticalHitDetected);
+                    const gameResult = game.handleSwingMeter(success, narrativeType);
                     
                     console.log('Game result after handling swing meter:', gameResult, 'Current stop after:', game.currentStop);
                     console.log('Updated decision history:', game.decisionHistory);
@@ -1540,12 +1417,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         // If successful, add the decision type class for proper coloring
                         station.classList.add(decision.narrativeType);
                         console.log(`Adding ${decision.narrativeType} class to station ${i}`);
-                        
-                        // Check if this was a critical hit
-                        if (decision.critical === true) {
-                            station.classList.add('critical');
-                            console.log(`Adding critical class to station ${i}`);
-                        }
                     } else {
                         // Fallback to standard class if no narrative type
                         station.classList.add('standard');
