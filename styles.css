@@ -349,13 +349,16 @@ header {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     position: relative;
     cursor: pointer;
+    min-height: 120px; /* Set minimum height to match result container */
+    height: auto;
 }
 
 .choice-description {
-    font-size: 1rem;
+    font-size: 1rem; /* Increased from 0.9rem to match narrative text */
     margin-bottom: 1rem;
     text-align: center;
     padding: 0 0.5rem;
+    line-height: 1.5; /* Added to match narrative text */
 }
 
 .swing-meter {
@@ -442,25 +445,9 @@ header {
     cursor: pointer;
     position: relative;
     height: auto;
-    min-height: 70px; /* Reduced minimum height for shorter text */
-    max-height: 100px; /* Reduced maximum height */
-    overflow-y: auto; /* Add scrolling if content exceeds max height */
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent-color) var(--primary-color);
-}
-
-.meter-result-container::-webkit-scrollbar {
-    width: 6px;
-}
-
-.meter-result-container::-webkit-scrollbar-track {
-    background: var(--primary-color);
-    border-radius: 3px;
-}
-
-.meter-result-container::-webkit-scrollbar-thumb {
-    background-color: var(--accent-color);
-    border-radius: 3px;
+    min-height: 120px; /* Increased to accommodate text without scrolling */
+    max-height: none; /* Remove max height to avoid scrollbars */
+    overflow-y: visible; /* Changed from auto to visible */
 }
 
 .meter-result-container.visible {
@@ -486,10 +473,9 @@ header {
 
 .meter-result-text {
     font-size: 1rem;
-    margin-bottom: 0.75rem; /* Reduced margin for shorter text */
+    margin-bottom: 0.75rem;
     line-height: 1.5;
     height: auto;
-    min-height: 1.5rem; /* Minimum height for at least one line of text */
 }
 
 .next-stop-button {
@@ -936,15 +922,24 @@ header {
     
     /* Small mobile styles for meter result container */
     .meter-result-container {
-        min-height: 60px; /* Reduced for shorter text */
-        max-height: 90px; /* Reduced for shorter text */
+        min-height: 100px; /* Adjusted for mobile */
         padding: 0.75rem;
     }
     
     .meter-result-text {
         font-size: 0.9rem;
         line-height: 1.4;
-        margin-bottom: 0.5rem; /* Reduced margin */
+        margin-bottom: 0.5rem;
+    }
+    
+    .choice-description {
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    .swing-meter-container {
+        min-height: 100px; /* Match result container on mobile */
+        padding: 0.75rem;
     }
 }
 
@@ -1014,6 +1009,7 @@ header {
     }
     
     .swing-meter-container {
+        min-height: 140px; /* Match result container on desktop */
         padding: 1.5rem;
         border-radius: 0.75rem;
         border-top-width: 6px;
@@ -1037,8 +1033,7 @@ header {
     
     /* Desktop styles for meter result container */
     .meter-result-container {
-        min-height: 80px; /* Reduced for shorter text */
-        max-height: 120px; /* Reduced for shorter text */
+        min-height: 140px; /* Increased for desktop */
         padding: 1.25rem;
         border-radius: 0.75rem;
         border-left-width: 6px;
@@ -1047,7 +1042,12 @@ header {
     .meter-result-text {
         font-size: 1.1rem;
         line-height: 1.6;
-        margin-bottom: 0.75rem; /* Reduced margin */
+        margin-bottom: 0.75rem;
+    }
+    
+    .choice-description {
+        font-size: 1.1rem; /* Match narrative text size on desktop */
+        line-height: 1.6;
     }
     
     .journey-track {
