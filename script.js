@@ -969,9 +969,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add click event to skip typing - make sure it's properly attached
         resultTextElement.style.cursor = 'pointer';
         resultTextElement.addEventListener('click', function(e) {
-            // Stop event propagation to prevent parent container's click handler from firing
-            e.stopPropagation();
-            completeTyping();
+            // Only complete typing if we're still typing
+            if (isTyping) {
+                completeTyping();
+                // Stop propagation only when typing is in progress
+                e.stopPropagation();
+            }
+            // If typing is complete, allow the click to propagate to the container
         });
         
         // Create a variable to store the next button for later reference
@@ -982,15 +986,16 @@ document.addEventListener('DOMContentLoaded', function() {
             // Get the current next button reference if it exists
             const currentNextButton = resultContainer.querySelector('.next-stop-button');
             
-            // Check if the click was on the result text
-            const isResultTextClick = e.target.classList && e.target.classList.contains('meter-result-text');
-            
-            // Prevent clicks on child elements from triggering multiple times
-            // Also ignore clicks on the result text element
-            if ((e.target === resultContainer || (currentNextButton && !currentNextButton.contains(e.target))) && !isResultTextClick) {
-                // If still typing, complete the typing first
-                if (isTyping) {
-                    completeTyping();
+            // Allow clicks on the result text element or the container itself
+            // Only prevent clicks on other interactive elements like buttons
+            if (e.target === resultContainer || 
+                e.target.classList.contains('meter-result-text') || 
+                (currentNextButton && !currentNextButton.contains(e.target))) {
+                // If still typing, complete the typing first (should not happen at this point)
+                if (typeof isTyping !== 'undefined' && isTyping) {
+                    if (typeof completeTyping === 'function') {
+                        completeTyping();
+                    }
                     return;
                 }
                 
@@ -1104,8 +1109,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // Get the updated next button reference
             const currentNextButton = resultContainer.querySelector('.next-stop-button');
             
-            // Prevent clicks on child elements from triggering multiple times
-            if (e.target === resultContainer || (currentNextButton && !currentNextButton.contains(e.target))) {
+            // Allow clicks on the result text element or the container itself
+            // Only prevent clicks on other interactive elements like buttons
+            if (e.target === resultContainer || 
+                e.target.classList.contains('meter-result-text') || 
+                (currentNextButton && !currentNextButton.contains(e.target))) {
                 // If still typing, complete the typing first (should not happen at this point)
                 if (typeof isTyping !== 'undefined' && isTyping) {
                     if (typeof completeTyping === 'function') {
