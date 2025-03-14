@@ -125,10 +125,23 @@ document.addEventListener('DOMContentLoaded', function() {
     let swingSpeed = 1;
     let swingDirection = 1;
     let currentSelectedChoice = null;
+    let speedModifier = 1.0; // Base speed modifier
+    let widthModifier = 1.0; // Base width modifier
+    let baseGoodZoneWidth = 20; // Default good zone width percentage
+    
+    // Reset difficulty modifiers to default values
+    function resetDifficultyModifiers() {
+        speedModifier = 1.0;
+        widthModifier = 1.0;
+        console.log('Reset difficulty modifiers to default values');
+    }
     
     // Initialize the game
     function initGame() {
         console.log('Initializing game...');
+        
+        // Reset difficulty modifiers
+        resetDifficultyModifiers();
         
         // Ensure we're starting from stop 1
         game.currentStop = 1;
@@ -239,6 +252,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Reset the entire game state
     function resetGameState() {
         console.log('Resetting game state...');
+        
+        // Reset difficulty modifiers
+        resetDifficultyModifiers();
         
         // Reset game state
         game.restart();
@@ -731,6 +747,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Start the swing meter
     function startSwingMeter() {
         console.log('Starting swing meter');
+        console.log(`Current modifiers - Speed: ${speedModifier.toFixed(2)}x, Width: ${widthModifier.toFixed(2)}x`);
         
         // Create the solid indicator bar if it doesn't exist
         let indicatorBar = document.querySelector('.meter-indicator-bar');
@@ -749,6 +766,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Reset the indicator position and ensure transition is set
         indicatorBar.style.transition = 'left 0.1s linear';
         indicatorBar.style.left = '0%';
+        
+        // Apply the speed modifier to the base speed
+        swingSpeed = 1 * speedModifier;
+        console.log(`Applied speed: ${swingSpeed.toFixed(2)}`);
         
         // Start the animation
         isSwingMeterMoving = true;
@@ -810,13 +831,19 @@ document.addEventListener('DOMContentLoaded', function() {
             indicatorBar.style.left = compensatedPosition + '%';
         }
         
-        // Determine the result based on compensated position
-        // With our current layout:
-        // 0-40%: poor-start (fail)
-        // 40-60%: good
-        // 60-100%: poor-end (fail)
+        // Calculate the current zone boundaries based on width modifier
+        const goodZoneWidth = baseGoodZoneWidth * widthModifier;
+        const poorZoneWidth = (100 - goodZoneWidth) / 2;
+        
+        // The good zone is in the middle, so it starts after the poor-start zone
+        const goodZoneStart = poorZoneWidth;
+        const goodZoneEnd = poorZoneWidth + goodZoneWidth;
+        
+        console.log(`Zone boundaries - Poor start: 0-${goodZoneStart.toFixed(2)}%, Good: ${goodZoneStart.toFixed(2)}-${goodZoneEnd.toFixed(2)}%, Poor end: ${goodZoneEnd.toFixed(2)}-100%`);
+        
+        // Determine the result based on compensated position and current zone boundaries
         let result = 'fail';
-        if (compensatedPosition >= 40 && compensatedPosition < 60) {
+        if (compensatedPosition >= goodZoneStart && compensatedPosition < goodZoneEnd) {
             result = 'good';
         }
         
@@ -1023,6 +1050,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('Game result after handling swing meter:', gameResult, 'Current stop after:', game.currentStop);
                     console.log('Updated decision history:', game.decisionHistory);
                     
+                    // If the swing meter was successful, adjust difficulty based on the choice type
+                    if (success) {
+                        console.log(`Successful ${narrativeType} choice - adjusting difficulty`);
+                        adjustDifficulty(narrativeType);
+                    } else {
+                        console.log('Failed choice - not adjusting difficulty');
+                    }
+                    
                     // Update the journey track immediately to reflect the decision
                     updateJourneyTrack();
                     
@@ -1146,6 +1181,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('Game result after handling swing meter:', gameResult, 'Current stop after:', game.currentStop);
                     console.log('Updated decision history:', game.decisionHistory);
                     
+                    // If the swing meter was successful, adjust difficulty based on the choice type
+                    if (success) {
+                        console.log(`Successful ${narrativeType} choice - adjusting difficulty`);
+                        adjustDifficulty(narrativeType);
+                    } else {
+                        console.log('Failed choice - not adjusting difficulty');
+                    }
+                    
                     // Update the journey track immediately to reflect the decision
                     updateJourneyTrack();
                     
@@ -1209,14 +1252,24 @@ document.addEventListener('DOMContentLoaded', function() {
             meterBackground.id = 'meterBackground';
             meterBackground.className = 'meter-background';
             
+            // Calculate the good zone width based on the width modifier
+            const goodZoneWidth = baseGoodZoneWidth * widthModifier;
+            // Calculate the poor zones width (they should be equal and fill the remaining space)
+            const poorZoneWidth = (100 - goodZoneWidth) / 2;
+            
+            console.log(`Creating zones - Good: ${goodZoneWidth.toFixed(2)}%, Poor: ${poorZoneWidth.toFixed(2)}% each`);
+            
             const poorStartZone = document.createElement('div');
             poorStartZone.className = 'meter-zone poor-start';
+            poorStartZone.style.width = `${poorZoneWidth}%`;
             
             const goodZone = document.createElement('div');
             goodZone.className = 'meter-zone good';
+            goodZone.style.width = `${goodZoneWidth}%`;
             
             const poorEndZone = document.createElement('div');
             poorEndZone.className = 'meter-zone poor-end';
+            poorEndZone.style.width = `${poorZoneWidth}%`;
             
             const indicatorBar = document.createElement('div');
             indicatorBar.className = 'meter-indicator-bar';
@@ -1244,6 +1297,21 @@ document.addEventListener('DOMContentLoaded', function() {
             if (swingMeter) {
                 swingMeter.style.display = 'block';
                 swingMeter.classList.remove('fade-out');
+                
+                // Update the zone widths based on current modifiers
+                const goodZoneWidth = baseGoodZoneWidth * widthModifier;
+                const poorZoneWidth = (100 - goodZoneWidth) / 2;
+                
+                const goodZone = swingMeter.querySelector('.meter-zone.good');
+                const poorStartZone = swingMeter.querySelector('.meter-zone.poor-start');
+                const poorEndZone = swingMeter.querySelector('.meter-zone.poor-end');
+                
+                if (goodZone && poorStartZone && poorEndZone) {
+                    goodZone.style.width = `${goodZoneWidth}%`;
+                    poorStartZone.style.width = `${poorZoneWidth}%`;
+                    poorEndZone.style.width = `${poorZoneWidth}%`;
+                    console.log(`Updated zones - Good: ${goodZoneWidth.toFixed(2)}%, Poor: ${poorZoneWidth.toFixed(2)}% each`);
+                }
             }
         }
         
@@ -2307,5 +2375,41 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         console.log('Game over journey track updated');
+    }
+
+    // Adjust swing meter difficulty based on player's choice
+    function adjustDifficulty(decisionType) {
+        console.log(`Adjusting difficulty based on ${decisionType} decision`);
+        
+        switch(decisionType) {
+            case 'soul':
+                // Soul choices make the meter faster
+                speedModifier *= 1.2; // Increase speed by 20%
+                console.log(`Speed increased to ${speedModifier.toFixed(2)}x`);
+                break;
+            case 'connections':
+                // Connections choices make the good zone smaller
+                widthModifier *= 0.8; // Decrease good zone width by 20%
+                console.log(`Width decreased to ${widthModifier.toFixed(2)}x`);
+                break;
+            case 'success':
+                // Success choices make the meter slightly slower and good zone slightly wider
+                speedModifier *= 0.9; // Decrease speed by 10%
+                widthModifier *= 1.1; // Increase good zone width by 10%
+                console.log(`Speed decreased to ${speedModifier.toFixed(2)}x, width increased to ${widthModifier.toFixed(2)}x`);
+                break;
+            default:
+                // No change for unknown types
+                break;
+        }
+        
+        // Apply limits to prevent extremes
+        speedModifier = Math.max(0.5, Math.min(speedModifier, 2.5)); // Limit between 0.5x and 2.5x
+        widthModifier = Math.max(0.4, Math.min(widthModifier, 1.5)); // Limit between 0.4x and 1.5x
+        
+        // Calculate the actual swing speed
+        swingSpeed = 1 * speedModifier;
+        
+        console.log(`Final modifiers - Speed: ${speedModifier.toFixed(2)}x, Width: ${widthModifier.toFixed(2)}x`);
     }
 });
