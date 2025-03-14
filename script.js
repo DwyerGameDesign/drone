@@ -961,21 +961,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 isTyping = false;
                 resultTextElement.innerHTML = sanitizedMessage;
                 // Add the Next Stop button immediately
-                addNextStopButton(result, resultContainer);
+                nextButton = addNextStopButton(result, resultContainer);
             }
         };
         
         // Add click event to skip typing - make sure it's properly attached
         resultTextElement.style.cursor = 'pointer';
-        resultTextElement.addEventListener('click', completeTyping);
+        resultTextElement.addEventListener('click', function(e) {
+            // Stop event propagation to prevent parent container's click handler from firing
+            e.stopPropagation();
+            completeTyping();
+        });
         
         // Create a variable to store the next button for later reference
         let nextButton;
         
         // Also make the entire result container tappable to skip typing
         resultContainer.addEventListener('click', function(e) {
+            // Get the current next button reference if it exists
+            const currentNextButton = resultContainer.querySelector('.next-stop-button');
+            
+            // Check if the click was on the result text
+            const isResultTextClick = e.target.classList && e.target.classList.contains('meter-result-text');
+            
             // Prevent clicks on child elements from triggering multiple times
-            if (e.target === resultContainer || (nextButton && !nextButton.contains(e.target))) {
+            // Also ignore clicks on the result text element
+            if ((e.target === resultContainer || (currentNextButton && !currentNextButton.contains(e.target))) && !isResultTextClick) {
                 // If still typing, complete the typing first
                 if (isTyping) {
                     completeTyping();
@@ -1087,11 +1098,14 @@ document.addEventListener('DOMContentLoaded', function() {
             resultContainer.removeEventListener('click', oldClickHandler);
         }
         
-        // Add the new click handler
-        resultContainer.onclick = function(e) {
+        // Add the new click handler to the container
+        resultContainer.addEventListener('click', function(e) {
+            // Get the updated next button reference
+            const currentNextButton = resultContainer.querySelector('.next-stop-button');
+            
             // Prevent clicks on child elements from triggering multiple times
-            if (e.target === resultContainer || !nextButton.contains(e.target)) {
-                // If still typing, complete the typing first
+            if (e.target === resultContainer || (currentNextButton && !currentNextButton.contains(e.target))) {
+                // If still typing, complete the typing first (should not happen at this point)
                 if (typeof isTyping !== 'undefined' && isTyping) {
                     if (typeof completeTyping === 'function') {
                         completeTyping();
@@ -1160,11 +1174,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('Error processing swing meter result:', error);
                 }
             }
-        };
+        });
         
-        // Keep the original button functionality for backward compatibility
-        nextButton.onclick = resultContainer.onclick;
-        
+        // Return the next button for reference
         return nextButton;
     }
     
