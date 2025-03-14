@@ -441,6 +441,26 @@ header {
     border-left: 4px solid transparent;
     cursor: pointer;
     position: relative;
+    height: auto;
+    min-height: 100px; /* Set a minimum height */
+    max-height: 150px; /* Set a maximum height */
+    overflow-y: auto; /* Add scrolling if content exceeds max height */
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color) var(--primary-color);
+}
+
+.meter-result-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.meter-result-container::-webkit-scrollbar-track {
+    background: var(--primary-color);
+    border-radius: 3px;
+}
+
+.meter-result-container::-webkit-scrollbar-thumb {
+    background-color: var(--accent-color);
+    border-radius: 3px;
 }
 
 .meter-result-container.visible {
@@ -468,6 +488,8 @@ header {
     font-size: 1rem;
     margin-bottom: 1rem;
     line-height: 1.5;
+    height: auto;
+    min-height: 1.5rem; /* Minimum height for at least one line of text */
 }
 
 .next-stop-button {
@@ -911,6 +933,19 @@ header {
     .card-content {
         font-size: 0.8rem;
     }
+    
+    /* Small mobile styles for meter result container */
+    .meter-result-container {
+        min-height: 80px;
+        max-height: 120px;
+        padding: 0.75rem;
+    }
+    
+    .meter-result-text {
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin-bottom: 0.75rem;
+    }
 }
 
 /* Desktop styles */
@@ -998,6 +1033,20 @@ header {
     .next-instruction {
         font-size: 1rem;
         margin-top: 1.25rem;
+    }
+    
+    /* Desktop styles for meter result container */
+    .meter-result-container {
+        min-height: 120px;
+        max-height: 180px;
+        padding: 1.25rem;
+        border-radius: 0.75rem;
+        border-left-width: 6px;
+    }
+    
+    .meter-result-text {
+        font-size: 1.1rem;
+        line-height: 1.6;
     }
     
     .journey-track {
