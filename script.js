@@ -1019,9 +1019,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     resetSwingMeter();
                     
                     // Check if the game is over
-                    if (gameResult.gameOver) {
-                        console.log('Game over detected after swing meter result');
-                        showGameOver(gameResult.reason === 'success');
+                    if (gameResult && gameResult.gameOver) {
+                        console.log('Game over detected after swing meter result:', gameResult);
+                        try {
+                            showGameOver(gameResult.reason === 'success');
+                        } catch (gameOverError) {
+                            console.error('Error showing game over screen:', gameOverError);
+                            // Fallback to a simple game over message
+                            alert('Game over: ' + (gameResult.reason === 'success' ? 'You completed your journey!' : 'Your journey has ended prematurely.'));
+                        }
                         return;
                     }
                     
@@ -1130,9 +1136,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     resetSwingMeter();
                     
                     // Check if the game is over
-                    if (gameResult.gameOver) {
-                        console.log('Game over detected after swing meter result');
-                        showGameOver(gameResult.reason === 'success');
+                    if (gameResult && gameResult.gameOver) {
+                        console.log('Game over detected after swing meter result:', gameResult);
+                        try {
+                            showGameOver(gameResult.reason === 'success');
+                        } catch (gameOverError) {
+                            console.error('Error showing game over screen:', gameOverError);
+                            // Fallback to a simple game over message
+                            alert('Game over: ' + (gameResult.reason === 'success' ? 'You completed your journey!' : 'Your journey has ended prematurely.'));
+                        }
                         return;
                     }
                     
@@ -1533,13 +1545,21 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Game state at game over:', {
             logicalStop: game.logicalStop,
             currentStop: game.currentStop,
-            totalStops: game.journeyManager.getTotalStops(),
+            totalStops: game.journeyManager ? game.journeyManager.getTotalStops() : 'unknown',
             gameOverReason: game.gameOverReason,
             performanceScore: game.performanceScore,
             failureThreshold: game.failureThreshold,
-            decisionHistory: game.decisionHistory.length,
-            decisionTypes: game.decisionTypes
+            decisionHistory: game.decisionHistory ? game.decisionHistory.length : 0,
+            decisionTypes: game.decisionTypes ? game.decisionTypes.length : 0
         });
+        
+        // Log the last decision for debugging
+        if (game.decisionHistory && game.decisionHistory.length > 0) {
+            const lastDecision = game.decisionHistory[game.decisionHistory.length - 1];
+            console.log('Last decision:', lastDecision);
+        } else {
+            console.log('No decisions in history');
+        }
         
         // Force success to true if gameOverReason is "success"
         if (game.gameOverReason === "success") {
@@ -1649,8 +1669,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Get the game over message
-        const gameOverMessage = game.getGameOverMessage(success);
-        console.log('Game over message:', gameOverMessage);
+        let gameOverMessage;
+        try {
+            gameOverMessage = game.getGameOverMessage(success);
+            console.log('Game over message:', gameOverMessage);
+        } catch (error) {
+            console.error('Error getting game over message:', error);
+            // Fallback message if there's an error
+            gameOverMessage = success 
+                ? "Your journey has changed you in subtle but significant ways. The corporate drone is gone, replaced by someone more aware, more alive."
+                : "Your journey has come to an abrupt end. A moment's hesitation, a wrong choice, and everything changed.";
+        }
+        
+        // Ensure we have a valid message
+        if (!gameOverMessage) {
+            console.warn('Game over message is empty or undefined, using fallback');
+            gameOverMessage = success 
+                ? "Your journey has changed you in subtle but significant ways. The corporate drone is gone, replaced by someone more aware, more alive."
+                : "Your journey has come to an abrupt end. A moment's hesitation, a wrong choice, and everything changed.";
+        }
         
         // Clear existing content
         elements.gameOverMessage.textContent = '';
