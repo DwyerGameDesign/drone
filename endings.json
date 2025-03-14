@@ -1,0 +1,138 @@
+{
+    "success": {
+      "dominant": {
+        "soul": {
+          "title": "AUTHENTIC SELF ENDING",
+          "message": "You've reconnected with your authentic self. Perhaps some relationships were left behind, but your inner light burns bright. As you step off the train for the last time, you know you'll never be a drone again."
+        },
+        "connections": {
+          "title": "MEANINGFUL BONDS ENDING",
+          "message": "You've built a network of meaningful relationships that sustain you. Though personal struggles remain, you're never alone in facing them. The journey continues, but now with companions who make the ride worthwhile."
+        },
+        "success": {
+          "title": "PROFESSIONAL ACHIEVEMENT ENDING",
+          "message": "You've achieved the success you always wanted, though at times it came at a personal cost. Your journey has brought you material comfort and professional recognition, and now you stand at the threshold of new opportunities."
+        },
+        "mixed": {
+          "title": "BALANCED GROWTH ENDING", 
+          "message": "Your journey has changed you in subtle but significant ways. The corporate drone is gone, replaced by someone more aware, more alive. It's not perfect, but it's progress, and that's enough."
+        }
+      },
+      "patterns": {
+        "all_soul": {
+          "title": "TRUE NORTH ENDING", 
+          "message": "Every crossroads led you deeper inward. Each choice, a declaration of independence from the expectations that once defined you. The transformation is so complete that old acquaintances don't recognize the person before them – not physically, but essentially. You've become your own magnetic north, drawing others to the authenticity they recognize but rarely achieve themselves."
+        },
+        "all_connections": {
+          "title": "COMMUNITY ARCHITECT ENDING",
+          "message": "Your life has transformed into a constellation of meaningful relationships. Where once were strangers, now exists a network of souls connected through your intentional presence. Your calendar is full not of meetings but of moments – coffee with friends, dinners with chosen family, community gatherings you helped create. The drone man is now the bridge builder."
+        },
+        "all_success": {
+          "title": "EMPIRE BUILDER ENDING",
+          "message": "The corporate ladder wasn't enough – you built your own. That corner office became a stepping stone to ventures entirely your own. Where others saw security in routine, you recognized opportunity in risk. The drone man now captains his own ship, charting courses for others to follow, redefining success on your own uncompromising terms."
+        },
+        "soul_heavy": {
+          "title": "INNER COMPASS ENDING",
+          "message": "Your journey inward has created ripples outward. Though you occasionally navigate external demands and relationships, your identity is no longer defined by them. You've built a life where authenticity is non-negotiable, where choices align with values, and where success is measured by integrity rather than acquisition. The drone man has found his voice."
+        },
+        "connections_heavy": {
+          "title": "HUMAN TAPESTRY ENDING",
+          "message": "Your identity is now woven into a tapestry of relationships. Not entirely dissolved – you maintain your unique thread – but strengthened through interlacing with others. Professional achievements and personal growth now serve primarily to enrich these connections. The once-isolated drone man now measures time by conversations rather than commutes."
+        },
+        "success_heavy": {
+          "title": "VISIONARY LEADER ENDING",
+          "message": "Your professional transformation has become the framework for a new life. While you've made room for authentic expression and meaningful connections, they orbit around the sun of your ambition. Unlike the drone you once were, this ambition is self-directed and value-driven. You've become the author of your professional narrative rather than a character in someone else's."
+        },
+        "soul_connections_balanced": {
+          "title": "AUTHENTIC COMMUNITY ENDING",
+          "message": "The inner journey led outward. As you uncovered your authentic self, you naturally attracted those who resonated with your truth. Now you lead a life where personal integrity and community belonging mutually reinforce each other. Success is measured not in accolades but in moments of genuine connection with yourself and others. The drone man has found his chorus."
+        },
+        "soul_success_balanced": {
+          "title": "PURPOSEFUL ACHIEVEMENT ENDING",
+          "message": "Your search for meaning has transformed your relationship with achievement. Where once you climbed predetermined ladders, you now create paths aligned with your deepest values. Your work has become a canvas for self-expression, and success tastes sweeter for being authentically yours. The drone man has become the architect of his own cathedral."
+        },
+        "connections_success_balanced": {
+          "title": "COLLABORATIVE PROSPERITY ENDING",
+          "message": "You've woven professional achievement and human connection into a single tapestry. Your success is communal, lifting others as you rise. Your network isn't merely social or professional but a community of purpose. The boardroom and the living room hold equal importance in your transformed life. The drone man now leads a colony of change-makers."
+        },
+        "perfect_balance": {
+          "title": "HARMONIC CONVERGENCE ENDING",
+          "message": "The self you've discovered flourishes in the community you've built and expresses through the work you've chosen. Each aspect of your life reinforces the others in perfect harmony. The boundaries between personal growth, relationships, and achievement have dissolved into a unified life where authenticity, connection, and purpose are not competing values but facets of the same gem. The drone man has achieved integration."
+        }
+      },
+      "special_conditions": {
+        "late_bloomer": {
+          "title": "AWAKENING ENDING",
+          "message": "Your transformation began tentatively, almost imperceptibly. Early decisions maintained the status quo, until something shifted – a moment of clarity, a crossroads that couldn't be ignored. The latter half of your journey saw radical change, proving it's never too late to rewrite your story. The drone man slept through the beginning of the journey but woke before the end."
+        },
+        "early_decided": {
+          "title": "CONVICTION ENDING",
+          "message": "You chose your path early and held it with conviction. Though the journey presented alternatives, you recognized your truth from the beginning and built each subsequent choice upon that foundation. What others might see as inflexibility, you know as certainty – the drone man became a compass rather than a weathervane."
+        },
+        "transformation_journey": {
+          "title": "METAMORPHOSIS ENDING",
+          "message": "Your choices trace a deliberate evolution – from one way of being to another, through intentional stages of growth. What began as one type of journey transformed into another as your understanding deepened. The drone man entered the cocoon as one creature and emerged as another entirely, exactly as the journey demanded."
+        },
+        "unexpected_turn": {
+          "title": "PLOT TWIST ENDING",
+          "message": "Your journey took an unforeseen turn. What began as one type of transformation shifted dramatically when an unexpected choice or circumstance altered your trajectory. Rather than derailing you, this redirection led to a more fitting destination. The drone man set out on one path but discovered his true destination lay elsewhere."
+        }
+      }
+    },
+    "failure": {
+      "early": {
+        "soul": {
+          "title": "FLEETING GLIMPSE ENDING",
+          "message": "For a brief moment, you caught a glimpse of who you might become. But like waking from a dream, that vision faded before it could take hold. The drone man returns to his routine, with only the faintest memory that something else might have been possible."
+        },
+        "connections": {
+          "title": "STRANGER AGAIN ENDING",
+          "message": "You reached out, fingers almost touching another soul. Then the train lurched, the moment passed, and the faces around you returned to anonymous blur. You retreat back into the safety of isolation, the risk of connection proving too great so early in your journey."
+        },
+        "success": {
+          "title": "FALSE START ENDING",
+          "message": "The ladder appeared before you, each rung a promise of ascension. But your footing slipped before you'd barely begun to climb. You return to your desk, file away those ambitious plans, and accept the mundane path laid out before you."
+        },
+        "mixed": {
+          "title": "OPTION PARALYSIS ENDING",
+          "message": "Too many paths, too little conviction. Your tentative steps in different directions led nowhere as each choice undermined the others. You stand frozen at the station, watching as the train of possibility pulls away without you."
+        }
+      },
+      "middle": {
+        "soul": {
+          "title": "ABANDONED EXCAVATION ENDING",
+          "message": "You dug deep enough to discover that the self you sought was buried under years of compromise. But when the work grew difficult and the walls began to crumble, you sealed the tunnel and returned to the surface, haunted by what lies forever half-unearthed."
+        },
+        "connections": {
+          "title": "OVEREXTENDED ENDING",
+          "message": "The bridges you built reached halfway across the void. When they began to sway, you realized how far you'd ventured from solid ground. Rather than risk the collapse, you retreat, leaving those half-formed connections suspended between what was and what could have been."
+        },
+        "success": {
+          "title": "BURNOUT ENDING",
+          "message": "The promotion, the raise, the corner office – all within reach. But the cost became clear as your body and mind rebelled against the pace. You retreat to safer, more sustainable mediocrity, wondering if ambition itself was the trap all along."
+        },
+        "mixed": {
+          "title": "SCATTERED FOCUS ENDING",
+          "message": "Your energy divided between self-discovery, relationships, and career advancement, none received the focus needed for transformation. Like a juggler adding too many balls, the inevitable collapse leaves you clutching at fragments, unable to reconstruct a coherent path forward."
+        }
+      },
+      "late": {
+        "soul": {
+          "title": "ALMOST AUTHENTIC ENDING",
+          "message": "So close to becoming whole. The authentic self was more than a concept – you touched it, breathed it, lived it... briefly. But old patterns reasserted themselves when tested most severely. You retreat into the comfort of the drone, though you'll never fully silence the voice that almost found its song."
+        },
+        "connections": {
+          "title": "FINAL DISCONNECT ENDING",
+          "message": "The community you built was almost strong enough to sustain you. The foundations were laid, the walls raised, the roof nearly complete. Then came the storm that revealed the flaws in your construction. As your connections collapse around you, you wonder if true belonging was ever possible."
+        },
+        "success": {
+          "title": "SUMMIT MIRAGE ENDING",
+          "message": "The peak was within sight. After all the climbing, all the sacrifice, the final ascent should have been your moment of triumph. But as you reached for that last handhold, the entire mountain seemed to shift. You slide back down, recognizing too late that what awaited at the top was just another beginning."
+        },
+        "mixed": {
+          "title": "SYMPHONY UNFINISHED ENDING",
+          "message": "Your life was becoming a complex composition – career, relationships, inner growth all finding their proper balance. In the final movement, a single discordant note shattered the harmony. You're left with the score in your hands, unable to recapture the music that was almost complete."
+        }
+      }
+    }
+  }
