@@ -1645,39 +1645,34 @@ header {
 /* Rhythm label and difficulty meters */
 .rhythm-label {
     font-family: 'Orbitron', sans-serif;
-    font-size: 16px;
+    font-size: 12px;
     font-weight: bold;
     color: #fff;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     letter-spacing: 1px;
     text-shadow: 0 0 5px rgba(0, 150, 255, 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.3);
-    padding: 5px 0;
-    border-radius: 4px;
 }
 
 .rhythm-label::before,
 .rhythm-label::after {
     content: "~~~";
     color: #2A66C9;
-    margin: 0 8px;
+    margin: 0 5px;
     font-weight: bold;
 }
 
 .difficulty-meters {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-top: 15px;
-    margin-bottom: 15px;
+    gap: 4px;
+    margin-top: 5px;
+    margin-bottom: 10px;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.2);
-    padding: 10px;
-    border-radius: 4px;
+    max-width: 200px; /* Limit width to match green box */
 }
 
 .meter-container {
@@ -1689,35 +1684,34 @@ header {
 
 .meter-label {
     font-family: 'Orbitron', sans-serif;
-    font-size: 14px;
+    font-size: 10px;
     font-weight: bold;
     color: #fff;
-    width: 90px;
+    width: 70px;
     text-align: left;
 }
 
 .difficulty-meter {
     flex-grow: 1;
-    height: 10px;
-    background-color: #333;
-    border-radius: 5px;
+    height: 6px;
+    background-color: #444;
+    border-radius: 3px;
     overflow: hidden;
     position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .meter-value {
     height: 100%;
-    border-radius: 4px;
+    border-radius: 3px;
     transition: width 0.3s ease-out;
 }
 
 .tempo-meter .meter-value {
-    background-color: #e74c3c;
+    background-color: #777; /* Grey color */
 }
 
 .precision-meter .meter-value {
-    background-color: #3498db;
+    background-color: #777; /* Grey color */
 }
 
 /* Adjust swing meter container to accommodate new elements */

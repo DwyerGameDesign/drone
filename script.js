@@ -170,12 +170,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Loading fresh game data...');
                 game.loadGameData();
             }
-            
-            // Initialize journey manager
-            game.initializeJourneyManager();
         }
         
-        // Make sure achievement system is properly initialized
+        // Initialize the achievement system if needed
         if (!game.achievementSystem) {
             console.log('Achievement system not initialized by game, creating manually...');
             game.achievementSystem = new AchievementSystem(game);
@@ -186,6 +183,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Initialize journey track
         updateJourneyTrack();
+        
+        // Make sure the swing meter is reset and ready
+        resetSwingMeter();
         
         // Start the game
         const result = game.startGame();
@@ -208,15 +208,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Ensure the current narrative is set
                     game.currentNarrative = firstNarrative;
                     displayNarrative(firstNarrative);
-                } else {
-                    console.error('Could not find first narrative');
-                    console.log('Available stops:', game.narratives.map(n => n.stop).sort((a, b) => a - b));
                 }
             }
         }
-        
-        // Update the game state UI
-        updateUI();
     }
     
     // Add event listeners
@@ -489,8 +483,11 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.choiceDescription.textContent = '';
         }
         
-        // Hide all interaction elements initially
+        // Hide all interaction elements except the swing meter
         hideAllInteractions();
+        
+        // Make sure the swing meter is visible
+        elements.swingMeterContainer.style.display = 'block';
         
         // Create a temporary div to store the full message
         const tempDiv = document.createElement('div');
@@ -534,8 +531,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Hide choice container
         elements.choiceContainer.style.display = 'none';
         
-        // Hide swing meter container
-        elements.swingMeterContainer.style.display = 'none';
+        // Don't hide the swing meter container, just make sure it's properly initialized
+        if (elements.swingMeterContainer.style.display === 'none') {
+            elements.swingMeterContainer.style.display = 'block';
+            // Make sure the tap instruction is visible
+            if (elements.tapInstruction) {
+                elements.tapInstruction.style.display = 'block';
+            }
+        }
     }
     
     // Display the appropriate interaction based on narrative type
@@ -1389,6 +1392,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Update UI meters
+        updateDifficultyMeters();
+        
+        // Make sure the difficulty meters are updated
         updateDifficultyMeters();
     }
     
