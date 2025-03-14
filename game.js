@@ -7,7 +7,7 @@ class DroneManGame {
             connections: 10
         };
         this.failureThreshold = -5;
-        this.performanceScore = 0;
+        this.performanceScore = 100;
         
         // Initialize game state
         this.resources = { ...this.startingResources };
@@ -15,11 +15,11 @@ class DroneManGame {
         this.performanceResults = [];
         this.currentRound = 1;
         this.currentStop = 1;
-        this.logicalStop = 1; // Track the logical stop (1-5) separately from the actual narrative stop
+        this.logicalStop = 0;
         this.maxRounds = 1; // Only 1 round with 5 stops
         this.stopsPerRound = 5; // 5 stops per journey
         this.gameOver = false;
-        this.gameOverReason = "";
+        this.gameOverReason = null;
         this.activePassiveEffects = [];
         this.narratives = [];
         this.passiveEffects = {};
@@ -32,6 +32,12 @@ class DroneManGame {
         this.randomEventProbability = 0; // Disabled: was 30% chance of a random event after each narrative
         this.currentRandomEvent = null;
         this.completedSwingMeters = []; // Track completed swing meters
+        this.journeyManager = new JourneyManager(this);
+        this.achievementSystem = null;
+        
+        // Load endings data
+        this.endingsData = null;
+        this.loadEndingsData();
         
         // Load game data
         this.loadGameData();
@@ -39,10 +45,11 @@ class DroneManGame {
     
     // Initialize the journey manager after game data is loaded
     initializeJourneyManager() {
-        if (!this.journeyManager) {
-            console.log('Initializing journey manager');
-            this.journeyManager = new JourneyManager(this);
+        console.log('Initializing journey manager');
+        if (this.journeyManager) {
             this.journeyManager.initializeJourney();
+        } else {
+            console.error('Journey manager not initialized');
         }
     }
     
@@ -118,6 +125,82 @@ class DroneManGame {
         });
     }
     
+    // Load endings data from JSON file
+    loadEndingsData() {
+        fetch('endings.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to load endings data');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Endings data loaded successfully');
+                this.endingsData = data;
+                
+                // Debug: Log the structure of the endings data
+                console.log('Success endings patterns:', Object.keys(data.success.patterns || {}));
+                console.log('Success endings special conditions:', Object.keys(data.success.special_conditions || {}));
+                console.log('Success endings dominant types:', Object.keys(data.success.dominant || {}));
+                console.log('Failure endings stages:', Object.keys(data.failure || {}));
+            })
+            .catch(error => {
+                console.error('Error loading endings data:', error);
+                
+                // Create fallback endings data
+                this.endingsData = {
+                    success: {
+                        patterns: {
+                            all_soul: { message: "You've fully embraced your authentic self, leaving behind the corporate drone completely." },
+                            all_connections: { message: "You've built a network of deep, meaningful relationships that will sustain you for life." },
+                            all_success: { message: "You've achieved remarkable professional success while maintaining your identity." },
+                            soul_heavy: { message: "Your journey of self-discovery has transformed you into someone barely recognizable to your former self." },
+                            connections_heavy: { message: "The connections you've made have created a support network that makes life's challenges manageable." },
+                            success_heavy: { message: "Your drive for achievement has paid off, bringing you recognition while preserving your humanity." },
+                            soul_connections_balanced: { message: "You've found a beautiful balance between personal authenticity and meaningful relationships." },
+                            soul_success_balanced: { message: "You've managed to achieve success while staying true to yourself." },
+                            connections_success_balanced: { message: "Your professional achievements are matched by the quality of your relationships." },
+                            perfect_balance: { message: "You've achieved a rare harmony between authenticity, connection, and achievement." }
+                        },
+                        special_conditions: {
+                            late_bloomer: { message: "After years of conformity, you finally discovered what truly matters to you." },
+                            early_decided: { message: "You knew what you wanted from the beginning and never wavered from your path." },
+                            transformation_journey: { message: "Your journey has been one of profound transformation and growth." },
+                            unexpected_turn: { message: "Your life took an unexpected turn that changed everything for the better." }
+                        },
+                        dominant: {
+                            soul: { message: "You've reconnected with your authentic self. The corporate drone is gone forever." },
+                            connections: { message: "You've built a network of meaningful relationships that sustain you through life's challenges." },
+                            success: { message: "You've achieved the success you always wanted while maintaining your humanity." },
+                            mixed: { message: "Your journey has changed you in subtle but significant ways, creating a more balanced life." }
+                        }
+                    },
+                    failure: {
+                        early: {
+                            soul: { message: "Your journey to find yourself ended before it truly began." },
+                            connections: { message: "Your attempt to connect with others was cut short." },
+                            success: { message: "Your pursuit of achievement was halted prematurely." },
+                            mixed: { message: "Your journey ended before you could find your path." }
+                        },
+                        middle: {
+                            soul: { message: "You were halfway to finding yourself when your journey ended." },
+                            connections: { message: "The connections you were building collapsed midway." },
+                            success: { message: "Your climb toward success was interrupted halfway up." },
+                            mixed: { message: "Your journey was cut short before you could see it through." }
+                        },
+                        late: {
+                            soul: { message: "You were so close to becoming whole when your journey ended." },
+                            connections: { message: "The community you built was almost strong enough." },
+                            success: { message: "The peak was within sight when your journey ended." },
+                            mixed: { message: "Your journey ended just before completion." }
+                        }
+                    }
+                };
+                
+                console.log('Using fallback endings data');
+            });
+    }
+    
     // Start the game
     startGame() {
         console.log('Starting game...');
@@ -125,8 +208,8 @@ class DroneManGame {
         // Reset game state
         this.currentRound = 1;
         this.currentStop = 1;
-        this.logicalStop = 1;
-        this.performanceScore = 0;
+        this.logicalStop = 0;
+        this.performanceScore = 100;
         this.resources = { soul: 0, connections: 0, money: 0 };
         this.decisionHistory = [];
         this.decisionTypes = [];
@@ -154,9 +237,9 @@ class DroneManGame {
         
         // Reset game state
         this.currentStop = 1;
-        this.logicalStop = 1;
+        this.logicalStop = 0;
         this.currentRound = 1;
-        this.performanceScore = 0;
+        this.performanceScore = 100;
         this.decisionHistory = [];
         this.decisionTypes = [];
         this.resources = { soul: 0, connections: 0, money: 0 };
@@ -231,7 +314,11 @@ class DroneManGame {
             this.performanceScore++;
             console.log(`Performance score increased to ${this.performanceScore}`);
         } else {
-            console.log(`Performance score remains at ${this.performanceScore}`);
+            // End game immediately on failure
+            console.log(`Failure detected - ending game immediately`);
+            this.gameOver = true;
+            this.gameOverReason = "failure";
+            return { gameOver: true, reason: "failure" };
         }
         
         // Check if we've reached the end of the journey
@@ -240,14 +327,6 @@ class DroneManGame {
             this.gameOver = true;
             this.gameOverReason = "success";
             return { gameOver: true, reason: "success" };
-        }
-        
-        // Check if we've failed too many times
-        if (this.performanceScore <= this.failureThreshold) {
-            console.log(`Performance score (${this.performanceScore}) below failure threshold (${this.failureThreshold})`);
-            this.gameOver = true;
-            this.gameOverReason = "failure";
-            return { gameOver: true, reason: "failure" };
         }
         
         // Increment the logical stop counter
@@ -617,72 +696,191 @@ class DroneManGame {
     getGameOverMessage(success) {
         console.log('Getting game over message, success:', success, 'gameOverReason:', this.gameOverReason);
         
-        if (!success) {
-            // Count the types of decisions the player ATTEMPTED
-            const soulAttempts = this.decisionHistory.filter(d => d.intendedType === "soul").length;
-            const connectionsAttempts = this.decisionHistory.filter(d => d.intendedType === "connections").length;
-            const successAttempts = this.decisionHistory.filter(d => d.intendedType === "success").length;
+        if (success) {
+            // Calculate stats for decision patterns
+            const totalDecisions = this.decisionHistory.length;
+            const soulCount = this.decisionTypes.filter(type => type === "soul").length;
+            const connectionsCount = this.decisionTypes.filter(type => type === "connections").length;
+            const successCount = this.decisionTypes.filter(type => type === "success").length;
             
-            console.log('Decision attempts:', { soul: soulAttempts, connections: connectionsAttempts, success: successAttempts });
+            const soulPercentage = totalDecisions > 0 ? soulCount / totalDecisions : 0;
+            const connectionsPercentage = totalDecisions > 0 ? connectionsCount / totalDecisions : 0;
+            const successPercentage = totalDecisions > 0 ? successCount / totalDecisions : 0;
             
-            // Determine dominant attempt pattern
-            let dominantAttempt = "mixed";
-            if (soulAttempts > connectionsAttempts && soulAttempts > successAttempts) {
-                dominantAttempt = "soul";
-            } else if (connectionsAttempts > soulAttempts && connectionsAttempts > successAttempts) {
-                dominantAttempt = "connections";
-            } else if (successAttempts > soulAttempts && successAttempts > connectionsAttempts) {
-                dominantAttempt = "success";
+            console.log('Decision stats:', {
+                total: totalDecisions,
+                soul: { count: soulCount, percentage: soulPercentage },
+                connections: { count: connectionsCount, percentage: connectionsPercentage },
+                success: { count: successCount, percentage: successPercentage }
+            });
+            
+            // Make sure we have endings data
+            if (!this.endingsData || !this.endingsData.success) {
+                console.warn('No endings data found, using fallback message');
+                return "Your journey has changed you in subtle but significant ways. The corporate drone is gone, replaced by someone more aware, more alive.";
             }
             
-            console.log('Dominant attempt:', dominantAttempt);
-            
-            // Return ending based on dominant attempt pattern
-            switch (dominantAttempt) {
-                case "soul":
-                    return "You sought to reconnect with your authentic self, but each attempt slipped through your fingers. The more desperately you grasped at meaning, the more it eluded you. Now you find yourself more lost than when you began, haunted by glimpses of a self you couldn't quite reach.";
-                    
-                case "connections":
-                    return "You reached out to others, seeking bonds to anchor you in this drifting life. But something in your approach pushed people away. Perhaps it was desperation, perhaps insincerity. The bridges you tried to build collapsed, leaving you more isolated than before.";
-                    
-                case "success":
-                    return "You chased achievement and recognition, believing they would fill the emptiness. But each rung of the ladder broke as you climbed, each victory proved hollow. Now you stand amid the wreckage of ambitions that consumed you without ever nourishing your spirit.";
-                    
-                default:
-                    return "You tried many paths, committed to none. The scattered efforts left you disoriented, unable to find a true direction. The drone remains, neither transformed nor at peace, caught in a limbo of half-realized possibilities.";
+            // Check for pure paths (all decisions of one type)
+            if (soulPercentage === 1 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.all_soul.message;
+            } else if (connectionsPercentage === 1 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.all_connections.message;
+            } else if (successPercentage === 1 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.all_success.message;
             }
-        }
-        
-        // For success endings, count the decision types to determine the dominant path
-        const counts = {
-            soul: this.decisionTypes.filter(type => type === "soul").length,
-            connections: this.decisionTypes.filter(type => type === "connections").length,
-            success: this.decisionTypes.filter(type => type === "success").length
-        };
-        
-        console.log('Success ending - Decision type counts:', counts);
-        
-        // Determine the dominant path
-        let dominant = "mixed";
-        if (counts.soul > counts.connections && counts.soul > counts.success) {
-            dominant = "soul";
-        } else if (counts.connections > counts.soul && counts.connections > counts.success) {
-            dominant = "connections";
-        } else if (counts.success > counts.soul && counts.success > counts.connections) {
-            dominant = "success";
-        }
-        
-        console.log('Dominant path for success ending:', dominant);
-        
-        // Return ending based on dominant path
-        if (dominant === "soul") {
-            return "You've reconnected with your authentic self. Perhaps some relationships were left behind, but your inner light burns bright. As you step off the train for the last time, you know you'll never be a drone again.";
-        } else if (dominant === "connections") {
-            return "You've built a network of meaningful relationships that sustain you. Though personal struggles remain, you're never alone in facing them. The journey continues, but now with companions who make the ride worthwhile.";
-        } else if (dominant === "success") {
-            return "You've achieved the success you always wanted, though at times it came at a personal cost. Your journey has brought you material comfort and professional recognition, and now you stand at the threshold of new opportunities.";
+            
+            // Check for heavily weighted paths (e.g., 80%+ of one type)
+            if (soulPercentage >= 0.8 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.soul_heavy.message;
+            } else if (connectionsPercentage >= 0.8 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.connections_heavy.message;
+            } else if (successPercentage >= 0.8 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.success_heavy.message;
+            }
+            
+            // Check for balanced dual paths
+            if (Math.abs(soulPercentage - connectionsPercentage) < 0.2 && successPercentage < 0.2 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.soul_connections_balanced.message;
+            } else if (Math.abs(soulPercentage - successPercentage) < 0.2 && connectionsPercentage < 0.2 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.soul_success_balanced.message;
+            } else if (Math.abs(connectionsPercentage - successPercentage) < 0.2 && soulPercentage < 0.2 && totalDecisions > 0) {
+                return this.endingsData.success.patterns.connections_success_balanced.message;
+            }
+            
+            // Check for perfect balance
+            if (Math.abs(soulPercentage - 1/3) < 0.1 && 
+                Math.abs(connectionsPercentage - 1/3) < 0.1 && 
+                Math.abs(successPercentage - 1/3) < 0.1 && 
+                totalDecisions >= 3) {
+                return this.endingsData.success.patterns.perfect_balance.message;
+            }
+            
+            // Check for special narrative patterns
+            
+            // Late Bloomer: First half conventional, second half transformative
+            if (totalDecisions >= 4) {
+                const firstHalfDecisions = this.decisionTypes.slice(0, Math.floor(totalDecisions/2));
+                const secondHalfDecisions = this.decisionTypes.slice(Math.floor(totalDecisions/2));
+                
+                // Late Bloomer: First half mostly success, second half mostly soul/connections
+                const firstHalfSuccessCount = firstHalfDecisions.filter(type => type === "success").length;
+                const secondHalfTransformativeCount = secondHalfDecisions.filter(type => type === "soul" || type === "connections").length;
+                
+                if (firstHalfSuccessCount / firstHalfDecisions.length >= 0.7 && 
+                    secondHalfTransformativeCount / secondHalfDecisions.length >= 0.7) {
+                    return this.endingsData.success.special_conditions.late_bloomer.message;
+                }
+                
+                // Early Decided: First decisions set the pattern for the rest
+                const firstType = this.decisionTypes[0];
+                const sameTypeCount = this.decisionTypes.filter(type => type === firstType).length;
+                
+                if (sameTypeCount / totalDecisions >= 0.7) {
+                    return this.endingsData.success.special_conditions.early_decided.message;
+                }
+                
+                // Transformation Journey: Clear progression from one type to another
+                const firstThirdType = this.decisionTypes.slice(0, Math.floor(totalDecisions/3))[0];
+                const lastThirdTypes = this.decisionTypes.slice(Math.floor(2*totalDecisions/3));
+                const lastThirdDominantType = lastThirdTypes.reduce((acc, type) => {
+                    acc[type] = (acc[type] || 0) + 1;
+                    return acc;
+                }, {});
+                
+                const lastThirdDominant = Object.entries(lastThirdDominantType).sort((a, b) => b[1] - a[1])[0][0];
+                
+                if (firstThirdType !== lastThirdDominant && 
+                    lastThirdTypes.filter(type => type === lastThirdDominant).length / lastThirdTypes.length >= 0.7) {
+                    return this.endingsData.success.special_conditions.transformation_journey.message;
+                }
+                
+                // Unexpected Turn: Pattern breaks dramatically at some point
+                for (let i = 1; i < totalDecisions; i++) {
+                    const beforeTypes = this.decisionTypes.slice(0, i);
+                    const afterTypes = this.decisionTypes.slice(i);
+                    
+                    const beforeDominant = beforeTypes.reduce((acc, type) => {
+                        acc[type] = (acc[type] || 0) + 1;
+                        return acc;
+                    }, {});
+                    
+                    const afterDominant = afterTypes.reduce((acc, type) => {
+                        acc[type] = (acc[type] || 0) + 1;
+                        return acc;
+                    }, {});
+                    
+                    const beforeDominantType = Object.entries(beforeDominant).sort((a, b) => b[1] - a[1])[0][0];
+                    const afterDominantType = Object.entries(afterDominant).sort((a, b) => b[1] - a[1])[0][0];
+                    
+                    if (beforeDominantType !== afterDominantType && 
+                        beforeTypes.filter(type => type === beforeDominantType).length / beforeTypes.length >= 0.7 &&
+                        afterTypes.filter(type => type === afterDominantType).length / afterTypes.length >= 0.7) {
+                        return this.endingsData.success.special_conditions.unexpected_turn.message;
+                    }
+                }
+            }
+            
+            // Fall back to dominant type endings
+            let dominant = "mixed";
+            if (soulCount > connectionsCount && soulCount > successCount) {
+                dominant = "soul";
+            } else if (connectionsCount > soulCount && connectionsCount > successCount) {
+                dominant = "connections";
+            } else if (successCount > soulCount && successCount > connectionsCount) {
+                dominant = "success";
+            }
+            
+            return this.endingsData.success.dominant[dominant].message;
         } else {
-            return "Your journey has changed you in subtle but significant ways. The corporate drone is gone, replaced by someone more aware, more alive. It's not perfect, but it's progress, and that's enough.";
+            // Get the stop where the player failed
+            const failedDecision = this.decisionHistory[this.decisionHistory.length - 1];
+            const failedStop = failedDecision ? failedDecision.stop : 0;
+            const failedType = failedDecision ? failedDecision.intendedType : "unknown";
+            const totalStops = this.journeyManager.getTotalStops();
+            
+            console.log('Failed at stop:', failedStop, 'with decision type:', failedType, 'out of total stops:', totalStops);
+            
+            // Make sure we have endings data
+            if (!this.endingsData || !this.endingsData.failure) {
+                console.warn('No failure endings data found, using fallback message');
+                return "Your journey has come to an abrupt end. A moment's hesitation, a wrong choice, and everything changed.";
+            }
+            
+            // Determine the stage of the journey (early, middle, late)
+            let stage = "middle";
+            const progressPercentage = failedStop / totalStops;
+            
+            if (progressPercentage <= 0.33) {
+                stage = "early";
+            } else if (progressPercentage >= 0.67) {
+                stage = "late";
+            }
+            
+            console.log('Failure stage:', stage, 'Progress percentage:', progressPercentage);
+            
+            // Determine the dominant type based on decisions made so far
+            let dominantType = "mixed";
+            const soulCount = this.decisionTypes.filter(type => type === "soul").length;
+            const connectionsCount = this.decisionTypes.filter(type => type === "connections").length;
+            const successCount = this.decisionTypes.filter(type => type === "success").length;
+            
+            if (soulCount > connectionsCount && soulCount > successCount) {
+                dominantType = "soul";
+            } else if (connectionsCount > soulCount && connectionsCount > successCount) {
+                dominantType = "connections";
+            } else if (successCount > soulCount && successCount > connectionsCount) {
+                dominantType = "success";
+            }
+            
+            // If no decisions made yet, use the failed type
+            if (this.decisionTypes.length === 0 && failedType && failedType !== "unknown") {
+                dominantType = failedType;
+            }
+            
+            console.log('Dominant type for failure ending:', dominantType);
+            
+            // Return the appropriate failure message
+            return this.endingsData.failure[stage][dominantType].message;
         }
     }
 
@@ -700,6 +898,33 @@ class DroneManGame {
     // Get a narrative for a specific stop
     getNarrativeForStop(stop) {
         return this.narratives.find(n => n.stop === stop) || null;
+    }
+
+    // Initialize the achievement system
+    initializeAchievementSystem() {
+        console.log('Initializing achievement system');
+        if (window.AchievementSystem) {
+            this.achievementSystem = new AchievementSystem(this);
+            console.log('Achievement system initialized');
+        } else {
+            console.warn('AchievementSystem class not found');
+        }
+    }
+    
+    // Initialize game
+    async initialize() {
+        console.log('Initializing game...');
+        
+        // Load game data
+        await this.loadGameData();
+        
+        // Initialize journey manager
+        this.initializeJourneyManager();
+        
+        // Initialize achievement system
+        this.initializeAchievementSystem();
+        
+        console.log('Game initialized successfully');
     }
 }
 

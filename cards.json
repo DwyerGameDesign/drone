@@ -45,7 +45,7 @@
           "resultOkay": "You review the main points, though details remain fuzzy. It should be adequate, as always.",
           "resultFail": "Your thoughts scatter as anxiety creeps in. Another day of barely staying afloat.",
           "effects": {
-            "soul": -1,
+            "soul": 0,
             "connections": 0,
             "money": 1
           }
@@ -67,9 +67,9 @@
           "resultOkay": "With a sigh, you cancel lunch. The report will get done, though not your best work. But enough.",
           "resultFail": "You stare at your phone, trapped. Another personal sacrifice for a job that takes and takes.",
           "effects": {
-            "soul": -1,
-            "connections": -1,
-            "money": 2
+            "soul": 0,
+            "connections": 0,
+            "money": 1
           }
         },
         {
@@ -104,7 +104,7 @@
           "resultOkay": "You manage a few paragraphs. Not Shakespeare, but it feels good to express yourself again.",
           "resultFail": "You stare at the blank page, pen hovering. The words don't come. That part of you might be gone.",
           "effects": {
-            "soul": 2,
+            "soul": 1,
             "connections": 0,
             "money": 0
           },
@@ -121,7 +121,7 @@
           "resultFail": "You start several times but can't find the right words. What could you say after all this time?",
           "effects": {
             "soul": 0,
-            "connections": 2,
+            "connections": 1,
             "money": 0
           }
         },
@@ -135,7 +135,7 @@
           "resultOkay": "You jot down some decent ideas. Not inspired, but practical enough to be useful.",
           "resultFail": "You try focusing on work, but your heart isn't in it. Every idea feels forced and hollow.",
           "effects": {
-            "soul": -1,
+            "soul": 0,
             "connections": 0,
             "money": 1
           }
@@ -157,9 +157,9 @@
           "resultOkay": "A few texts get exchanged. Not a deep connection, but it's a small step forward.",
           "resultFail": "Your attempt feels awkward and forced. The digital divide seems wider than ever.",
           "effects": {
-            "soul": 1,
-            "connections": 2,
-            "money": -1
+            "soul": 0,
+            "connections": 1,
+            "money": 0
           }
         },
         {
@@ -172,7 +172,7 @@
           "resultOkay": "You drift off to sleep, thoughts of connection barely registering in your mind.",
           "resultFail": "Sleep eludes you as the screen's blue light continues burning in your thoughts.",
           "effects": {
-            "soul": 0,
+            "soul": 1,
             "connections": 0,
             "money": 0
           }
@@ -187,9 +187,9 @@
           "resultOkay": "Hours blend into an indistinguishable haze, time passing without meaning or memory.",
           "resultFail": "The pattern becomes clear—you're trapped in a cycle of empty victories and wasted nights.",
           "effects": {
-            "soul": -1,
-            "connections": -1,
-            "money": 0
+            "soul": 0,
+            "connections": 0,
+            "money": 1
           },
           "unlockPassive": "last_life"
         }
@@ -210,8 +210,8 @@
           "resultOkay": "A pleasant exchange ensues—comfortable, if ultimately superficial and brief.",
           "resultFail": "Your attempted conversation falls flat, leaving you feeling more isolated than before.",
           "effects": {
-            "soul": 1,
-            "connections": 2,
+            "soul": 0,
+            "connections": 1,
             "money": 0
           }
         },
@@ -240,9 +240,9 @@
           "resultOkay": "Another potential connection drifts away unnoticed as you focus on certainty.",
           "resultFail": "The familiar isolation feels increasingly suffocating, though you'd never admit it.",
           "effects": {
-            "soul": -2,
-            "connections": -1,
-            "money": 0
+            "soul": 0,
+            "connections": 0,
+            "money": 1
           },
           "unlockPassive": "strange_passenger"
         }
@@ -265,7 +265,7 @@
           "effects": {
             "soul": 1,
             "connections": 0,
-            "money": 1
+            "money": 0
           }
         },
         {
@@ -280,7 +280,7 @@
           "effects": {
             "soul": 0,
             "connections": 1,
-            "money": -2
+            "money": 0
           }
         },
         {
@@ -293,9 +293,9 @@
           "resultOkay": "The purchase feels hollow but temporarily exciting. At least it's something new.",
           "resultFail": "You commit to a financial burden that brings no satisfaction, just mounting pressure.",
           "effects": {
-            "soul": -1,
+            "soul": 0,
             "connections": 0,
-            "money": -4
+            "money": 1
           }
         }
       ]
@@ -315,9 +315,9 @@
           "resultOkay": "You take some steps toward better health, but your motivation wavers under daily pressures.",
           "resultFail": "The changes feel forced and unsustainable. Another prescription joins others in your cabinet.",
           "effects": {
-            "soul": 2,
+            "soul": 1,
             "connections": 0,
-            "money": -1
+            "money": 0
           }
         },
         {
@@ -330,8 +330,8 @@
           "resultOkay": "You make tentative efforts to address stress levels, with mixed success.",
           "resultFail": "Your half-hearted changes feel superficial and ineffective as pressures continue mounting.",
           "effects": {
-            "soul": 1,
-            "connections": 0,
+            "soul": 0,
+            "connections": 1,
             "money": 0
           }
         },
@@ -345,7 +345,7 @@
           "resultOkay": "You convince yourself everything's under control, pushing the warning aside.",
           "resultFail": "The cracks begin to show as your body sends increasingly urgent warning signals.",
           "effects": {
-            "soul": -2,
+            "soul": 0,
             "connections": 0,
             "money": 1
           }
@@ -367,7 +367,7 @@
           "resultOkay": "You experience momentary calm before familiar anxieties begin creeping back in.",
           "resultFail": "The silence quickly becomes uncomfortable, driving you back to familiar patterns.",
           "effects": {
-            "soul": 2,
+            "soul": 1,
             "connections": 0,
             "money": 0
           }
@@ -382,7 +382,7 @@
           "resultOkay": "A brief exchange hints at deeper potential, though it doesn't quite reach that depth.",
           "resultFail": "Your attempt to translate the moment falls flat, the insight lost in transmission.",
           "effects": {
-            "soul": 1,
+            "soul": 0,
             "connections": 1,
             "money": 0
           }
@@ -397,7 +397,7 @@
           "resultOkay": "The familiar routine returns, but the fleeting peace is already lost to memory.",
           "resultFail": "The flood of emails and messages overwhelms you, anxiety immediately returning.",
           "effects": {
-            "soul": -1,
+            "soul": 0,
             "connections": 0,
             "money": 1
           }
@@ -419,9 +419,9 @@
           "resultOkay": "You create a tentative list, though old thinking patterns still cloud your vision.",
           "resultFail": "The list feels like just another task, another box to check in an endless series.",
           "effects": {
-            "soul": 2,
-            "connections": 1,
-            "money": -1
+            "soul": 1,
+            "connections": 0,
+            "money": 0
           }
         },
         {
@@ -434,9 +434,9 @@
           "resultOkay": "A few awkward but well-intentioned conversations begin to bridge forgotten connections.",
           "resultFail": "Your outreach feels too late—most connections seem irreparably broken by time and neglect.",
           "effects": {
-            "soul": 1,
-            "connections": 2,
-            "money": -1
+            "soul": 0,
+            "connections": 1,
+            "money": 0
           }
         },
         {
@@ -449,9 +449,9 @@
           "resultOkay": "You continue on your current path, unsure if it's truly fulfilling but familiar.",
           "resultFail": "The pursuit of career success feels increasingly hollow yet you see no alternative.",
           "effects": {
-            "soul": -1,
-            "connections": -1,
-            "money": 2
+            "soul": 0,
+            "connections": 0,
+            "money": 1
           }
         }
       ]
@@ -471,9 +471,9 @@
           "resultOkay": "Small boundaries get established, though significant challenges still remain.",
           "resultFail": "Your attempts to create boundaries feel futile as work continues to invade all spaces.",
           "effects": {
-            "soul": 2,
+            "soul": 1,
             "connections": 0,
-            "money": -1
+            "money": 0
           }
         },
         {
@@ -487,7 +487,7 @@
           "resultFail": "The whole event feels awkward and forced, highlighting the limitations of virtual space.",
           "effects": {
             "soul": 0,
-            "connections": 2,
+            "connections": 1,
             "money": 0
           }
         },
@@ -501,9 +501,9 @@
           "resultOkay": "You blend into the background of corporate expectations, another face in the squares.",
           "resultFail": "Burnout begins consuming you entirely as the line between work and life disappears.",
           "effects": {
-            "soul": -2,
-            "connections": -1,
-            "money": 2
+            "soul": 0,
+            "connections": 0,
+            "money": 1
           }
         }
       ]
@@ -523,7 +523,7 @@
           "resultOkay": "A few scattered thoughts find paper before momentum fades back into restlessness.",
           "resultFail": "The blank page only amplifies your inner turmoil, another witness to your sleeplessness.",
           "effects": {
-            "soul": 2,
+            "soul": 1,
             "connections": 0,
             "money": 0
           }
@@ -539,7 +539,7 @@
           "resultFail": "The unanswered message only emphasizes your solitude in these dark hours.",
           "effects": {
             "soul": 0,
-            "connections": 2,
+            "connections": 1,
             "money": 0
           }
         },
@@ -553,7 +553,7 @@
           "resultOkay": "Processing a few emails fills time, though sleep remains frustratingly elusive.",
           "resultFail": "Work emails only intensify your anxiety, guaranteeing another sleepless night.",
           "effects": {
-            "soul": -1,
+            "soul": 0,
             "connections": 0,
             "money": 1
           }
@@ -575,9 +575,9 @@
           "resultOkay": "Small steps toward change begin taking shape, though uncertainty remains.",
           "resultFail": "The magnitude of meaningful change overwhelms you into continued inaction.",
           "effects": {
-            "soul": 2,
-            "connections": 1,
-            "money": -2
+            "soul": 1,
+            "connections": 0,
+            "money": 0
           }
         },
         {
@@ -591,7 +591,7 @@
           "resultFail": "The superficial changes fail to address the emptiness you feel within these walls.",
           "effects": {
             "soul": 0,
-            "connections": 2,
+            "connections": 1,
             "money": -1
           }
         },
@@ -605,9 +605,9 @@
           "resultOkay": "Incremental progress toward a potential future, though current dissatisfaction lingers.",
           "resultFail": "Work becomes just another escape, not a solution to your fundamental discontent.",
           "effects": {
-            "soul": -1,
+            "soul": 0,
             "connections": 0,
-            "money": 2
+            "money": 1
           }
         }
       ]
@@ -627,9 +627,9 @@
           "resultOkay": "You take a tentative step toward something different, anxiety mixing with excitement.",
           "resultFail": "The unknown feels more terrifying than exciting. You freeze at the threshold of change.",
           "effects": {
-            "soul": 2,
-            "connections": -1,
-            "money": -1
+            "soul": 1,
+            "connections": 0,
+            "money": 0
           }
         },
         {
@@ -642,9 +642,9 @@
           "resultOkay": "A pleasant meeting unfolds, though it doesn't quite match your moment of insight.",
           "resultFail": "Your attempt to connect falls flat, leaving you alone with unshared possibilities.",
           "effects": {
-            "soul": 1,
-            "connections": 2,
-            "money": -1
+            "soul": 0,
+            "connections": 1,
+            "money": 0
           }
         },
         {
@@ -657,9 +657,9 @@
           "resultOkay": "You choose the path of least resistance, relief mixing with faint disappointment.",
           "resultFail": "The routine feels like a prison of your own making, yet you cannot break free.",
           "effects": {
-            "soul": -1,
+            "soul": 0,
             "connections": 0,
-            "money": 0
+            "money": 1
           }
         }
       ]
@@ -679,9 +679,9 @@
           "resultOkay": "Uncertainty mingles with potential as you take this necessary leap into the unknown.",
           "resultFail": "Doubt erodes your resolve at the last moment. Is this really the right time?",
           "effects": {
-            "soul": 3,
-            "connections": -1,
-            "money": -3
+            "soul": 1,
+            "connections": 0,
+            "money": 0
           }
         },
         {
@@ -694,9 +694,9 @@
           "resultOkay": "Tentative conversations hint at potential paths, though nothing concrete emerges.",
           "resultFail": "The conversations only reinforce your feeling of being trapped in your situation.",
           "effects": {
-            "soul": 1,
-            "connections": 2,
-            "money": -1
+            "soul": 0,
+            "connections": 1,
+            "money": 0
           }
         },
         {
@@ -709,7 +709,7 @@
           "resultOkay": "You maintain the status quo for now, though the desire for change remains.",
           "resultFail": "Indecision becomes its own form of imprisonment as another opportunity passes.",
           "effects": {
-            "soul": -1,
+            "soul": 0,
             "connections": 0,
             "money": 1
           }
@@ -731,9 +731,9 @@
           "resultOkay": "Uncertainty and excitement mix as you continue your journey into unfamiliar territory.",
           "resultFail": "Stations pass as doubt creeps in, making you question your spontaneous decision.",
           "effects": {
-            "soul": 3,
-            "connections": -1,
-            "money": -1
+            "soul": 1,
+            "connections": 0,
+            "money": 0
           }
         },
         {
@@ -746,8 +746,8 @@
           "resultOkay": "A moment of connection, however brief, leaves you feeling slightly less alone.",
           "resultFail": "The call highlights the distances between you as words fall flat, deepening isolation.",
           "effects": {
-            "soul": 1,
-            "connections": 2,
+            "soul": 0,
+            "connections": 1,
             "money": 0
           }
         },
@@ -761,8 +761,8 @@
           "resultOkay": "You choose the familiar path, finding a small measure of peace in routine.",
           "resultFail": "The routine feels suffocating, your decision weighing on you like a heavy burden.",
           "effects": {
-            "soul": -1,
-            "connections": 1,
+            "soul": 0,
+            "connections": 0,
             "money": 1
           }
         }

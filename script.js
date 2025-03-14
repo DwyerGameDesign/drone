@@ -141,18 +141,27 @@ document.addEventListener('DOMContentLoaded', function() {
         game.gameOver = false;
         game.gameOverReason = null;
         
-        // Reload game data if possible
-        if (game.loadGameData && typeof game.loadGameData === 'function') {
-            console.log('Loading fresh game data...');
-            game.loadGameData();
+        // Initialize the game
+        if (game.initialize && typeof game.initialize === 'function') {
+            console.log('Initializing game...');
+            game.initialize();
+        } else {
+            // Fallback to old initialization method
+            console.log('Using legacy initialization...');
+            
+            // Reload game data if possible
+            if (game.loadGameData && typeof game.loadGameData === 'function') {
+                console.log('Loading fresh game data...');
+                game.loadGameData();
+            }
+            
+            // Initialize journey manager
+            game.initializeJourneyManager();
         }
         
-        // Initialize journey manager
-        game.initializeJourneyManager();
-        
-        // Initialize achievement system
+        // Make sure achievement system is properly initialized
         if (!game.achievementSystem) {
-            console.log('Initializing achievement system...');
+            console.log('Achievement system not initialized by game, creating manually...');
             game.achievementSystem = new AchievementSystem(game);
         } else {
             console.log('Resetting achievement system for new playthrough...');
@@ -1878,16 +1887,18 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Check if performance score is too low (game over due to failure)
-        if (game.performanceScore <= game.failureThreshold) {
-            console.log(`Performance score (${game.performanceScore}) below failure threshold (${game.failureThreshold}), showing failure game over`);
-            // Set game over state
-            game.gameOver = true;
-            game.gameOverReason = "failure";
-            console.log('Set gameOverReason to "failure" in updateGameState');
-            showGameOver(false); // Show failure ending
+        // Get the current narrative
+        const currentNarrative = game.getCurrentNarrative();
+        
+        if (!currentNarrative) {
+            console.error('No current narrative found');
             return;
         }
+        
+        console.log('Current narrative:', currentNarrative);
+        
+        // Display the current narrative
+        displayNarrative(currentNarrative);
     }
 
     function hideRoundComplete() {
