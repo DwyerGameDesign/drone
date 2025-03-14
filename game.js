@@ -219,11 +219,15 @@ class DroneManGame {
         // Initialize a new journey with randomized stops
         this.initializeJourneyManager();
         
+        // Increment the logical stop to 1 for the first narrative
+        this.logicalStop = 1;
+        console.log(`Set logical stop to ${this.logicalStop} for first narrative`);
+        
         // Get the first narrative based on the journey
-        const firstNarrative = this.journeyManager.getNarrativeForLogicalStop(1);
+        const firstNarrative = this.journeyManager.getNarrativeForLogicalStop(this.logicalStop);
         if (firstNarrative) {
             this.currentNarrative = firstNarrative;
-            console.log(`Starting game with narrative: ${firstNarrative.title} (Logical Stop: 1, Actual Stop: ${firstNarrative.stop})`);
+            console.log(`Starting game with narrative: ${firstNarrative.title} (Logical Stop: ${this.logicalStop}, Actual Stop: ${firstNarrative.stop})`);
             return { success: true, narrative: firstNarrative };
         } else {
             console.error('Failed to get first narrative');
@@ -249,8 +253,12 @@ class DroneManGame {
         // Initialize the journey manager
         this.initializeJourneyManager();
         
+        // Increment the logical stop to 1 for the first narrative
+        this.logicalStop = 1;
+        console.log(`Set logical stop to ${this.logicalStop} for restart`);
+        
         // Get the first narrative
-        const firstActualStop = this.journeyManager.getActualStop(1);
+        const firstActualStop = this.journeyManager.getActualStop(this.logicalStop);
         const firstNarrative = this.narratives.find(n => n.stop === firstActualStop);
         
         if (firstNarrative) {

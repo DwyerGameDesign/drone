@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Ensure we're starting from stop 1
         game.currentStop = 1;
-        game.logicalStop = 1;
+        game.logicalStop = 0; // Changed from 1 to 0 to match game.js constructor
         game.currentRound = 1;
         game.performanceScore = 0;
         game.decisionHistory = [];
@@ -250,12 +250,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Explicitly ensure we're at stop 1 and performance score is 0
-        if (game.logicalStop !== 1 || game.performanceScore !== 0) {
+        if (game.logicalStop !== 0 || game.performanceScore !== 0) {
             console.warn('Game did not reset properly, forcing reset...');
             console.warn('Current logical stop:', game.logicalStop, 'Performance score:', game.performanceScore);
             
             game.currentStop = 1;
-            game.logicalStop = 1;
+            game.logicalStop = 0; // Changed from 1 to 0 to match game.js constructor
             game.currentRound = 1;
             game.performanceScore = 0;
             game.decisionHistory = [];
@@ -378,6 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Force a complete game restart
                 game.currentStop = 1;
+                game.logicalStop = 0; // Changed from 1 to 0
                 game.currentRound = 1;
                 game.performanceScore = 0;
                 game.decisionHistory = [];
@@ -1390,6 +1391,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Updating journey track');
         console.log('Decision history:', game.decisionHistory);
         console.log('Decision types:', game.decisionTypes);
+        console.log('Current logical stop:', game.logicalStop);
         
         const journeyTrack = document.getElementById('journeyTrack');
         if (!journeyTrack) {
