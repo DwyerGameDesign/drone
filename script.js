@@ -664,9 +664,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Update meter zone colors based on decision type
-        updateMeterZoneColors(decisionType);
-        
         // Store the selected choice with all necessary properties
         currentSelectedChoice = {
             text: choiceText,
@@ -680,9 +677,26 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('Current selected choice with results:', currentSelectedChoice);
         
+        // Reset the swing meter to ensure all elements are properly created
+        resetSwingMeter();
+        
+        // Update meter zone colors based on decision type
+        updateMeterZoneColors(decisionType);
+        
         // Show the swing meter container
         elements.swingMeterContainer.style.display = 'block';
         console.log('Setting swing meter container display to block');
+        
+        // Ensure the rhythm label and difficulty meters are visible
+        const rhythmLabel = document.querySelector('.rhythm-label');
+        if (rhythmLabel) {
+            rhythmLabel.style.display = 'flex';
+        }
+        
+        const difficultyMeters = document.querySelector('.difficulty-meters');
+        if (difficultyMeters) {
+            difficultyMeters.style.display = 'flex';
+        }
         
         // Set up the tap button
         if (elements.tapButton) {
@@ -764,6 +778,17 @@ document.addEventListener('DOMContentLoaded', function() {
         // Apply the speed modifier to the base speed
         swingSpeed = 1 * speedModifier;
         console.log(`Applied speed: ${swingSpeed.toFixed(2)}`);
+        
+        // Ensure the rhythm label and difficulty meters are visible
+        const rhythmLabel = document.querySelector('.rhythm-label');
+        if (rhythmLabel) {
+            rhythmLabel.style.display = 'flex';
+        }
+        
+        const difficultyMeters = document.querySelector('.difficulty-meters');
+        if (difficultyMeters) {
+            difficultyMeters.style.display = 'flex';
+        }
         
         // Make sure difficulty meters are updated
         updateDifficultyMeters();
