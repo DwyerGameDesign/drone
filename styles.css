@@ -209,7 +209,7 @@ header {
     padding: 1rem;
     margin-bottom: 1rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    max-height: 35vh;
+    max-height: 25vh; /* Reduced from 35vh for shorter text */
     overflow-y: auto;
     flex-grow: 1;
     display: flex;
@@ -255,7 +255,7 @@ header {
     transform: translateY(0);
     transition: opacity 0.3s, transform 0.3s;
     overflow-y: auto;
-    max-height: 40vh;
+    max-height: 45vh; /* Increased from 40vh to balance with shorter narrative */
     padding-right: 0.5rem;
     scrollbar-width: thin;
     scrollbar-color: var(--accent-color) var(--primary-color);
@@ -442,8 +442,8 @@ header {
     cursor: pointer;
     position: relative;
     height: auto;
-    min-height: 100px; /* Set a minimum height */
-    max-height: 150px; /* Set a maximum height */
+    min-height: 70px; /* Reduced minimum height for shorter text */
+    max-height: 100px; /* Reduced maximum height */
     overflow-y: auto; /* Add scrolling if content exceeds max height */
     scrollbar-width: thin;
     scrollbar-color: var(--accent-color) var(--primary-color);
@@ -486,7 +486,7 @@ header {
 
 .meter-result-text {
     font-size: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem; /* Reduced margin for shorter text */
     line-height: 1.5;
     height: auto;
     min-height: 1.5rem; /* Minimum height for at least one line of text */
@@ -914,12 +914,12 @@ header {
     
     .narrative-card {
         padding: 0.75rem;
-        max-height: 30vh;
+        max-height: 22vh; /* Reduced from 30vh for shorter text */
     }
     
     .choice-container {
         gap: 0.5rem;
-        max-height: 45vh;
+        max-height: 50vh; /* Increased from 45vh to balance with shorter narrative */
     }
     
     .card {
@@ -936,15 +936,15 @@ header {
     
     /* Small mobile styles for meter result container */
     .meter-result-container {
-        min-height: 80px;
-        max-height: 120px;
+        min-height: 60px; /* Reduced for shorter text */
+        max-height: 90px; /* Reduced for shorter text */
         padding: 0.75rem;
     }
     
     .meter-result-text {
         font-size: 0.9rem;
         line-height: 1.4;
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.5rem; /* Reduced margin */
     }
 }
 
@@ -976,7 +976,7 @@ header {
     }
     
     .narrative-card {
-        max-height: 40vh;
+        max-height: 30vh; /* Reduced from 40vh for shorter text */
         padding: 1.5rem;
         border-radius: 0.75rem;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -993,7 +993,7 @@ header {
     }
     
     .choice-container {
-        max-height: 35vh;
+        max-height: 40vh; /* Increased from 35vh to balance with shorter narrative */
         gap: 1rem;
         margin-top: 1.5rem;
     }
@@ -1037,8 +1037,8 @@ header {
     
     /* Desktop styles for meter result container */
     .meter-result-container {
-        min-height: 120px;
-        max-height: 180px;
+        min-height: 80px; /* Reduced for shorter text */
+        max-height: 120px; /* Reduced for shorter text */
         padding: 1.25rem;
         border-radius: 0.75rem;
         border-left-width: 6px;
@@ -1047,6 +1047,7 @@ header {
     .meter-result-text {
         font-size: 1.1rem;
         line-height: 1.6;
+        margin-bottom: 0.75rem; /* Reduced margin */
     }
     
     .journey-track {
