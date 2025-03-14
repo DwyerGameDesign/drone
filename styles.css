@@ -349,16 +349,17 @@ header {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     position: relative;
     cursor: pointer;
-    min-height: 120px; /* Set minimum height to match result container */
+    min-height: 160px; /* Increased from 120px to provide more space */
     height: auto;
 }
 
 .choice-description {
-    font-size: 1rem; /* Increased from 0.9rem to match narrative text */
+    font-size: 1rem;
     margin-bottom: 1rem;
     text-align: center;
     padding: 0 0.5rem;
-    line-height: 1.5; /* Added to match narrative text */
+    line-height: 1.5;
+    min-height: 3rem; /* Add minimum height to prevent layout shifts */
 }
 
 .swing-meter {
@@ -445,9 +446,9 @@ header {
     cursor: pointer;
     position: relative;
     height: auto;
-    min-height: 120px; /* Increased to accommodate text without scrolling */
-    max-height: none; /* Remove max height to avoid scrollbars */
-    overflow-y: visible; /* Changed from auto to visible */
+    min-height: 160px; /* Increased to match swing-meter-container */
+    max-height: none;
+    overflow-y: visible;
 }
 
 .meter-result-container.visible {
@@ -476,6 +477,7 @@ header {
     margin-bottom: 0.75rem;
     line-height: 1.5;
     height: auto;
+    min-height: 3rem; /* Add minimum height to prevent layout shifts */
 }
 
 .next-stop-button {
@@ -922,7 +924,7 @@ header {
     
     /* Small mobile styles for meter result container */
     .meter-result-container {
-        min-height: 100px; /* Adjusted for mobile */
+        min-height: 140px; /* Increased from 100px */
         padding: 0.75rem;
     }
     
@@ -938,7 +940,7 @@ header {
     }
     
     .swing-meter-container {
-        min-height: 100px; /* Match result container on mobile */
+        min-height: 140px; /* Increased from 100px */
         padding: 0.75rem;
     }
 }
@@ -1009,7 +1011,7 @@ header {
     }
     
     .swing-meter-container {
-        min-height: 140px; /* Match result container on desktop */
+        min-height: 180px; /* Increased from 140px */
         padding: 1.5rem;
         border-radius: 0.75rem;
         border-top-width: 6px;
@@ -1033,7 +1035,7 @@ header {
     
     /* Desktop styles for meter result container */
     .meter-result-container {
-        min-height: 140px; /* Increased for desktop */
+        min-height: 180px; /* Increased from 140px */
         padding: 1.25rem;
         border-radius: 0.75rem;
         border-left-width: 6px;
@@ -1043,11 +1045,13 @@ header {
         font-size: 1.1rem;
         line-height: 1.6;
         margin-bottom: 0.75rem;
+        min-height: 3.2rem; /* Adjusted for desktop font size */
     }
     
     .choice-description {
-        font-size: 1.1rem; /* Match narrative text size on desktop */
+        font-size: 1.1rem;
         line-height: 1.6;
+        min-height: 3.2rem; /* Adjusted for desktop font size */
     }
     
     .journey-track {
