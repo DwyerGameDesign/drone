@@ -3,51 +3,21 @@
     {
       "stop": 1,
       "title": "Inbound",
-      "narrative": "6:40 AM. The platform is cold and quiet as you wait for the train. The same train you've taken every weekday for years. You pull your beige trenchcoat tighter around your shoulders as you scan the empty platform. A distant rumble signals the approaching train. Just like yesterday, and the day before, and all the days stretching back through the calendar of your memory.",
+      "narrative": "6:40 AM. The platform is cold and quiet as you wait for the train—the same one you've taken every weekday for years. You pull your beige trenchcoat tighter, scanning the empty platform. A distant rumble signals the approaching train, just like yesterday and countless days before.",
       "choices": [
         {
-          "text": "Think about the life you once dreamed of",
-          "decisionType": "soul",
-          "title": "Inner Reflection",
-          "swingMeterType": "standard",
-          "meterContext": "As the train approaches, your mind begins to drift to forgotten dreams...",
-          "resultGood": "You close your eyes and let yourself remember. The art you used to create, the places you wanted to see. For a moment, you feel something stir within you that's been dormant for too long.",
-          "resultOkay": "You try to recall your old aspirations, but the details are fuzzy. Still, there's comfort in remembering you once had dreams beyond the daily commute.",
-          "resultFail": "The memories feel distant and childish now. Reality has a way of grinding down such fanciful notions. Better to focus on the present.",
-          "effects": {
-            "soul": 1,
-            "connections": 0,
-            "money": 0
-          }
-        },
-        {
-          "text": "Observe the world around you",
-          "decisionType": "connections",
-          "title": "Social Awareness",
-          "swingMeterType": "standard",
-          "meterContext": "You look around at the other commuters gathering on the platform...",
-          "resultGood": "You notice details you've overlooked for years - an elderly woman with kind eyes, a young man nervously checking his watch. Everyone has a story, you realize. Including you.",
-          "resultOkay": "The faces around you seem less anonymous today. You make brief eye contact with another commuter and share a knowing nod about the morning routine.",
-          "resultFail": "Everyone looks as tired as you feel. Just more drones heading to their hives. Nothing worth noting.",
-          "effects": {
-            "soul": 0,
-            "connections": 1,
-            "money": 0
-          }
-        },
-        {
-          "text": "Review your upcoming work presentation",
+          "text": "Return to your usual routine",
           "decisionType": "success",
-          "title": "Career Focus",
+          "title": "Practical Choice",
           "swingMeterType": "standard",
-          "meterContext": "You mentally rehearse the key points of today's presentation...",
-          "resultGood": "The structure crystallizes in your mind. You've got this. Your preparation will pay off, and maybe this is the presentation that finally gets you noticed.",
-          "resultOkay": "You go through the main points, though some details remain fuzzy. It should be adequate, which has always been enough before.",
-          "resultFail": "Your thoughts are scattered, and anxiety creeps in. Another day of just trying to keep your head above water.",
+          "meterContext": "Standing before the departures board, you weigh the comfort of the familiar...",
+          "resultGood": "You find unexpected comfort in returning to your routine with fresh perspective.",
+          "resultOkay": "You choose the path of least resistance, relief mixing with faint disappointment.",
+          "resultFail": "The routine feels like a prison of your own making, yet you cannot break free.",
           "effects": {
             "soul": -1,
             "connections": 0,
-            "money": 1
+            "money": 0
           }
         }
       ]
@@ -55,7 +25,7 @@
     {
       "stop": 2,
       "title": "Drone",
-      "narrative": "The train lurches forward as you settle into your usual seat. Through the window, the suburbs slide by in a blur of sameness. You're halfway through the commute when your phone buzzes. It's your boss: \"I need that report finished by noon.\" You were planning to take lunch with an old friend today, someone you've been meaning to reconnect with for months.",
+      "narrative": "The train lurches forward as you settle in your usual seat. Through the window, suburbs blur in sameness. Halfway through your commute, your phone buzzes—your boss: 'I need that report by noon.' You'd planned lunch with an old friend you've been meaning to reconnect with for months.",
       "choices": [
         {
           "text": "Prioritize the report",
@@ -63,9 +33,9 @@
           "title": "Work First",
           "swingMeterType": "standard",
           "meterContext": "You consider how to handle the urgent work request...",
-          "resultGood": "You immediately text your friend to reschedule and mentally organize your morning to complete the report efficiently. Your boss will notice your reliability.",
-          "resultOkay": "With a sigh, you cancel lunch. The report will get done, though it won't be your best work. But it will be enough to keep things moving.",
-          "resultFail": "You stare at your phone, feeling trapped. Another personal sacrifice for a job that takes and takes. You'll cancel lunch, but resentment builds.",
+          "resultGood": "You text to reschedule and organize your morning to complete the report. Your boss will notice your reliability.",
+          "resultOkay": "With a sigh, you cancel lunch. The report will get done, though not your best work. But enough.",
+          "resultFail": "You stare at your phone, trapped. Another personal sacrifice for a job that takes and takes.",
           "effects": {
             "soul": -1,
             "connections": -1,
@@ -78,9 +48,9 @@
           "title": "Balance",
           "swingMeterType": "quick",
           "meterContext": "You think about how to manage both commitments...",
-          "resultGood": "You text your friend to meet near your office for a shorter lunch. You'll work intensely before and after. It's a compromise, but one that honors both commitments.",
-          "resultOkay": "You decide to meet your friend for a quick coffee instead of lunch. Not ideal, but at least you're making an effort to maintain the connection.",
-          "resultFail": "You try to plan a way to do both, but realize it's impossible. You'll end up disappointing someone - probably yourself.",
+          "resultGood": "You arrange a shorter lunch near your office, working intensely before and after. A thoughtful compromise.",
+          "resultOkay": "You suggest a quick coffee instead. Not ideal, but at least you're maintaining the connection.",
+          "resultFail": "You attempt to plan for both, but it's impossible. Someone will be disappointed—probably yourself.",
           "effects": {
             "soul": 0,
             "connections": 1,
@@ -92,7 +62,7 @@
     {
       "stop": 3,
       "title": "Write Along The Way",
-      "narrative": "Your college journal sits on your nightstand, gathering dust. Inside are fragments of stories you once wanted to write, dreams you once planned to chase. Tonight, you find yourself flipping through its pages, feeling a strange spark that hasn't flickered in years. The blank page calls to you.",
+      "narrative": "Your college journal sits on your nightstand gathering dust. Inside are fragments of stories you wanted to write, dreams you planned to chase. Tonight, flipping through its pages, you feel a strange spark that hasn't flickered in years. The blank page calls to you.",
       "choices": [
         {
           "text": "Start writing again, even if just for yourself",
@@ -100,9 +70,9 @@
           "title": "Self-Expression",
           "swingMeterType": "standard",
           "meterContext": "The blank page before you invites expression...",
-          "resultGood": "Words flow surprisingly easily. You write about your day, your thoughts, your forgotten dreams. It feels like reconnecting with an old friend - yourself.",
-          "resultOkay": "You manage to write a few paragraphs. It's not Shakespeare, but it feels good to express yourself again, even in small ways.",
-          "resultFail": "You stare at the blank page, pen hovering. The words don't come. Maybe you've lost that part of yourself for good.",
+          "resultGood": "Words flow easily. You write about your day, thoughts, forgotten dreams—reconnecting with yourself.",
+          "resultOkay": "You manage a few paragraphs. Not Shakespeare, but it feels good to express yourself again.",
+          "resultFail": "You stare at the blank page, pen hovering. The words don't come. That part of you might be gone.",
           "effects": {
             "soul": 2,
             "connections": 0,
@@ -116,9 +86,9 @@
           "title": "Reach Out",
           "swingMeterType": "standard",
           "meterContext": "As you think of someone you've lost touch with...",
-          "resultGood": "The letter becomes a bridge across time. You pour your heart out, remembering shared moments and expressing hope for reconnection.",
-          "resultOkay": "You write a friendly note, keeping it light but sincere. It's a small step toward rebuilding a connection that once mattered.",
-          "resultFail": "You start several times but can't find the right words. What would you even say after all this time?",
+          "resultGood": "The letter bridges time. You recall shared moments, expressing genuine hope for reconnection.",
+          "resultOkay": "You write a friendly note, keeping it light but sincere. A small step toward rebuilding.",
+          "resultFail": "You start several times but can't find the right words. What could you say after all this time?",
           "effects": {
             "soul": 0,
             "connections": 2,
@@ -131,9 +101,9 @@
           "title": "Get Ahead",
           "swingMeterType": "standard",
           "meterContext": "As your thoughts turn to work...",
-          "resultGood": "You outline a brilliant presentation that could impress your boss. This extra effort might finally get you the recognition you deserve.",
-          "resultOkay": "You jot down some decent ideas for your next presentation. It's not inspired, but it's practical.",
-          "resultFail": "You try to focus on work, but your heart isn't in it. The ideas feel forced and uninspired.",
+          "resultGood": "You outline a brilliant presentation that could impress your boss and finally earn recognition.",
+          "resultOkay": "You jot down some decent ideas. Not inspired, but practical enough to be useful.",
+          "resultFail": "You try focusing on work, but your heart isn't in it. Every idea feels forced and hollow.",
           "effects": {
             "soul": -1,
             "connections": 0,
@@ -145,7 +115,7 @@
     {
       "stop": 4,
       "title": "Last Life",
-      "narrative": "It's 2AM. The blue light of your monitor is the only illumination in your apartment. \"Just one more level,\" you told yourself three hours ago. Your friends have invited you out countless times, but the digital world feels safer, more controllable. Your character stands victorious on screen, but the victory feels hollow.",
+      "narrative": "It's 2AM. Your monitor's blue light is the only illumination. 'Just one more level,' you told yourself three hours ago. Friends have invited you out countless times, but the digital world feels safer, more controllable. Your character stands victorious, but the victory feels hollow.",
       "choices": [
         {
           "text": "Log off and text your friends about weekend plans",
@@ -153,9 +123,9 @@
           "title": "Reconnect",
           "swingMeterType": "noOvershot",
           "meterContext": "The hollow victory on screen fades as your thoughts turn to real connections...",
-          "resultGood": "You reach out and feel a spark of genuine connection. Your friends are excited to hear from you, planning a real-world meetup.",
-          "resultOkay": "A few texts are exchanged. It's not a deep connection, but it's a start.",
-          "resultFail": "Your attempt to connect feels awkward and forced. The digital divide seems wider than ever.",
+          "resultGood": "You reach out and feel genuine connection. Friends respond with excitement about meeting up soon.",
+          "resultOkay": "A few texts get exchanged. Not a deep connection, but it's a small step forward.",
+          "resultFail": "Your attempt feels awkward and forced. The digital divide seems wider than ever.",
           "effects": {
             "soul": 1,
             "connections": 2,
@@ -168,9 +138,9 @@
           "title": "Self-Care",
           "swingMeterType": "noOvershot",
           "meterContext": "As the victory screen fades, you consider your options...",
-          "resultGood": "You recognize your need for rest. A moment of self-awareness breaks through the digital fog.",
-          "resultOkay": "You drift off, the thought of connection barely registering.",
-          "resultFail": "Sleep eludes you, the blue light still burning in your mind.",
+          "resultGood": "You recognize your need for rest. A moment of clarity breaks through the digital fog.",
+          "resultOkay": "You drift off to sleep, thoughts of connection barely registering in your mind.",
+          "resultFail": "Sleep eludes you as the screen's blue light continues burning in your thoughts.",
           "effects": {
             "soul": 0,
             "connections": 0,
@@ -183,9 +153,9 @@
           "title": "Achievement",
           "swingMeterType": "noOvershot",
           "meterContext": "As the victory screen fades, the pull of another game beckons...",
-          "resultGood": "Another victory, another meaningless achievement that fills the void momentarily.",
-          "resultOkay": "Hours pass, blending into an indistinguishable digital haze.",
-          "resultFail": "You realize you're trapped in a cycle of empty victories.",
+          "resultGood": "Another hollow victory, another meaningless achievement that momentarily fills the emptiness.",
+          "resultOkay": "Hours blend into an indistinguishable haze, time passing without meaning or memory.",
+          "resultFail": "The pattern becomes clear—you're trapped in a cycle of empty victories and wasted nights.",
           "effects": {
             "soul": -1,
             "connections": -1,
@@ -198,7 +168,7 @@
     {
       "stop": 5,
       "title": "Strange Passenger",
-      "narrative": "A stranger sits beside you on today's commute - something that never happens in your carefully regulated routine. They're reading a book you loved years ago. Your eyes meet, and there's a strange pull, an unexpected connection. They smile, and for a moment, the train seems less gray.",
+      "narrative": "A stranger sits beside you today—something that never happens in your regulated routine. They're reading a book you loved years ago. Your eyes meet with an unexpected pull, a strange connection. They smile, and for a moment, the train seems less gray.",
       "choices": [
         {
           "text": "Strike up a conversation about the book",
@@ -206,9 +176,9 @@
           "title": "Open Up",
           "swingMeterType": "critical",
           "meterContext": "The book in their hands sparks a memory, and you consider reaching out...",
-          "resultGood": "A profound conversation unfolds. You rediscover a part of yourself long forgotten, connected through shared passion.",
-          "resultOkay": "A brief, pleasant exchange. Comfortable but ultimately superficial.",
-          "resultFail": "The conversation falls flat, leaving you more isolated than before.",
+          "resultGood": "A conversation unfolds that reawakens forgotten parts of yourself through shared passion.",
+          "resultOkay": "A pleasant exchange ensues—comfortable, if ultimately superficial and brief.",
+          "resultFail": "Your attempted conversation falls flat, leaving you feeling more isolated than before.",
           "effects": {
             "soul": 1,
             "connections": 2,
@@ -221,9 +191,9 @@
           "title": "Gentle Acknowledgment",
           "swingMeterType": "critical",
           "meterContext": "You notice their book, and consider how to respond...",
-          "resultGood": "A moment of quiet introspection. The stranger's presence triggers a deep inner reflection.",
-          "resultOkay": "A fleeting connection, then back to your familiar inner landscape.",
-          "resultFail": "The moment passes, leaving no impression.",
+          "resultGood": "In quiet acknowledgment, their presence triggers unexpectedly profound inner reflection.",
+          "resultOkay": "A fleeting moment of connection before you retreat to your familiar inner landscape.",
+          "resultFail": "The moment passes without leaving any impression, another forgettable commute.",
           "effects": {
             "soul": 1,
             "connections": 0,
@@ -236,9 +206,9 @@
           "title": "Stay Focused",
           "swingMeterType": "critical",
           "meterContext": "As your eyes meet, you weigh the unpredictability of human connection...",
-          "resultGood": "You maintain your carefully constructed emotional barriers.",
-          "resultOkay": "Another potential connection slips away, unnoticed.",
-          "resultFail": "The isolation feels suffocating, but familiar.",
+          "resultGood": "You maintain your emotional walls, preserving the careful boundaries you've constructed.",
+          "resultOkay": "Another potential connection drifts away unnoticed as you focus on certainty.",
+          "resultFail": "The familiar isolation feels increasingly suffocating, though you'd never admit it.",
           "effects": {
             "soul": -2,
             "connections": -1,
@@ -251,7 +221,7 @@
     {
       "stop": 6,
       "title": "For Me",
-      "narrative": "Your neighbor just bought a new car - sleek, expensive, turning heads. Your reliable old vehicle suddenly seems inadequate. The showroom downtown is having a sale. You don't need a new car, but the thought of rolling up to work in something impressive plants itself in your mind.",
+      "narrative": "Your neighbor bought a new car—sleek, expensive, turning heads. Your reliable vehicle suddenly seems inadequate. The downtown showroom is having a sale. You don't need a new car, but the thought of arriving at work in something impressive takes root in your mind.",
       "choices": [
         {
           "text": "Your current car is fine, save your money",
@@ -259,9 +229,9 @@
           "title": "Inner Satisfaction",
           "swingMeterType": "standard",
           "meterContext": "As you weigh the value of material possessions...",
-          "resultGood": "A moment of true self-awareness. Material things don't define your worth.",
-          "resultOkay": "You rationalize keeping your current car, but doubt lingers.",
-          "resultFail": "The temptation of status weighs heavily on you.",
+          "resultGood": "You realize with clarity that material possessions don't define your worth or happiness.",
+          "resultOkay": "You convince yourself to keep your current car, though status envy lingers faintly.",
+          "resultFail": "The temptation of status and appearance weighs on you, harder to dismiss than expected.",
           "effects": {
             "soul": 1,
             "connections": 0,
@@ -274,9 +244,9 @@
           "title": "Social Impression",
           "swingMeterType": "standard",
           "meterContext": "As you try to find a middle ground...",
-          "resultGood": "You find a car that feels like a compromise between practicality and personal expression.",
-          "resultOkay": "A middle-ground choice that satisfies neither completely.",
-          "resultFail": "The search leaves you more confused and unsatisfied.",
+          "resultGood": "You find a balanced option that satisfies practicality while allowing some self-expression.",
+          "resultOkay": "Your compromise satisfies neither need completely, but seems reasonable enough.",
+          "resultFail": "The search only confuses you more, leaving you unsatisfied with every option.",
           "effects": {
             "soul": 0,
             "connections": 1,
@@ -289,9 +259,9 @@
           "title": "Status Symbol",
           "swingMeterType": "standard",
           "meterContext": "As the allure of status and recognition pulls at you...",
-          "resultGood": "A momentary thrill of acquisition masks deeper insecurities.",
-          "resultOkay": "The purchase feels hollow, but temporarily exciting.",
-          "resultFail": "You've committed to a financial burden that brings no real satisfaction.",
+          "resultGood": "A brief thrill of acquisition masks deeper insecurities as you sign the financing papers.",
+          "resultOkay": "The purchase feels hollow but temporarily exciting. At least it's something new.",
+          "resultFail": "You commit to a financial burden that brings no satisfaction, just mounting pressure.",
           "effects": {
             "soul": -1,
             "connections": 0,
@@ -303,7 +273,7 @@
     {
       "stop": 7,
       "title": "Bioavailable",
-      "narrative": "Your doctor mentions your blood pressure during your annual checkup. \"Stress,\" he says. \"You need to find ways to relax.\" But the constant emails, the deadlines, the mortgage payments - they create an addictive cycle of pressure. The adrenaline rush of solving one crisis after another has become your normal.",
+      "narrative": "Your doctor mentions your blood pressure at your checkup. 'Stress,' he says. 'Find ways to relax.' But constant emails, deadlines, mortgage payments create an addictive pressure cycle. The adrenaline rush of solving one crisis after another has become your normal.",
       "choices": [
         {
           "text": "Take prescribed medication, make lifestyle changes",
@@ -311,9 +281,9 @@
           "title": "Self-Healing",
           "swingMeterType": "noOvershot",
           "meterContext": "The doctor's warning lingers in your mind...",
-          "resultGood": "A genuine commitment to your physical and mental well-being begins to take root. Small changes that might become lasting habits.",
-          "resultOkay": "Small steps toward health, but the path remains uncertain and your motivation wavers.",
-          "resultFail": "The changes feel forced and unsustainable. Another prescription bottle joins others in your medicine cabinet.",
+          "resultGood": "Small but meaningful health changes take root. Perhaps these could become lasting habits.",
+          "resultOkay": "You take some steps toward better health, but your motivation wavers under daily pressures.",
+          "resultFail": "The changes feel forced and unsustainable. Another prescription joins others in your cabinet.",
           "effects": {
             "soul": 2,
             "connections": 0,
@@ -326,9 +296,9 @@
           "title": "Ask for Support",
           "swingMeterType": "noOvershot",
           "meterContext": "Leaving the doctor's office, you consider how to approach this health warning...",
-          "resultGood": "You reach out to friends and family, creating a support network.",
-          "resultOkay": "A tentative attempt to address your stress levels.",
-          "resultFail": "The support feels superficial and ineffective.",
+          "resultGood": "You reach out to friends and family, creating a support network for healthier habits.",
+          "resultOkay": "You make tentative efforts to address stress levels, with mixed success.",
+          "resultFail": "Your half-hearted changes feel superficial and ineffective as pressures continue mounting.",
           "effects": {
             "soul": 1,
             "connections": 0,
@@ -341,9 +311,9 @@
           "title": "Power Through",
           "swingMeterType": "noOvershot",
           "meterContext": "Leaving the doctor's office, you assess your relationship with stress...",
-          "resultGood": "Momentary confidence in your ability to handle stress.",
-          "resultOkay": "You convince yourself everything is under control.",
-          "resultFail": "The pressure begins to crack your facade.",
+          "resultGood": "You feel momentarily confident in your ability to handle the pressure and keep performing.",
+          "resultOkay": "You convince yourself everything's under control, pushing the warning aside.",
+          "resultFail": "The cracks begin to show as your body sends increasingly urgent warning signals.",
           "effects": {
             "soul": -2,
             "connections": 0,
@@ -355,7 +325,7 @@
     {
       "stop": 8,
       "title": "Outbound",
-      "narrative": "A work conference in another city. As the return train pulls away from the station, you realize you didn't check your email once today. The world didn't end. For the first time in years, you watch the scenery without your mind racing ahead to the next task. Something is shifting inside you.",
+      "narrative": "A work conference in another city. As the return train pulls away, you realize you didn't check email once today. The world didn't end. For the first time in years, you watch the scenery without your mind racing ahead to the next task. Something shifts inside you.",
       "choices": [
         {
           "text": "Enjoy the moment, stay disconnected",
@@ -363,9 +333,9 @@
           "title": "Present Awareness",
           "swingMeterType": "standard",
           "meterContext": "As you savor this moment of peace...",
-          "resultGood": "A profound sense of peace washes over you. You're present, truly present.",
-          "resultOkay": "Momentary calm, quickly followed by familiar anxieties.",
-          "resultFail": "The silence becomes uncomfortable, forcing you back to familiar patterns.",
+          "resultGood": "A profound sense of peace washes over you. For once, you're fully present in the moment.",
+          "resultOkay": "You experience momentary calm before familiar anxieties begin creeping back in.",
+          "resultFail": "The silence quickly becomes uncomfortable, driving you back to familiar patterns.",
           "effects": {
             "soul": 2,
             "connections": 0,
@@ -378,9 +348,9 @@
           "title": "Shared Insight",
           "swingMeterType": "standard",
           "meterContext": "As you feel compelled to share this moment of peace...",
-          "resultGood": "A meaningful conversation that deepens your connection and understanding.",
-          "resultOkay": "A brief exchange that hints at deeper potential.",
-          "resultFail": "The moment of insight fails to translate.",
+          "resultGood": "The conversation deepens your connection and understanding, giving meaning to the insight.",
+          "resultOkay": "A brief exchange hints at deeper potential, though it doesn't quite reach that depth.",
+          "resultFail": "Your attempt to translate the moment falls flat, the insight lost in transmission.",
           "effects": {
             "soul": 1,
             "connections": 1,
@@ -393,9 +363,9 @@
           "title": "Duty First",
           "swingMeterType": "standard",
           "meterContext": "As your professional responsibility tugs at you...",
-          "resultGood": "You feel a sense of control, catching up on missed communications.",
-          "resultOkay": "Routine restored, but the moment of peace is lost.",
-          "resultFail": "The avalanche of emails overwhelms you completely.",
+          "resultGood": "Catching up on communications gives you a sense of control and accomplishment.",
+          "resultOkay": "The familiar routine returns, but the fleeting peace is already lost to memory.",
+          "resultFail": "The flood of emails and messages overwhelms you, anxiety immediately returning.",
           "effects": {
             "soul": -1,
             "connections": 0,
@@ -407,7 +377,7 @@
     {
       "stop": 9,
       "title": "Life Between Life",
-      "narrative": "A former colleague has died suddenly. At the funeral, people speak of his achievements, his career. But no one mentions joy, passion, or love. You recognize yourself in the tributes - a life measured in promotions and acquisitions. The thought follows you home like a shadow.",
+      "narrative": "A former colleague died suddenly. At the funeral, people speak of achievements and career milestones. No one mentions joy, passion, or love. You recognize yourself in these tributes—a life measured in promotions and acquisitions. The thought follows you home like a shadow.",
       "choices": [
         {
           "text": "Start a bucket list of experiences, not achievements",
@@ -415,9 +385,9 @@
           "title": "Life's Meaning",
           "swingMeterType": "critical",
           "meterContext": "The hollow eulogy still echoes as you consider your own legacy...",
-          "resultGood": "A transformative moment dawns. You begin to see life as more than a series of professional milestones, focusing instead on experiences that bring genuine joy.",
-          "resultOkay": "You make a tentative list, but old habits of thinking still cloud your vision of what truly matters.",
-          "resultFail": "The list feels like just another task to complete, another box to check in an endless series.",
+          "resultGood": "You begin seeing life beyond professional milestones, focusing on experiences that bring joy.",
+          "resultOkay": "You create a tentative list, though old thinking patterns still cloud your vision.",
+          "resultFail": "The list feels like just another task, another box to check in an endless series.",
           "effects": {
             "soul": 2,
             "connections": 1,
@@ -431,8 +401,8 @@
           "swingMeterType": "critical",
           "meterContext": "As the importance of human connection comes to mind...",
           "resultGood": "Genuine reconnections bloom. You realize relationships are the true measure of a life.",
-          "resultOkay": "A few awkward but well-intentioned conversations begin.",
-          "resultFail": "Most connections feel irreparably broken.",
+          "resultOkay": "A few awkward but well-intentioned conversations begin to bridge forgotten connections.",
+          "resultFail": "Your outreach feels too late—most connections seem irreparably broken by time and neglect.",
           "effects": {
             "soul": 1,
             "connections": 2,
@@ -445,9 +415,9 @@
           "title": "Double Down",
           "swingMeterType": "critical",
           "meterContext": "As you consider what kind of legacy you want to leave...",
-          "resultGood": "A renewed sense of professional purpose takes hold.",
-          "resultOkay": "You recommit to your current path, unsure if it's truly fulfilling.",
-          "resultFail": "The pursuit feels increasingly hollow and meaningless.",
+          "resultGood": "A renewed sense of professional purpose takes hold as you recommit to achievement.",
+          "resultOkay": "You continue on your current path, unsure if it's truly fulfilling but familiar.",
+          "resultFail": "The pursuit of career success feels increasingly hollow yet you see no alternative.",
           "effects": {
             "soul": -1,
             "connections": -1,
@@ -459,7 +429,7 @@
     {
       "stop": 10,
       "title": "Squares",
-      "narrative": "The pandemic has transformed your dining room into an office. Your world has contracted into Zoom squares, each one a tiny window into other lives similarly confined. The boundaries between work and home have dissolved completely. You haven't left your apartment in three days.",
+      "narrative": "The pandemic transformed your dining room into an office. Your world has contracted into Zoom squares, each a tiny window into other confined lives. The boundaries between work and home have dissolved completely. You haven't left your apartment in three days.",
       "choices": [
         {
           "text": "Set strict work boundaries, reclaim your space",
@@ -467,9 +437,9 @@
           "title": "Reclaim Control",
           "swingMeterType": "noOvershot",
           "meterContext": "As another meeting invitation appears on your screen...",
-          "resultGood": "A powerful moment of self-assertion. You create meaningful separation between work and life.",
-          "resultOkay": "Small boundaries are established, but challenges remain.",
-          "resultFail": "Your attempt to create boundaries feels futile.",
+          "resultGood": "With firm self-assertion, you create meaningful separation between work and personal life.",
+          "resultOkay": "Small boundaries get established, though significant challenges still remain.",
+          "resultFail": "Your attempts to create boundaries feel futile as work continues to invade all spaces.",
           "effects": {
             "soul": 2,
             "connections": 0,
@@ -482,9 +452,9 @@
           "title": "Digital Connection",
           "swingMeterType": "noOvershot",
           "meterContext": "As you think about maintaining human connection...",
-          "resultGood": "A surprisingly meaningful virtual gathering emerges. Real connections break through the digital barrier.",
-          "resultOkay": "Polite interactions, but nothing deeply transformative.",
-          "resultFail": "The event feels forced and awkward.",
+          "resultGood": "A meaningful virtual gathering emerges where real connections break through digital barriers.",
+          "resultOkay": "Polite interactions occur, but nothing transformative emerges from the screen.",
+          "resultFail": "The whole event feels awkward and forced, highlighting the limitations of virtual space.",
           "effects": {
             "soul": 0,
             "connections": 2,
@@ -497,9 +467,9 @@
           "title": "Career Opportunity",
           "swingMeterType": "noOvershot",
           "meterContext": "As you see an opportunity in this crisis...",
-          "resultGood": "Your efforts seem to be noticed by management.",
-          "resultOkay": "You blend into the background of corporate expectations.",
-          "resultFail": "Burnout begins to consume you completely.",
+          "resultGood": "Management seems to notice your extra effort as you exceed expectations remotely.",
+          "resultOkay": "You blend into the background of corporate expectations, another face in the squares.",
+          "resultFail": "Burnout begins consuming you entirely as the line between work and life disappears.",
           "effects": {
             "soul": -2,
             "connections": -1,
@@ -511,7 +481,7 @@
     {
       "stop": 11,
       "title": "Star Light",
-      "narrative": "3:17 AM. You stare at the ceiling, watching the star-shaped chandelier cast shadows as cars pass by outside. Sleep eludes you night after night. Your mind races with everything you've done and everything you've failed to do. The star seems to pulse with each anxious thought.",
+      "narrative": "3:17 AM. You stare at the ceiling, watching the star-shaped chandelier cast shadows as cars pass outside. Sleep eludes you night after night. Your mind races with everything done and everything failed. The star seems to pulse with each anxious thought.",
       "choices": [
         {
           "text": "Get up and write down your thoughts",
@@ -519,9 +489,9 @@
           "title": "Emotional Release",
           "swingMeterType": "standard",
           "meterContext": "In the quiet darkness, your racing thoughts demand expression...",
-          "resultGood": "A cathartic outpouring of emotions and insights flows onto the page. The writing becomes a path to self-understanding in the small hours.",
-          "resultOkay": "A few scattered thoughts find their way onto paper before the momentum fades.",
-          "resultFail": "The blank page only amplifies your inner turmoil, another witness to your restlessness.",
+          "resultGood": "Your emotions flow onto the page, creating a path toward clarity in these small hours.",
+          "resultOkay": "A few scattered thoughts find paper before momentum fades back into restlessness.",
+          "resultFail": "The blank page only amplifies your inner turmoil, another witness to your sleeplessness.",
           "effects": {
             "soul": 2,
             "connections": 0,
@@ -534,9 +504,9 @@
           "title": "Midnight Confidant",
           "swingMeterType": "standard",
           "meterContext": "Realizing sleep won't come easily tonight, you reach for your phone...",
-          "resultGood": "A profound, honest conversation breaks through the night's isolation.",
-          "resultOkay": "A brief, somewhat comforting exchange.",
-          "resultFail": "The attempt to connect only emphasizes your loneliness.",
+          "resultGood": "An honest, midnight conversation pierces through your isolation with surprising depth.",
+          "resultOkay": "A brief exchange brings some comfort, though sleep remains distant.",
+          "resultFail": "The unanswered message only emphasizes your solitude in these dark hours.",
           "effects": {
             "soul": 0,
             "connections": 2,
@@ -549,9 +519,9 @@
           "title": "Productive Insomnia",
           "swingMeterType": "standard",
           "meterContext": "Realizing sleep won't come easily tonight, you think about using these wakeful hours...",
-          "resultGood": "You feel a momentary sense of control by getting ahead on work.",
-          "resultOkay": "A few emails processed, but sleep remains elusive.",
-          "resultFail": "The work only intensifies your anxiety and sleeplessness.",
+          "resultGood": "Getting ahead on work gives you a momentary sense of control amid the sleeplessness.",
+          "resultOkay": "Processing a few emails fills time, though sleep remains frustratingly elusive.",
+          "resultFail": "Work emails only intensify your anxiety, guaranteeing another sleepless night.",
           "effects": {
             "soul": -1,
             "connections": 0,
@@ -563,7 +533,7 @@
     {
       "stop": 12,
       "title": "Sick of Home",
-      "narrative": "You notice the crack in your living room wall for the first time, though it's probably been there for years. Looking around, you see the faded furniture, the dusty shelves, the life you've been sleepwalking through. This place doesn't feel like home anymore - or perhaps it never really did.",
+      "narrative": "You notice the crack in your living room wall for the first time, though it's probably been there for years. Looking around, you see faded furniture, dusty shelves, a life you've been sleepwalking through. This place doesn't feel like home—or perhaps it never did.",
       "choices": [
         {
           "text": "It's time for a major change in your life",
@@ -571,9 +541,9 @@
           "title": "Radical Change",
           "swingMeterType": "standard",
           "meterContext": "The realization weighs on you...",
-          "resultGood": "A transformative decision. You begin to dismantle the walls of your old life.",
-          "resultOkay": "Small steps towards change begin to take shape.",
-          "resultFail": "The magnitude of change feels overwhelming.",
+          "resultGood": "A transformative decision crystallizes. You begin dismantling the walls of your old life.",
+          "resultOkay": "Small steps toward change begin taking shape, though uncertainty remains.",
+          "resultFail": "The magnitude of meaningful change overwhelms you into continued inaction.",
           "effects": {
             "soul": 2,
             "connections": 1,
@@ -586,9 +556,9 @@
           "title": "Community Project",
           "swingMeterType": "standard",
           "meterContext": "You consider how others might help transform your space...",
-          "resultGood": "A collaborative effort brings new energy and hope to your space.",
-          "resultOkay": "A few friends help, creating a slight sense of renewal.",
-          "resultFail": "The attempt to change feels superficial and forced.",
+          "resultGood": "Collaboration brings new energy to your space as connections deepen through shared work.",
+          "resultOkay": "A few friends help create a slight sense of renewal, though deeper issues remain.",
+          "resultFail": "The superficial changes fail to address the emptiness you feel within these walls.",
           "effects": {
             "soul": 0,
             "connections": 2,
@@ -601,9 +571,9 @@
           "title": "Future Investment",
           "swingMeterType": "standard",
           "meterContext": "You consider a practical approach to improvement...",
-          "resultGood": "A strategic approach to improving your living situation.",
-          "resultOkay": "Incremental progress towards a potential future.",
-          "resultFail": "Work becomes an escape, not a solution.",
+          "resultGood": "A strategic approach to improving your living situation emerges with clear steps.",
+          "resultOkay": "Incremental progress toward a potential future, though current dissatisfaction lingers.",
+          "resultFail": "Work becomes just another escape, not a solution to your fundamental discontent.",
           "effects": {
             "soul": -1,
             "connections": 0,
@@ -615,7 +585,7 @@
     {
       "stop": 13,
       "title": "Contact High",
-      "narrative": "You find yourself on a train platform, but not your usual one. You don't remember deciding to come here. The departures board shows destinations you've never visited. A sense of liberation washes over you - the realization that you could go anywhere, be anyone. For the first time in years, possibilities feel endless.",
+      "narrative": "You find yourself on an unfamiliar train platform. You don't remember deciding to come here. The departures board shows destinations you've never visited. A sense of liberation washes over you—you could go anywhere, be anyone. For the first time in years, possibilities feel endless.",
       "choices": [
         {
           "text": "Board a train to somewhere new",
@@ -623,9 +593,9 @@
           "title": "Spontaneous Adventure",
           "swingMeterType": "standard",
           "meterContext": "The unfamiliar departure board presents possibilities you hadn't considered...",
-          "resultGood": "A profound moment of liberation as you step aboard. You embrace the unknown with open arms, heart quickening with possibilities.",
-          "resultOkay": "A tentative step towards something different, though anxiety mingles with the excitement.",
-          "resultFail": "The adventure feels more terrifying than exciting. You freeze at the threshold of change.",
+          "resultGood": "A liberating moment as you step aboard, heart quickening with unexplored possibilities.",
+          "resultOkay": "You take a tentative step toward something different, anxiety mixing with excitement.",
+          "resultFail": "The unknown feels more terrifying than exciting. You freeze at the threshold of change.",
           "effects": {
             "soul": 2,
             "connections": -1,
@@ -638,9 +608,9 @@
           "title": "Shared Experience",
           "swingMeterType": "standard",
           "meterContext": "Standing before the departures board, you think about sharing this moment...",
-          "resultGood": "A spontaneous connection transforms an ordinary day into something extraordinary.",
-          "resultOkay": "A pleasant but unremarkable meeting.",
-          "resultFail": "The attempt to connect falls flat.",
+          "resultGood": "Spontaneous connection transforms an ordinary day into something extraordinary.",
+          "resultOkay": "A pleasant meeting unfolds, though it doesn't quite match your moment of insight.",
+          "resultFail": "Your attempt to connect falls flat, leaving you alone with unshared possibilities.",
           "effects": {
             "soul": 1,
             "connections": 2,
@@ -648,18 +618,48 @@
           }
         },
         {
-          "text": "Return to your usual routine",
-          "decisionType": "success",
-          "title": "Practical Choice",
+          "text": "Think about the life you once dreamed of",
+          "decisionType": "soul",
+          "title": "Inner Reflection",
           "swingMeterType": "standard",
-          "meterContext": "Standing before the departures board, you weigh the comfort of the familiar...",
-          "resultGood": "A moment of reflection reveals the comfort in familiarity.",
-          "resultOkay": "You choose the path of least resistance.",
-          "resultFail": "The routine feels like a prison of your own making.",
+          "meterContext": "As the train approaches, your mind begins to drift to forgotten dreams...",
+          "resultGood": "Old dreams resurface—art you created, places unseen. Something long dormant stirs within you.",
+          "resultOkay": "The details are fuzzy, but you find comfort in remembering dreams beyond this daily commute.",
+          "resultFail": "Those childish dreams feel distant now. Reality has worn them down. Better focus on today.",
+          "effects": {
+            "soul": 1,
+            "connections": 0,
+            "money": 0
+          }
+        },
+        {
+          "text": "Observe the world around you",
+          "decisionType": "connections",
+          "title": "Social Awareness",
+          "swingMeterType": "standard",
+          "meterContext": "You look around at the other commuters gathering on the platform...",
+          "resultGood": "You notice overlooked details—an elderly woman's kind eyes, a nervous young man. Everyone has a story. Including you.",
+          "resultOkay": "Faces seem less anonymous today. You share a knowing nod with another commuter about the morning routine.",
+          "resultFail": "Everyone looks tired. More drones heading to their hives. Nothing worth noting.",
+          "effects": {
+            "soul": 0,
+            "connections": 1,
+            "money": 0
+          }
+        },
+        {
+          "text": "Review your upcoming work presentation",
+          "decisionType": "success",
+          "title": "Career Focus",
+          "swingMeterType": "standard",
+          "meterContext": "You mentally rehearse the key points of today's presentation...",
+          "resultGood": "The structure crystallizes in your mind. You've got this. Your preparation might finally get you noticed.",
+          "resultOkay": "You review the main points, though details remain fuzzy. It should be adequate, as always.",
+          "resultFail": "Your thoughts scatter as anxiety creeps in. Another day of barely staying afloat.",
           "effects": {
             "soul": -1,
             "connections": 0,
-            "money": 0
+            "money": 1
           }
         }
       ]
@@ -667,7 +667,7 @@
     {
       "stop": 14,
       "title": "The Letter",
-      "narrative": "In your hands is a resignation letter. You've written and deleted it a dozen times over the years, but this version feels different. Final. Your boss would be shocked - you've always been the reliable one, the steady worker, the company drone. But something has changed inside you.",
+      "narrative": "In your hands is a resignation letter. You've written and deleted it a dozen times over the years, but this version feels different. Final. Your boss would be shocked—you've always been the reliable one, the steady worker, the company drone. But something has changed inside you.",
       "choices": [
         {
           "text": "Submit the resignation letter",
@@ -675,9 +675,9 @@
           "title": "Liberation",
           "swingMeterType": "critical",
           "meterContext": "The finished letter represents years of silent compromise...",
-          "resultGood": "A moment of pure freedom as you finally act. You reclaim your life on your own terms, walking taller as you leave the building.",
-          "resultOkay": "Uncertainty mingles with a sense of potential as you take this leap. What comes next is unknown but necessary.",
-          "resultFail": "Doubt begins to erode your resolve at the last moment. Is this really the right time? The right choice?",
+          "resultGood": "Pure freedom as you finally act. You reclaim your life, walking taller as you leave.",
+          "resultOkay": "Uncertainty mingles with potential as you take this necessary leap into the unknown.",
+          "resultFail": "Doubt erodes your resolve at the last moment. Is this really the right time?",
           "effects": {
             "soul": 3,
             "connections": -1,
@@ -690,9 +690,9 @@
           "title": "Network Change",
           "swingMeterType": "critical",
           "meterContext": "With the letter in hand, you consider your network...",
-          "resultGood": "Unexpected doors open. Your network becomes a source of transformation.",
-          "resultOkay": "Tentative conversations hint at potential paths.",
-          "resultFail": "The conversations reinforce your feeling of being stuck.",
+          "resultGood": "Unexpected doors open as your network becomes a source of transformation.",
+          "resultOkay": "Tentative conversations hint at potential paths, though nothing concrete emerges.",
+          "resultFail": "The conversations only reinforce your feeling of being trapped in your situation.",
           "effects": {
             "soul": 1,
             "connections": 2,
@@ -705,9 +705,9 @@
           "title": "Security First",
           "swingMeterType": "critical",
           "meterContext": "With the letter before you, you deliberate on timing...",
-          "resultGood": "A strategic pause allows for careful consideration.",
-          "resultOkay": "You maintain the status quo, for now.",
-          "resultFail": "Indecision becomes its own form of imprisonment.",
+          "resultGood": "A strategic pause allows for careful consideration of your next professional move.",
+          "resultOkay": "You maintain the status quo for now, though the desire for change remains.",
+          "resultFail": "Indecision becomes its own form of imprisonment as another opportunity passes.",
           "effects": {
             "soul": -1,
             "connections": 0,
@@ -718,8 +718,8 @@
     },
     {
       "stop": 15,
-        "title": "The Feel",
-      "narrative": "The train slows as it approaches your station - the same one you've departed from and arrived at thousands of times. But today, you don't automatically rise from your seat. The doors open. Other passengers file past. You remain seated, watching the familiar platform. The same platform that will be there tomorrow, and the next day. Unless...",
+      "title": "The Feel",
+      "narrative": "The train slows as it approaches your station—the same one you've arrived at thousands of times. But today, you don't automatically rise from your seat. The doors open. Other passengers file past. You remain seated, watching the familiar platform. The same platform that will be there tomorrow, unless...",
       "choices": [
         {
           "text": "Stay on the train, see where it takes you",
@@ -727,9 +727,9 @@
           "title": "New Beginning",
           "swingMeterType": "critical",
           "meterContext": "Your familiar stop passes by as you remain seated...",
-          "resultGood": "A profound leap into the unknown awakens your spirit fully. The train carries you beyond the familiar, towards possibilities you've never imagined.",
-          "resultOkay": "Uncertainty and excitement mix as you continue your journey. The landscape outside changes, hinting at unexplored potential.",
-          "resultFail": "The unknown becomes overwhelming as stations pass. Doubt creeps in, making you question your spontaneous decision.",
+          "resultGood": "A profound leap into the unknown awakens your spirit. The train carries you toward new possibilities.",
+          "resultOkay": "Uncertainty and excitement mix as you continue your journey into unfamiliar territory.",
+          "resultFail": "Stations pass as doubt creeps in, making you question your spontaneous decision.",
           "effects": {
             "soul": 3,
             "connections": -1,
@@ -742,9 +742,9 @@
           "title": "Meaningful Connection",
           "swingMeterType": "critical",
           "meterContext": "As you step onto the familiar platform...",
-          "resultGood": "A transformative conversation bridges past and present. The call becomes a moment of profound understanding and reconnection.",
-          "resultOkay": "A moment of connection, however brief. You feel slightly less alone.",
-          "resultFail": "The call highlights the distances between you. Words fall flat, leaving you more isolated.",
+          "resultGood": "A transformative conversation bridges past and present with profound understanding.",
+          "resultOkay": "A moment of connection, however brief, leaves you feeling slightly less alone.",
+          "resultFail": "The call highlights the distances between you as words fall flat, deepening isolation.",
           "effects": {
             "soul": 1,
             "connections": 2,
@@ -757,9 +757,9 @@
           "title": "Steadfast Reliability",
           "swingMeterType": "critical",
           "meterContext": "As you consider your commitments...",
-          "resultGood": "A sense of duty provides a momentary comfort. You recognize the value of consistency and commitment.",
+          "resultGood": "Duty provides momentary comfort. You find value in consistency and commitment.",
           "resultOkay": "You choose the familiar path, finding a small measure of peace in routine.",
-          "resultFail": "The routine feels suffocating. Your decision weighs on you like a heavy burden.",
+          "resultFail": "The routine feels suffocating, your decision weighing on you like a heavy burden.",
           "effects": {
             "soul": -1,
             "connections": 1,
@@ -859,4 +859,4 @@
       "speed": 5
     }
   }
-  }
+}
