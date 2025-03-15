@@ -1097,8 +1097,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (firstNarrative) {
                     displayNarrative(firstNarrative);
                     updateJourneyTrack();
-                } else {
-                    console.error('No initial narrative found');
+                }
+                // In startGame method, add this as a fallback
+                if (!firstNarrative) {
+                    console.log('Trying direct approach to load first narrative');
+                    this.currentNarrative = this.narratives[0];
+                    return { success: true, narrative: this.currentNarrative };
                 }
             }).catch(error => {
                 console.error('Error initializing game:', error);
