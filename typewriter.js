@@ -13,7 +13,7 @@ export default class Typewriter {
         this.options = {
             speed: options.speed || 30,
             delay: options.delay || 500,
-            cursor: options.cursor || '|',
+            cursor: options.cursor || '',
             cursorSpeed: options.cursorSpeed || 400,
             onComplete: options.onComplete || (() => {}),
             text: options.text || ''
