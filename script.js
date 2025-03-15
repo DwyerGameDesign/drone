@@ -123,7 +123,17 @@ document.addEventListener('DOMContentLoaded', function() {
         gameOverTitle: document.getElementById('gameOverTitle'),
         gameOverMessage: document.getElementById('gameOverMessage'),
         restartButton: document.getElementById('restartButton'),
-        journeyTrack: document.getElementById('journeyTrack')
+        journeyTrack: document.getElementById('journeyTrack'),
+        gameOverJourneyTrack: document.getElementById('gameOverJourneyTrack'),
+        swingMeter: document.querySelector('.swing-meter'),
+        difficultyMeters: document.querySelector('.difficulty-meters'),
+        rhythmLabel: document.querySelector('.rhythm-label'),
+        endingType: document.getElementById('endingType'),
+        newAlbumsSection: document.getElementById('newAlbumsSection'),
+        newAlbumsGrid: document.getElementById('newAlbumsGrid'),
+        viewAlbumsButton: document.getElementById('viewAlbumsButton'),
+        recordCollection: document.getElementById('recordCollection'),
+        albumCollectionGrid: document.getElementById('albumCollectionGrid')
     };
     
     // Typewriter effect variables
@@ -204,44 +214,597 @@ document.addEventListener('DOMContentLoaded', function() {
         // Make the entire container tappable
         elements.swingMeterContainer.onclick = () => {
             const result = SwingMeter.stop();
-            showResult(result);
+            showSwingMeterResult(result);
         };
     }
     
-    // Update showResult function
-    function showResult(result) {
-        const resultContainer = document.createElement('div');
-        resultContainer.className = 'meter-result-container';
+    // Show the result of the swing meter
+    function showSwingMeterResult(result) {
+        elements.tapButton.style.display = 'none';
+        elements.tapInstruction.style.display = 'none';
         
-        const resultTextElement = document.createElement('div');
-        resultTextElement.className = 'meter-result-text';
-        resultContainer.appendChild(resultTextElement);
-        
-        // Set result text based on the outcome
+        // Get the result text
         let resultText = '';
-        switch(result) {
-            case 'good':
-                resultText = 'Perfect timing! Your inner rhythm guides you true.';
-                break;
-            case 'poor':
-                resultText = 'Not quite there, but you managed to keep going.';
-                break;
-            default:
-                resultText = 'Your timing was off, but every mistake is a lesson.';
+        if (currentSelectedChoice) {
+            console.log('Getting result text for:', result, currentSelectedChoice);
+            
+            resultText = result === 'good' ? 
+                (currentSelectedChoice.resultGood || "You executed this perfectly!") :
+                (currentSelectedChoice.resultFail || "You struggled with this task.");
+        } else {
+            resultText = result === 'good' ? 
+                "You executed this perfectly!" : 
+                "You struggled with this task.";
         }
         
-        // Add the result container to the DOM
-        elements.swingMeterContainer.appendChild(resultContainer);
-        resultContainer.classList.add('visible');
+        console.log('Result text to display:', resultText);
+        
+        // Hide swing meter elements
+        if (elements.swingMeter) {
+            elements.swingMeter.style.display = 'none';
+        }
+        if (elements.difficultyMeters) {
+            elements.difficultyMeters.style.display = 'none';
+        }
+        if (elements.rhythmLabel) {
+            elements.rhythmLabel.style.display = 'none';
+        }
         
         // Display the result text with typewriter effect
         displayResultText(resultText, resultTextElement);
-        
-        // Add the Next Stop button
-        addNextStopButton(result, resultContainer);
     }
     
-    // Update showGameOver function
+    // Add the Next Stop button
+    function addNextStopButton(result, resultContainer) {
+        // Create the Next Stop button (hidden)
+        const nextButton = document.createElement('button');
+        nextButton.className = 'next-stop-button';
+        nextButton.textContent = 'Next Stop';
+        nextButton.style.display = 'none';
+        resultContainer.appendChild(nextButton);
+        
+        // Add instruction text
+        const nextInstruction = document.createElement('div');
+        nextInstruction.className = 'next-instruction';
+        nextInstruction.textContent = 'Tap to continue';
+        resultContainer.appendChild(nextInstruction);
+        
+        // Make the entire result container tappable
+        resultContainer.style.cursor = 'pointer';
+        
+        // Remove any existing click handlers
+        const oldClickHandler = resultContainer.onclick;
+        if (oldClickHandler) {
+            resultContainer.removeEventListener('click', oldClickHandler);
+        }
+
+        // Add click handler to skip typing
+        resultContainer.addEventListener('click', function(e) {
+            if (e.target === resultContainer || 
+                e.target.classList.contains('meter-result-text') || 
+                (currentNextButton && !currentNextButton.contains(e.target))) {
+                
+                if (resultTypewriter && resultTypewriter.isTyping) {
+                    resultTypewriter.skip();
+                    return;
+                }
+                
+                try {
+                    // Process the result
+                    console.log('Processing swing meter result:', result);
+                    
+                    // Determine if the swing meter was successful
+                    const success = result === 'good';
+                    
+                    // Get the narrative type from the selected choice
+                    const narrativeType = currentSelectedChoice.type || 'neutral';
+                    
+                    // Track the decision in the achievement system
+                    if (game.achievementSystem) {
+                        game.achievementSystem.trackDecision(game.logicalStop, narrativeType, success);
+                    }
+                    
+                    // Call the game's handleSwingMeter method
+                    const gameResult = game.handleSwingMeter(success, narrativeType);
+                    
+                    // If successful, adjust difficulty
+                    if (success) {
+                        SwingMeter.adjustDifficulty(narrativeType);
+                    }
+                    
+                    // Update the journey track
+                    updateJourneyTrack();
+                    
+                    // Hide the swing meter container
+                    elements.swingMeterContainer.style.display = 'none';
+                    
+                    // Reset the swing meter
+                    SwingMeter.reset();
+                    
+                    // Check if game is over
+                    if (gameResult && gameResult.gameOver) {
+                        showGameOver(gameResult.reason === 'success');
+                        return;
+                    }
+                    
+                    // Get and display next narrative
+                    const nextNarrative = game.getCurrentNarrative();
+                    if (nextNarrative) {
+                        displayNarrative(nextNarrative);
+                    }
+                } catch (error) {
+                    console.error('Error processing swing meter result:', error);
+                }
+            }
+        });
+        
+        return nextButton;
+    }
+    
+    // Reset the swing meter for next use
+    function resetSwingMeter() {
+        // Remove any result containers
+        const resultContainers = document.querySelectorAll('.meter-result-container');
+        resultContainers.forEach(container => {
+            if (container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+        });
+        
+        // Remove existing rhythm label and difficulty meters
+        const existingRhythmLabel = document.querySelector('.rhythm-label');
+        if (existingRhythmLabel) {
+            existingRhythmLabel.remove();
+        }
+        
+        const existingDifficultyMeters = document.querySelector('.difficulty-meters');
+        if (existingDifficultyMeters) {
+            existingDifficultyMeters.remove();
+        }
+        
+        // Clear the swing meter container but preserve the choice description
+        const choiceDescription = elements.choiceDescription.cloneNode(true);
+        const choiceDescriptionText = elements.choiceDescription.textContent;
+        elements.swingMeterContainer.innerHTML = '';
+        elements.swingMeterContainer.appendChild(choiceDescription);
+        elements.choiceDescription = choiceDescription;
+        elements.choiceDescription.textContent = choiceDescriptionText;
+        
+        // Add the Inner Rhythm label at the beginning
+        const rhythmLabel = document.createElement('div');
+        rhythmLabel.className = 'rhythm-label';
+        rhythmLabel.textContent = 'INNER RHYTHM';
+        elements.swingMeterContainer.insertBefore(rhythmLabel, elements.swingMeterContainer.firstChild);
+        
+        // Recreate the swing meter structure
+        const swingMeter = document.createElement('div');
+        swingMeter.className = 'swing-meter';
+        
+        const meterBackground = document.createElement('div');
+        meterBackground.id = 'meterBackground';
+        meterBackground.className = 'meter-background';
+        
+        // Calculate the good zone width based on the width modifier
+        const goodZoneWidth = baseGoodZoneWidth * widthModifier;
+        // Calculate the poor zones width (they should be equal and fill the remaining space)
+        const poorZoneWidth = (100 - goodZoneWidth) / 2;
+        
+        console.log(`Creating zones - Good: ${goodZoneWidth.toFixed(2)}%, Poor: ${poorZoneWidth.toFixed(2)}% each`);
+        
+        const poorStartZone = document.createElement('div');
+        poorStartZone.className = 'meter-zone poor-start';
+        poorStartZone.style.width = `${poorZoneWidth}%`;
+        
+        const goodZone = document.createElement('div');
+        goodZone.className = 'meter-zone good';
+        goodZone.style.width = `${goodZoneWidth}%`;
+        
+        const poorEndZone = document.createElement('div');
+        poorEndZone.className = 'meter-zone poor-end';
+        poorEndZone.style.width = `${poorZoneWidth}%`;
+        
+        const indicatorBar = document.createElement('div');
+        indicatorBar.className = 'meter-indicator-bar';
+        
+        const tapMarker = document.createElement('div');
+        tapMarker.className = 'tap-marker';
+        
+        meterBackground.appendChild(poorStartZone);
+        meterBackground.appendChild(goodZone);
+        meterBackground.appendChild(poorEndZone);
+        meterBackground.appendChild(indicatorBar);
+        meterBackground.appendChild(tapMarker);
+        
+        swingMeter.appendChild(meterBackground);
+        elements.swingMeterContainer.appendChild(swingMeter);
+        
+        // Add difficulty meters
+        const difficultyMeters = document.createElement('div');
+        difficultyMeters.className = 'difficulty-meters';
+        
+        // Tempo meter
+        const tempoContainer = document.createElement('div');
+        tempoContainer.className = 'meter-container';
+        
+        const tempoLabel = document.createElement('div');
+        tempoLabel.className = 'meter-label';
+        tempoLabel.textContent = 'TEMPO';
+        
+        const tempoMeter = document.createElement('div');
+        tempoMeter.className = 'difficulty-meter tempo-meter';
+        
+        const tempoValue = document.createElement('div');
+        tempoValue.className = 'meter-value';
+        tempoValue.style.width = `${(speedModifier - 0.5) / 2 * 100}%`;
+        
+        tempoMeter.appendChild(tempoValue);
+        tempoContainer.appendChild(tempoLabel);
+        tempoContainer.appendChild(tempoMeter);
+        
+        // Precision meter
+        const precisionContainer = document.createElement('div');
+        precisionContainer.className = 'meter-container';
+        
+        const precisionLabel = document.createElement('div');
+        precisionLabel.className = 'meter-label';
+        precisionLabel.textContent = 'PRECISION';
+        
+        const precisionMeter = document.createElement('div');
+        precisionMeter.className = 'difficulty-meter precision-meter';
+        
+        const precisionValue = document.createElement('div');
+        precisionValue.className = 'meter-value';
+        precisionValue.style.width = `${(widthModifier - 0.4) / 1.1 * 100}%`;
+        
+        precisionMeter.appendChild(precisionValue);
+        precisionContainer.appendChild(precisionLabel);
+        precisionContainer.appendChild(precisionMeter);
+        
+        difficultyMeters.appendChild(tempoContainer);
+        difficultyMeters.appendChild(precisionContainer);
+        elements.swingMeterContainer.appendChild(difficultyMeters);
+        
+        const tapInstruction = document.createElement('div');
+        tapInstruction.className = 'tap-instruction';
+        tapInstruction.textContent = 'Tap anywhere to stop';
+        elements.swingMeterContainer.appendChild(tapInstruction);
+        elements.tapInstruction = tapInstruction;
+        
+        // Reset the indicator bar
+        indicatorBar.style.transition = 'left 0.1s linear'; // Restore transition
+        indicatorBar.style.left = '0%';
+        indicatorBar.classList.remove('good', 'okay', 'fail');
+        indicatorBar.style.backgroundColor = 'white'; // Reset to default white color
+        
+        // Reset the tap marker
+        tapMarker.style.display = 'none';
+        tapMarker.classList.remove('good', 'okay', 'fail');
+        tapMarker.style.backgroundColor = 'white'; // Reset to default white color
+        
+        // Reset tap button
+        if (elements.tapButton) {
+            elements.tapButton.style.display = 'none';
+        }
+        
+        // Make sure tap instruction is visible
+        if (elements.tapInstruction) {
+            elements.tapInstruction.style.display = 'block';
+        }
+        
+        // Update UI meters
+        updateDifficultyMeters();
+        
+        // Make sure the difficulty meters are updated
+        updateDifficultyMeters();
+    }
+    
+    // Update the decision track
+    function updateDecisionTrack() {
+        console.log('Updating decision track');
+        
+        // Clear the decision track
+        elements.decisionTrack.innerHTML = '';
+        
+        // Get the decision history
+        const decisions = game.decisionHistory;
+        const decisionTypes = game.decisionTypes;
+        
+        console.log('Decision history:', decisions);
+        console.log('Decision types:', decisionTypes);
+        
+        // Add a card for each decision
+        for (let i = 0; i < game.currentStop - 1; i++) {
+            const card = document.createElement('div');
+            const decisionType = decisionTypes[i] || 'unknown';
+            
+            // Find the corresponding decision in history
+            const decision = decisions.find(d => d.stop === i + 1);
+            
+            console.log(`Decision for stop ${i + 1}:`, decision);
+            
+            // Determine the result of the swing meter
+            let swingResult = decision ? decision.swingMeterResult : null;
+            
+            // Set the card class based on decision type and swing meter result
+            if (swingResult === 'good') {
+                // Good result - full color
+                card.className = `decision-card ${decisionType}`;
+            } else if (swingResult === 'okay') {
+                // Okay result - muted color
+                card.className = `decision-card ${decisionType}-okay`;
+            } else {
+                // Failed or no result - poor (gray with X)
+                card.className = 'decision-card poor';
+            }
+            
+            // Add the stop number
+            const number = document.createElement('div');
+            number.className = 'decision-card-number';
+            number.textContent = i + 1;
+            card.appendChild(number);
+            
+            // Add the card to the track
+            elements.decisionTrack.appendChild(card);
+        }
+        
+        // Add the current stop
+        if (game.currentStop <= game.maxRounds * game.stopsPerRound) {
+            const currentCard = document.createElement('div');
+            currentCard.className = 'decision-card active';
+            
+            const number = document.createElement('div');
+            number.className = 'decision-card-number';
+            number.textContent = game.currentStop;
+            currentCard.appendChild(number);
+            
+            elements.decisionTrack.appendChild(currentCard);
+        }
+        
+        // Scroll to the end of the track
+        elements.decisionTrack.scrollLeft = elements.decisionTrack.scrollWidth;
+    }
+    
+    // Debug function to help understand what's happening with the journey track
+    function debugJourneyTrack() {
+        console.log('=== DEBUG JOURNEY TRACK ===');
+        console.log('Current logical stop:', game.logicalStop);
+        console.log('Total stops:', game.journeyManager.getTotalStops());
+        console.log('Decision history:', game.decisionHistory);
+        
+        // Check each station
+        const stations = document.querySelectorAll('.station');
+        console.log('Number of stations:', stations.length);
+        
+        stations.forEach((station, index) => {
+            console.log(`Station ${index + 1} classes:`, station.className);
+            
+            // Check if this station should have a decision
+            if (index + 1 < game.logicalStop) {
+                const decision = game.decisionHistory.find(d => Number(d.stop) === index + 1);
+                console.log(`Decision for station ${index + 1}:`, decision);
+                
+                if (decision) {
+                    console.log(`  Success: ${decision.success}, Type: ${decision.narrativeType}`);
+                    
+                    // Check if the station has the correct classes
+                    const hasCompletedClass = station.classList.contains('completed');
+                    const hasFailClass = station.classList.contains('fail');
+                    const hasTypeClass = station.classList.contains(decision.narrativeType);
+                    
+                    console.log(`  Has completed class: ${hasCompletedClass}`);
+                    console.log(`  Has fail class: ${hasFailClass}`);
+                    console.log(`  Has type class: ${hasTypeClass}`);
+                    
+                    // Check if the classes match the decision
+                    const shouldHaveFailClass = decision.success === false;
+                    const shouldHaveTypeClass = decision.success === true;
+                    
+                    console.log(`  Should have fail class: ${shouldHaveFailClass}`);
+                    console.log(`  Should have type class: ${shouldHaveTypeClass}`);
+                    
+                    // Log any discrepancies
+                    if (shouldHaveFailClass && !hasFailClass) {
+                        console.error(`  ERROR: Station ${index + 1} should have fail class but doesn't`);
+                    }
+                    
+                    if (shouldHaveTypeClass && !hasTypeClass) {
+                        console.error(`  ERROR: Station ${index + 1} should have ${decision.narrativeType} class but doesn't`);
+                    }
+                }
+            }
+        });
+        
+        console.log('=== END DEBUG JOURNEY TRACK ===');
+    }
+
+    // Update the journey track (works for both normal and game over states)
+    function updateJourneyTrack(isGameOver = false) {
+        console.log(`Updating ${isGameOver ? 'game over' : 'normal'} journey track`);
+        console.log('Decision history:', game.decisionHistory);
+        console.log('Current logical stop:', game.logicalStop);
+        
+        const trackElement = isGameOver ? elements.gameOverJourneyTrack : elements.journeyTrack;
+        if (!trackElement) {
+            console.error('Journey track element not found');
+            return;
+        }
+        
+        trackElement.innerHTML = '';
+        
+        const totalStops = game.journeyManager.getTotalStops();
+        console.log('Total stops:', totalStops);
+        
+        if (!totalStops || totalStops <= 0) {
+            console.warn('Invalid total stops:', totalStops);
+            return;
+        }
+
+        // Create stations
+        for (let i = 0; i < totalStops; i++) {
+            const station = document.createElement('div');
+            station.className = 'station';
+            
+            // Add appropriate classes based on game state
+            if (i + 1 === game.logicalStop) {
+                station.classList.add('current');
+            } else if (i + 1 < game.logicalStop) {
+                station.classList.add('completed');
+                
+                // Find the decision for this station
+                const decision = game.decisionHistory.find(d => Number(d.stop) === i + 1);
+                if (decision) {
+                    if (!decision.success) {
+                        station.classList.add('fail');
+                    } else {
+                        station.classList.add(decision.narrativeType);
+                    }
+                }
+            }
+            
+            trackElement.appendChild(station);
+        }
+    }
+    
+    // Update UI elements
+    function updateUI() {
+        console.log('Updating UI with game state:', game.currentStop, game.performanceScore);
+        updateJourneyTrack(false);
+    }
+    
+    // Update the journey track in the game over screen
+    function updateGameOverJourneyTrack() {
+        console.log('Updating game over journey track');
+        
+        // Use the gameOverJourneyTrack element
+        const journeyTrack = document.getElementById('gameOverJourneyTrack');
+        if (!journeyTrack) {
+            console.error('Game over journey track element not found');
+            return;
+        }
+        
+        // Clear the track
+        journeyTrack.innerHTML = '';
+        
+        // Get the total number of stops in the journey
+        const totalStops = game.journeyManager.getTotalStops();
+        console.log('Total stops for game over track:', totalStops);
+        
+        if (!totalStops || totalStops <= 0) {
+            console.warn('Invalid total stops for game over track:', totalStops);
+            return;
+        }
+        
+        // Create track line elements between stations
+        for (let i = 1; i <= totalStops; i++) {
+            // Add station
+            const station = document.createElement('div');
+            station.className = 'station';
+            
+            // Add station number as data attribute
+            station.dataset.stop = i;
+            
+            // Add track line before station (except for first station)
+            if (i > 1) {
+                const trackLine = document.createElement('div');
+                trackLine.className = 'track-line';
+                journeyTrack.appendChild(trackLine);
+            }
+            
+            // Find the decision for this logical stop
+            const decision = game.decisionHistory.find(d => Number(d.stop) === i);
+            
+            if (decision) {
+                // Add completed class
+                station.classList.add('completed');
+                
+                // Check if the swing meter was successful
+                if (decision.success === false) {
+                    // If failed, add the fail class to show an X
+                    station.classList.add('fail');
+                } else if (decision.narrativeType) {
+                    // If successful, add the decision type class for proper coloring
+                    station.classList.add(decision.narrativeType);
+                } else {
+                    // Fallback to standard class if no narrative type
+                    station.classList.add('standard');
+                }
+            }
+            
+            // Add current class if this is the current stop (for incomplete journeys)
+            if (i === game.logicalStop && !game.gameOver) {
+                station.classList.add('current');
+            }
+            
+            journeyTrack.appendChild(station);
+        }
+        
+        console.log('Game over journey track updated');
+    }
+    
+    // Handle the result of any interaction
+    function handleInteractionResult(result) {
+        console.log('Handling interaction result:', result);
+        
+        if (!result.success) {
+            console.error('Error processing interaction:', result.reason);
+            return;
+        }
+        
+        // Update UI
+        updateUI();
+        
+        // Explicitly update the journey track
+        updateJourneyTrack();
+        
+        // Handle game over
+        if (result.gameOver) {
+            showGameOver(result.reason === 'success');
+            return;
+        }
+        
+        // Handle random event
+        if (result.randomEvent) {
+            displayRandomEvent(result.randomEvent);
+            return;
+        }
+        
+        // Handle random event completion
+        if (result.randomEventComplete) {
+            if (elements.randomEventContainer) {
+                elements.randomEventContainer.style.display = 'none';
+            }
+            elements.narrativeText.style.display = 'block';
+            elements.choiceContainer.style.display = 'flex';
+        }
+        
+        // Display next narrative
+        if (result.nextNarrative) {
+            console.log('Displaying next narrative:', result.nextNarrative);
+            // Clear any existing content and hide interactions
+            hideAllInteractions();
+            // Display the next narrative with typewriter effect
+            displayNarrative(result.nextNarrative);
+        } else {
+            console.warn('No next narrative found in result:', result);
+            
+            // Try to get the next narrative manually
+            const logicalStop = game.logicalStop;
+            console.log('Current logical stop:', logicalStop);
+            const manualNextNarrative = game.journeyManager.getNarrativeForLogicalStop(logicalStop);
+            
+            if (manualNextNarrative) {
+                console.log('Found manual next narrative:', manualNextNarrative);
+                // Clear any existing content and hide interactions
+                hideAllInteractions();
+                // Display the next narrative with typewriter effect
+                displayNarrative(manualNextNarrative);
+            } else {
+                console.error('Cannot find next narrative for logical stop:', logicalStop);
+            }
+        }
+    }
+    
+    // Show game over screen
     function showGameOver(success) {
         console.log('Showing game over screen, success:', success);
         console.log('Game state at game over:', {
@@ -755,76 +1318,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Update the journey track in the game over screen
-    function updateGameOverJourneyTrack() {
-        console.log('Updating game over journey track');
-        
-        // Use the gameOverJourneyTrack element
-        const journeyTrack = document.getElementById('gameOverJourneyTrack');
-        if (!journeyTrack) {
-            console.error('Game over journey track element not found');
-            return;
-        }
-        
-        // Clear the track
-        journeyTrack.innerHTML = '';
-        
-        // Get the total number of stops in the journey
-        const totalStops = game.journeyManager.getTotalStops();
-        console.log('Total stops for game over track:', totalStops);
-        
-        if (!totalStops || totalStops <= 0) {
-            console.warn('Invalid total stops for game over track:', totalStops);
-            return;
-        }
-        
-        // Create track line elements between stations
-        for (let i = 1; i <= totalStops; i++) {
-            // Add station
-            const station = document.createElement('div');
-            station.className = 'station';
-            
-            // Add station number as data attribute
-            station.dataset.stop = i;
-            
-            // Add track line before station (except for first station)
-            if (i > 1) {
-                const trackLine = document.createElement('div');
-                trackLine.className = 'track-line';
-                journeyTrack.appendChild(trackLine);
-            }
-            
-            // Find the decision for this logical stop
-            const decision = game.decisionHistory.find(d => Number(d.stop) === i);
-            
-            if (decision) {
-                // Add completed class
-                station.classList.add('completed');
-                
-                // Check if the swing meter was successful
-                if (decision.success === false) {
-                    // If failed, add the fail class to show an X
-                    station.classList.add('fail');
-                } else if (decision.narrativeType) {
-                    // If successful, add the decision type class for proper coloring
-                    station.classList.add(decision.narrativeType);
-                } else {
-                    // Fallback to standard class if no narrative type
-                    station.classList.add('standard');
-                }
-            }
-            
-            // Add current class if this is the current stop (for incomplete journeys)
-            if (i === game.logicalStop && !game.gameOver) {
-                station.classList.add('current');
-            }
-            
-            journeyTrack.appendChild(station);
-        }
-        
-        console.log('Game over journey track updated');
-    }
-
     // Adjust swing meter difficulty based on player's choice
     function adjustDifficulty(narrativeType) {
         SwingMeter.adjustDifficulty(narrativeType);
@@ -853,97 +1346,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function resetGameState() {
         console.log('Resetting game state...');
         
-        // Reset difficulty modifiers
-        resetDifficultyModifiers();
-        
-        // Reset game state
-        game.reset();
-        
-        // Reset achievement system for new playthrough
-        if (game.achievementSystem) {
-            console.log('Resetting achievement system for new playthrough...');
-            game.achievementSystem.resetPlaythrough();
-        }
-        
-        // Explicitly ensure we're at stop 1 and performance score is 0
-        if (game.logicalStop !== 0 || game.performanceScore !== 0) {
-            console.warn('Game did not reset properly, forcing reset...');
-            console.warn('Current logical stop:', game.logicalStop, 'Performance score:', game.performanceScore);
-            
-            game.currentStop = 1;
-            game.logicalStop = 0; // Changed from 1 to 0 to match game.js constructor
-            game.currentRound = 1;
-            game.performanceScore = 0;
-            game.decisionHistory = [];
-            game.decisionTypes = [];
-            game.resources = { soul: 0, connections: 0, money: 0 };
-            game.gameOver = false;
-            game.gameOverReason = null;
-        }
-        
-        console.log('Game reset to logical stop:', game.logicalStop, 'Performance score:', game.performanceScore);
-        
-        // Reset UI elements
-        const journeyTrack = document.getElementById('journeyTrack');
-        if (journeyTrack) {
-            journeyTrack.innerHTML = '';
-        }
-        
-        // Clear any result containers or swing meter elements
-        const resultContainers = document.querySelectorAll('.meter-result-container');
-        resultContainers.forEach(container => {
-            if (container.parentNode) {
-                container.parentNode.removeChild(container);
-            }
-        });
-        
-        // Reset the swing meter if it exists
-        const swingMeter = document.querySelector('.swing-meter');
-        if (swingMeter) {
-            swingMeter.classList.remove('fade-out');
-        }
-        
-        // Reset the indicator bar
-        const indicatorBar = document.querySelector('.meter-indicator-bar');
-        if (indicatorBar) {
-            indicatorBar.style.transition = 'left 0.1s linear';
-            indicatorBar.style.left = '0%';
-            indicatorBar.classList.remove('good', 'okay', 'fail');
-            indicatorBar.style.backgroundColor = 'white';
-        }
-        
-        // Reset the tap marker
-        const tapMarker = document.querySelector('.tap-marker');
-        if (tapMarker) {
-            tapMarker.style.display = 'none';
-            tapMarker.classList.remove('good', 'okay', 'fail');
-            tapMarker.style.backgroundColor = 'white';
-        }
-        
-        // Reset any fade-in classes
-        elements.restartButton.classList.remove('fade-in');
-        elements.nextRoundButton.classList.remove('fade-in');
-        
         // Hide all screens
         elements.gameOver.style.display = 'none';
         elements.roundComplete.style.display = 'none';
-        
-        // Hide all interaction elements
-        hideAllInteractions();
-        
-        // Reset any global variables
-        isTyping = false;
-        skipTyping = false;
-        isSwingMeterMoving = false;
-        swingPosition = 0;
-        swingDirection = 1;
-        currentSelectedChoice = null;
-        
-        // Force a complete reload of the game data
-        if (game.loadGameData && typeof game.loadGameData === 'function') {
-            console.log('Reloading game data...');
-            game.loadGameData();
-        }
+        elements.swingMeterContainer.style.display = 'none';
         
         // Reset typewriter instances
         if (narrativeTypewriter) narrativeTypewriter.stop();
@@ -951,39 +1357,33 @@ document.addEventListener('DOMContentLoaded', function() {
         if (gameOverTypewriter) gameOverTypewriter.stop();
         if (roundSummaryTypewriter) roundSummaryTypewriter.stop();
         
-        // Wait a moment to ensure data is loaded
-        setTimeout(() => {
-            // Verify performance score is still 0
-            console.log('Verifying reset - Performance score:', game.performanceScore);
-            
-            // Get the first narrative and display it
-            let firstNarrative = null;
-            
-            // Try multiple methods to get the first narrative
-            if (game.narratives && game.narratives.length > 0) {
-                const firstActualStop = game.journeyManager.getActualStop(1);
-                firstNarrative = game.narratives.find(n => n.stop === firstActualStop);
-                console.log('Found first narrative directly:', firstNarrative?.title);
-            }
-            
-            if (!firstNarrative && typeof game.getCurrentNarrative === 'function') {
-                firstNarrative = game.getCurrentNarrative();
-                console.log('Found first narrative via getCurrentNarrative:', firstNarrative?.title);
-            }
-            
-            if (firstNarrative) {
-                console.log('Displaying first narrative after reset:', firstNarrative.title);
-                displayNarrative(firstNarrative);
-            } else {
-                console.error('Failed to get initial narrative after reset');
-                // Last resort: Try to restart the game completely
-                console.log('Attempting to restart game completely...');
-                initGame();
-            }
-            
-            // Update the UI to reflect the reset state
+        // Reset swing meter
+        SwingMeter.reset();
+        SwingMeter.resetDifficultyModifiers();
+        
+        // Reset game instance
+        game.resetGame();
+        
+        // Load fresh game data
+        if (game.loadGameData && typeof game.loadGameData === 'function') {
+            game.loadGameData();
+        }
+        
+        // Wait for game data to load
+        waitForGameData(game).then(() => {
+            // Initialize new game
+            initGame();
+            // Update UI
             updateUI();
-        }, 100);
+            // Display first narrative
+            const firstNarrative = game.getCurrentNarrative();
+            if (firstNarrative) {
+                displayNarrative(firstNarrative);
+            }
+        }).catch(error => {
+            console.error('Failed to load game data:', error);
+            alert('Failed to reset game. Please refresh the page.');
+        });
     }
     
     elements.restartButton.addEventListener('click', function() {
@@ -1164,7 +1564,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update the result container click handler
     function addNextStopButton(result, resultContainer) {
-        // ... existing code ...
+        // Create the Next Stop button (hidden)
+        const nextButton = document.createElement('button');
+        nextButton.className = 'next-stop-button';
+        nextButton.textContent = 'Next Stop';
+        nextButton.style.display = 'none';
+        resultContainer.appendChild(nextButton);
+        
+        // Add instruction text
+        const nextInstruction = document.createElement('div');
+        nextInstruction.className = 'next-instruction';
+        nextInstruction.textContent = 'Tap to continue';
+        resultContainer.appendChild(nextInstruction);
+        
+        // Make the entire result container tappable
+        resultContainer.style.cursor = 'pointer';
+        
+        // Remove any existing click handlers
+        const oldClickHandler = resultContainer.onclick;
+        if (oldClickHandler) {
+            resultContainer.removeEventListener('click', oldClickHandler);
+        }
 
         // Add click handler to skip typing
         resultContainer.addEventListener('click', function(e) {
@@ -1177,10 +1597,55 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                // ... rest of the existing click handler code ...
+                try {
+                    // Process the result
+                    console.log('Processing swing meter result:', result);
+                    
+                    // Determine if the swing meter was successful
+                    const success = result === 'good';
+                    
+                    // Get the narrative type from the selected choice
+                    const narrativeType = currentSelectedChoice.type || 'neutral';
+                    
+                    // Track the decision in the achievement system
+                    if (game.achievementSystem) {
+                        game.achievementSystem.trackDecision(game.logicalStop, narrativeType, success);
+                    }
+                    
+                    // Call the game's handleSwingMeter method
+                    const gameResult = game.handleSwingMeter(success, narrativeType);
+                    
+                    // If successful, adjust difficulty
+                    if (success) {
+                        SwingMeter.adjustDifficulty(narrativeType);
+                    }
+                    
+                    // Update the journey track
+                    updateJourneyTrack();
+                    
+                    // Hide the swing meter container
+                    elements.swingMeterContainer.style.display = 'none';
+                    
+                    // Reset the swing meter
+                    SwingMeter.reset();
+                    
+                    // Check if game is over
+                    if (gameResult && gameResult.gameOver) {
+                        showGameOver(gameResult.reason === 'success');
+                        return;
+                    }
+                    
+                    // Get and display next narrative
+                    const nextNarrative = game.getCurrentNarrative();
+                    if (nextNarrative) {
+                        displayNarrative(nextNarrative);
+                    }
+                } catch (error) {
+                    console.error('Error processing swing meter result:', error);
+                }
             }
         });
+        
+        return nextButton;
     }
-
-    // ... rest of the existing code ...
 });
