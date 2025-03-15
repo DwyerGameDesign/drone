@@ -18,7 +18,7 @@ const SwingMeter = {
 
     // Initialize the swing meter
     init() {
-        this.resetSwingMeter();
+        this.reset();
         this.updateDifficultyMeters();
     },
 
