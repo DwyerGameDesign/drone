@@ -1648,4 +1648,40 @@ document.addEventListener('DOMContentLoaded', function() {
         
         return nextButton;
     }
+
+    // Function to initialize the game
+    function initGame() {
+        console.log('Initializing game...');
+        
+        // Reset game state if needed
+        if (game.gameOver) {
+            game.resetGame();
+        }
+        
+        // Hide all screens except the main game screen
+        elements.gameOver.style.display = 'none';
+        elements.roundComplete.style.display = 'none';
+        elements.swingMeterContainer.style.display = 'none';
+        
+        // Reset all typewriter instances
+        if (narrativeTypewriter) narrativeTypewriter.stop();
+        if (resultTypewriter) resultTypewriter.stop();
+        if (gameOverTypewriter) gameOverTypewriter.stop();
+        if (roundSummaryTypewriter) roundSummaryTypewriter.stop();
+        
+        // Reset the swing meter
+        SwingMeter.reset();
+        SwingMeter.resetDifficultyModifiers();
+        
+        // Update the UI
+        updateUI();
+        
+        // Get and display the first narrative
+        const firstNarrative = game.getCurrentNarrative();
+        if (firstNarrative) {
+            displayNarrative(firstNarrative);
+        } else {
+            console.error('No initial narrative found');
+        }
+    }
 });
