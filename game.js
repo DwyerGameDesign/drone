@@ -10,7 +10,7 @@ class DroneManGame {
         this.performanceScore = 100;
         
         // Initialize game state
-        this.resources = { ...this.startingResources };
+        this.resources = { soul: 0, connections: 0, money: 0 };
         this.decisionTypes = [];
         this.performanceResults = [];
         this.currentRound = 1;
@@ -20,17 +20,10 @@ class DroneManGame {
         this.stopsPerRound = 5; // 5 stops per journey
         this.gameOver = false;
         this.gameOverReason = null;
-        this.activePassiveEffects = [];
         this.narratives = [];
-        this.passiveEffects = {};
-        this.swingMeterTypes = {};
         this.currentNarrative = null;
         this.currentChoices = [];
         this.decisionHistory = [];
-        this.purchaseEvents = [];
-        this.lastRandomEventId = null;
-        this.randomEventProbability = 0; // Disabled: was 30% chance of a random event after each narrative
-        this.currentRandomEvent = null;
         this.completedSwingMeters = []; // Track completed swing meters
         this.journeyManager = new JourneyManager(this);
         this.achievementSystem = null;
@@ -58,11 +51,10 @@ class DroneManGame {
         console.log('Loading game data...');
         try {
             // Load from external files
-            const cardsData = await this.loadJSON('cards.json');
-            const eventsData = await this.loadJSON('events.json');
+            const narrativesData = await this.loadJSON('narratives.json');
             
             // Process the loaded data
-            this.processGameData(cardsData, eventsData);
+            this.processGameData(narrativesData);
             console.log('Game data loaded successfully from files');
             
             // Initialize the journey manager
@@ -100,28 +92,14 @@ class DroneManGame {
     }
     
     // Process loaded game data
-    processGameData(cardsData, eventsData) {
-        // Process cards data
-        if (cardsData) {
-            this.narratives = cardsData.narratives || [];
-            this.passiveEffects = cardsData.passiveEffects || {};
-            this.swingMeterTypes = cardsData.swingMeterTypes || cardsData.powerMeterTypes || {}; // Support both naming conventions
-        }
-        
-        // Process events data
-        if (eventsData) {
-            this.purchaseEvents = eventsData.purchaseEvents || [];
-            
-            // Merge any additional passive effects from events
-            if (eventsData.passiveEffects) {
-                this.passiveEffects = { ...this.passiveEffects, ...eventsData.passiveEffects };
-            }
+    processGameData(narrativesData) {
+        // Process narratives data
+        if (narrativesData) {
+            this.narratives = narrativesData.narratives || [];
         }
         
         console.log('Game data processed:', {
-            narratives: this.narratives.length,
-            swingMeterTypes: Object.keys(this.swingMeterTypes).length,
-            purchaseEvents: this.purchaseEvents.length
+            narratives: this.narratives.length
         });
     }
     
@@ -136,10 +114,6 @@ class DroneManGame {
             })
             .then(data => {
                 console.log('Endings data loaded successfully');
-                
-                // Ensure each ending has a title property
-                this.ensureEndingTitles(data);
-                
                 this.endingsData = data;
                 
                 // Debug: Log the structure of the endings data
@@ -159,14 +133,6 @@ class DroneManGame {
                 
                 console.log('Using minimal fallback endings data structure');
             });
-    }
-    
-    // Ensure each ending has a title property
-    ensureEndingTitles(data) {
-        // This function is no longer needed since we're using "Title Not Found" 
-        // as a fallback instead of adding titles
-        console.log('ensureEndingTitles is deprecated - using "Title Not Found" for missing titles');
-        return;
     }
     
     // Start the game
@@ -258,8 +224,6 @@ class DroneManGame {
                 return this.handleSwingMeter(params.result, params.choice);
             case 'choice':
                 return this.handleChoice(params.choiceIndex);
-            case 'randomEvent':
-                return this.handleRandomEvent(params.optionIndex);
             default:
                 return { success: false, reason: 'Unknown interaction type' };
         }
@@ -356,48 +320,7 @@ class DroneManGame {
             return { success: false, reason: 'Invalid choice index' };
         }
         
-        // Check if player can afford this choice if it costs money
-        if (choice.effects.money < 0 && Math.abs(choice.effects.money) > this.resources.money) {
-            return { success: false, reason: 'Cannot afford this choice' };
-        }
-        
         return this.processOutcome(choice);
-    }
-    
-    // Handle random event interaction
-    handleRandomEvent(optionIndex) {
-        console.log('Handling random event option:', optionIndex);
-        // Use the stored current random event
-        const event = this.getCurrentRandomEvent();
-        if (!event) {
-            return { success: false, reason: 'No current random event' };
-        }
-        
-        let option;
-        if (optionIndex === -1) {
-            // This is the "walk away" option
-            option = event.options[1]; // The second option is usually the alternative
-        } else {
-            option = event.options[optionIndex];
-        }
-        
-        if (!option) {
-            return { success: false, reason: 'Invalid option index' };
-        }
-        
-        // Check if player can afford this option
-        if (option.cost && option.cost > this.resources.money) {
-            return { success: false, reason: 'Cannot afford this option' };
-        }
-        
-        // Process the outcome of the random event choice
-        const result = this.processRandomEventOutcome(event, option);
-        
-        // Clear the current random event
-        this.lastRandomEventId = event.id;
-        this.currentRandomEvent = null;
-        
-        return result;
     }
     
     // Process the outcome of any narrative interaction
@@ -410,7 +333,6 @@ class DroneManGame {
             stop: this.currentStop,
             title: narrative.title,
             text: outcome.text,
-            effects: outcome.effects,
             interactionType: narrative.interactionType
         };
         
@@ -433,19 +355,6 @@ class DroneManGame {
             this.performanceScore -= 1;
         }
         
-        // For compatibility, still update resources but don't display them
-        this.resources.soul = Math.max(0, Math.min(this.maxResources.soul, this.resources.soul + (outcome.effects.soul || 0)));
-        this.resources.connections = Math.max(0, Math.min(this.maxResources.connections, this.resources.connections + (outcome.effects.connections || 0)));
-        this.resources.money = Math.max(0, this.resources.money + (outcome.effects.money || 0));
-        
-        // Check for passive effect unlock
-        if (outcome.unlockPassive && !this.hasPassiveEffect(outcome.unlockPassive)) {
-            this.addPassiveEffect(outcome.unlockPassive);
-        }
-        
-        // Apply passive effects
-        this.applyPassiveEffects();
-        
         // Check game over conditions
         if (this.performanceScore <= this.failureThreshold) {
             this.gameOver = true;
@@ -462,19 +371,6 @@ class DroneManGame {
             };
         }
         
-        // Check if we should trigger a random event
-        const randomEvent = this.checkForRandomEvent();
-        if (randomEvent) {
-            this.setCurrentRandomEvent(randomEvent);
-            return {
-                success: true,
-                gameOver: false,
-                roundComplete: false,
-                randomEvent: randomEvent,
-                resources: { ...this.resources }
-            };
-        }
-        
         // Move to next stop
         this.currentStop++;
         
@@ -484,7 +380,7 @@ class DroneManGame {
             // Check if all rounds are complete
             if (this.currentRound >= this.maxRounds) {
                 // Game completed
-            this.gameOver = true;
+                this.gameOver = true;
                 return { 
                     success: true, 
                     gameOver: true, 
@@ -525,119 +421,6 @@ class DroneManGame {
         };
     }
     
-    // Process the outcome of a random event
-    processRandomEventOutcome(event, option) {
-        console.log('Processing random event outcome:', event.id, option);
-        // Save to decision history
-        const decision = {
-            round: this.currentRound,
-            stop: this.currentStop,
-            title: event.title,
-            text: option.text,
-            effects: option.effects,
-            interactionType: 'randomEvent'
-        };
-        
-        this.decisionHistory.push(decision);
-        
-        // Apply effects
-        this.resources.soul = Math.max(0, Math.min(this.maxResources.soul, this.resources.soul + (option.effects.soul || 0)));
-        this.resources.connections = Math.max(0, Math.min(this.maxResources.connections, this.resources.connections + (option.effects.connections || 0)));
-        this.resources.money = Math.max(0, this.resources.money + (option.effects.money || 0));
-        
-        // Check for passive effect unlock
-        if (option.unlockPassive && !this.hasPassiveEffect(option.unlockPassive)) {
-            this.activePassiveEffects.push(option.unlockPassive);
-        }
-        
-        // Apply passive effects
-        this.applyPassiveEffects();
-        
-        // Check game over conditions
-        if (this.performanceScore <= this.failureThreshold) {
-            this.gameOver = true;
-            this.gameOverReason = "You've lost focus on what really matters. The daily grind has worn you down completely.";
-            return { 
-                success: true, 
-                gameOver: true, 
-                reason: this.gameOverReason,
-                resources: { ...this.resources }
-            };
-        }
-        
-        // Continue to next narrative
-        const nextNarrative = this.narratives.find(n => n.stop === this.currentStop) || null;
-        
-        return {
-            success: true,
-            gameOver: false,
-            randomEventComplete: true,
-            nextNarrative,
-            resources: { ...this.resources }
-        };
-    }
-
-    // Check for a random event
-    checkForRandomEvent() {
-        // DISABLED: Random events are temporarily disabled
-        console.log('Random events are disabled');
-        return null;
-    }
-
-    // Set the current random event
-    setCurrentRandomEvent(event) {
-        console.log('Setting current random event:', event.id);
-        this.currentRandomEvent = event;
-    }
-
-    // Get the current random event
-    getCurrentRandomEvent() {
-        return this.currentRandomEvent;
-    }
-
-    // Add a passive effect
-    addPassiveEffect(effectId) {
-        console.log('Adding passive effect:', effectId);
-        if (this.passiveEffects[effectId] && !this.activePassiveEffects.includes(effectId)) {
-            this.activePassiveEffects.push(effectId);
-        }
-    }
-
-    // Check if a passive effect is active
-    hasPassiveEffect(effectId) {
-        return this.activePassiveEffects.includes(effectId);
-    }
-
-    // Apply all active passive effects
-    applyPassiveEffects() {
-        console.log('Applying passive effects:', this.activePassiveEffects);
-        for (const effectId of this.activePassiveEffects) {
-            const effect = this.passiveEffects[effectId];
-            if (effect && effect.effect) {
-                // Apply effect
-                if (effect.effect.soul) {
-                    this.resources.soul = Math.max(0, Math.min(this.maxResources.soul, this.resources.soul + effect.effect.soul));
-                }
-                if (effect.effect.connections) {
-                    this.resources.connections = Math.max(0, Math.min(this.maxResources.connections, this.resources.connections + effect.effect.connections));
-                }
-                if (effect.effect.money) {
-                    this.resources.money = Math.max(0, this.resources.money + effect.effect.money);
-                }
-            }
-        }
-    }
-
-    // Get a swing meter configuration
-    getSwingMeterConfig(meterType) {
-        const config = this.swingMeterTypes[meterType] || null;
-        if (!config && meterType !== 'standard') {
-            console.warn(`Swing meter type "${meterType}" not found, falling back to standard`);
-            return this.swingMeterTypes.standard || null;
-        }
-        return config;
-    }
-    
     // Start the next round
     startNextRound() {
         console.log('Starting next round');
@@ -645,9 +428,6 @@ class DroneManGame {
         this.currentStop = (this.currentRound - 1) * this.stopsPerRound + 1;
         
         console.log(`Next round started: Round ${this.currentRound}, Stop ${this.currentStop}`);
-        
-        // Apply passive effects for the new round
-        this.applyPassiveEffects();
         
         // Get the first narrative of the new round
         const nextNarrative = this.narratives.find(n => n.stop === this.currentStop) || null;
@@ -679,9 +459,6 @@ class DroneManGame {
     // Get game over message
     getGameOverMessage(success) {
         console.log('Getting game over message, success:', success, 'gameOverReason:', this.gameOverReason);
-        
-        // Error message for missing ending text
-        const errorMessage = "Ending Text Not Found";
         
         // Generic fallback messages
         const genericSuccessMessage = "Your journey has changed you in subtle but significant ways. The corporate drone is gone, replaced by someone more aware, more alive.";
@@ -896,7 +673,6 @@ class DroneManGame {
         console.log('=== GAME STATE ===');
         console.log('Round:', this.currentRound, 'Stop:', this.currentStop);
         console.log('Resources:', this.resources);
-        console.log('Active Effects:', this.activePassiveEffects);
         console.log('Decision History:', this.decisionHistory.length, 'decisions');
         console.log('Current Narrative:', this.getCurrentNarrative()?.title);
         console.log('=================');
@@ -1146,6 +922,3 @@ class DroneManGame {
         }
     }
 }
-
-// Make the game class available globally
-window.DroneManGame = DroneManGame;

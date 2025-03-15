@@ -41,7 +41,7 @@
           "title": "Career Focus",
           "swingMeterType": "standard",
           "meterContext": "You mentally rehearse the key points of today's presentation...",
-          "resultGood": "The structure crystallizes in your mind. You've got this. Your preparation might finally get you noticed.",
+          "resultGood": "The structure presentation crystallizes in your mind. Personal thoughts pushed aside.",
           "resultOkay": "You review the main points, though details remain fuzzy. It should be adequate, as always.",
           "resultFail": "Your thoughts scatter as anxiety creeps in. Another day of barely staying afloat.",
           "effects": {
@@ -63,7 +63,7 @@
           "title": "Work First",
           "swingMeterType": "standard",
           "meterContext": "You consider how to handle the urgent work request...",
-          "resultGood": "You text to reschedule and organize your morning to complete the report. Your boss will notice your reliability.",
+          "resultGood": "Another friendship postponed. The report will impress, your personal life recedes.",
           "resultOkay": "With a sigh, you cancel lunch. The report will get done, though not your best work. But enough.",
           "resultFail": "You stare at your phone, trapped. Another personal sacrifice for a job that takes and takes.",
           "effects": {
@@ -131,7 +131,7 @@
           "title": "Get Ahead",
           "swingMeterType": "standard",
           "meterContext": "As your thoughts turn to work...",
-          "resultGood": "You outline a brilliant presentation that could impress your boss and finally earn recognition.",
+          "resultGood": "Your creative energy now serves the company's goals instead of your own dreams.",
           "resultOkay": "You jot down some decent ideas. Not inspired, but practical enough to be useful.",
           "resultFail": "You try focusing on work, but your heart isn't in it. Every idea feels forced and hollow.",
           "effects": {
@@ -289,7 +289,7 @@
           "title": "Status Symbol",
           "swingMeterType": "standard",
           "meterContext": "As the allure of status and recognition pulls at you...",
-          "resultGood": "A brief thrill of acquisition masks deeper insecurities as you sign the financing papers.",
+          "resultGood": "The new car will turn heads as you drive to the job you'll need to keep paying for it.",
           "resultOkay": "The purchase feels hollow but temporarily exciting. At least it's something new.",
           "resultFail": "You commit to a financial burden that brings no satisfaction, just mounting pressure.",
           "effects": {
@@ -341,7 +341,7 @@
           "title": "Power Through",
           "swingMeterType": "noOvershot",
           "meterContext": "Leaving the doctor's office, you assess your relationship with stress...",
-          "resultGood": "You feel momentarily confident in your ability to handle the pressure and keep performing.",
+          "resultGood": "You ignore the warning signs. Your reputation for resilience grows, your health fades.",
           "resultOkay": "You convince yourself everything's under control, pushing the warning aside.",
           "resultFail": "The cracks begin to show as your body sends increasingly urgent warning signals.",
           "effects": {

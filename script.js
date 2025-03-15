@@ -1,10 +1,15 @@
 // Drone Man: The Journey - Main script
+import SwingMeter from './swing-meter.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded. Initializing game...');
     
     // Create game instance
     const game = new DroneManGame();
     window.gameInstance = game; // Make it globally accessible for swing meter
+    
+    // Initialize SwingMeter
+    SwingMeter.init();
     
     // Menu functionality
     const menuButton = document.getElementById('menuButton');
@@ -119,506 +124,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let skipTyping = false;
     const typingSpeed = 30; // ms per character
     
-    // Swing meter variables
-    let isSwingMeterMoving = false;
-    let swingPosition = 0;
-    let swingSpeed = 1;
-    let swingDirection = 1;
-    let currentSelectedChoice = null;
-    let speedModifier = 1.0; // Base speed modifier
-    let widthModifier = 1.0; // Base width modifier
-    let baseGoodZoneWidth = 20; // Default good zone width percentage
-    
-    // Reset difficulty modifiers to default values
-    function resetDifficultyModifiers() {
-        speedModifier = 1.0;
-        widthModifier = 1.0;
-        console.log('Reset difficulty modifiers to default values');
-        
-        // Update UI meters
-        updateDifficultyMeters();
-    }
-    
-    // Initialize the game
-    function initGame() {
-        console.log('Initializing game...');
-        
-        // Reset difficulty modifiers
-        resetDifficultyModifiers();
-        
-        // Ensure we're starting from stop 1
-        game.currentStop = 1;
-        game.logicalStop = 0; // Changed from 1 to 0 to match game.js constructor
-        game.currentRound = 1;
-        game.performanceScore = 0;
-        game.decisionHistory = [];
-        game.decisionTypes = [];
-        game.resources = { soul: 0, connections: 0, money: 0 };
-        game.gameOver = false;
-        game.gameOverReason = null;
-        
-        // Initialize the game
-        if (game.initialize && typeof game.initialize === 'function') {
-            console.log('Initializing game...');
-            game.initialize();
-        } else {
-            // Fallback to old initialization method
-            console.log('Using legacy initialization...');
-            
-            // Reload game data if possible
-            if (game.loadGameData && typeof game.loadGameData === 'function') {
-                console.log('Loading fresh game data...');
-                game.loadGameData();
-            }
-        }
-        
-        // Initialize the achievement system if needed
-        if (!game.achievementSystem) {
-            console.log('Achievement system not initialized by game, creating manually...');
-            game.achievementSystem = new AchievementSystem(game);
-        } else {
-            console.log('Resetting achievement system for new playthrough...');
-            game.achievementSystem.resetPlaythrough();
-        }
-        
-        // Initialize journey track
-        updateJourneyTrack();
-        
-        // Start the game
-        const result = game.startGame();
-        
-        // Display the first narrative
-        if (result.success && result.narrative) {
-            console.log('Starting game with narrative:', result.narrative.title, 'Stop:', result.narrative.stop);
-            // Ensure the current narrative is set
-            game.currentNarrative = result.narrative;
-            displayNarrative(result.narrative);
-        } else {
-            console.error('Failed to start game:', result);
-            
-            // Fallback: Try to get the first narrative directly
-            if (game.narratives && game.narratives.length > 0) {
-                const firstActualStop = game.journeyManager.getActualStop(1);
-                const firstNarrative = game.narratives.find(n => n.stop === firstActualStop);
-                if (firstNarrative) {
-                    console.log('Using fallback first narrative:', firstNarrative.title);
-                    // Ensure the current narrative is set
-                    game.currentNarrative = firstNarrative;
-                    displayNarrative(firstNarrative);
-                }
-            }
-        }
-    }
-    
-    // Add event listeners
-    const narrativeCard = document.querySelector('.narrative-card');
-    narrativeCard.addEventListener('click', function() {
-        if (isTyping) {
-            skipTyping = true;
-        }
-    });
-    
-    elements.nextRoundButton.addEventListener('click', function() {
-        console.log('Next round button clicked');
-        hideRoundComplete();
-        startNextRound();
-    });
-    
-    // Make the entire round complete screen tappable
-    elements.roundComplete.addEventListener('click', function(e) {
-        // Prevent clicks on child elements from triggering multiple times
-        if (e.target === elements.roundComplete || !elements.nextRoundButton.contains(e.target)) {
-            console.log('Round complete screen tapped');
-            hideRoundComplete();
-            startNextRound();
-        }
-    });
-    
-    // Add event listener for the view albums button
-    const viewAlbumsButton = document.getElementById('viewAlbumsButton');
-    if (viewAlbumsButton) {
-        viewAlbumsButton.addEventListener('click', function() {
-            console.log('View albums button clicked');
-            showRecordCollection();
-        });
-    }
-    
-    // Reset the entire game state
-    function resetGameState() {
-        console.log('Resetting game state...');
-        
-        // Reset difficulty modifiers
-        resetDifficultyModifiers();
-        
-        // Reset game state
-        game.restart();
-        
-        // Reset achievement system for new playthrough
-        if (game.achievementSystem) {
-            console.log('Resetting achievement system for new playthrough...');
-            game.achievementSystem.resetPlaythrough();
-        }
-        
-        // Explicitly ensure we're at stop 1 and performance score is 0
-        if (game.logicalStop !== 0 || game.performanceScore !== 0) {
-            console.warn('Game did not reset properly, forcing reset...');
-            console.warn('Current logical stop:', game.logicalStop, 'Performance score:', game.performanceScore);
-            
-            game.currentStop = 1;
-            game.logicalStop = 0; // Changed from 1 to 0 to match game.js constructor
-            game.currentRound = 1;
-            game.performanceScore = 0;
-            game.decisionHistory = [];
-            game.decisionTypes = [];
-            game.resources = { soul: 0, connections: 0, money: 0 };
-            game.gameOver = false;
-            game.gameOverReason = null;
-        }
-        
-        console.log('Game reset to logical stop:', game.logicalStop, 'Performance score:', game.performanceScore);
-        
-        // Reset UI elements
-        const journeyTrack = document.getElementById('journeyTrack');
-        if (journeyTrack) {
-            journeyTrack.innerHTML = '';
-        }
-        
-        // Clear any result containers or swing meter elements
-        const resultContainers = document.querySelectorAll('.meter-result-container');
-        resultContainers.forEach(container => {
-            if (container.parentNode) {
-                container.parentNode.removeChild(container);
-            }
-        });
-        
-        // Reset the swing meter if it exists
-        const swingMeter = document.querySelector('.swing-meter');
-        if (swingMeter) {
-            swingMeter.classList.remove('fade-out');
-        }
-        
-        // Reset the indicator bar
-        const indicatorBar = document.querySelector('.meter-indicator-bar');
-        if (indicatorBar) {
-            indicatorBar.style.transition = 'left 0.1s linear';
-            indicatorBar.style.left = '0%';
-            indicatorBar.classList.remove('good', 'okay', 'fail');
-            indicatorBar.style.backgroundColor = 'white';
-        }
-        
-        // Reset the tap marker
-        const tapMarker = document.querySelector('.tap-marker');
-        if (tapMarker) {
-            tapMarker.style.display = 'none';
-            tapMarker.classList.remove('good', 'okay', 'fail');
-            tapMarker.style.backgroundColor = 'white';
-        }
-        
-        // Reset any fade-in classes
-        elements.restartButton.classList.remove('fade-in');
-        elements.nextRoundButton.classList.remove('fade-in');
-        
-        // Hide all screens
-        elements.gameOver.style.display = 'none';
-        elements.roundComplete.style.display = 'none';
-        
-        // Hide all interaction elements
-        hideAllInteractions();
-        
-        // Reset any global variables
-        isTyping = false;
-        skipTyping = false;
-        isSwingMeterMoving = false;
-        swingPosition = 0;
-        swingDirection = 1;
-        currentSelectedChoice = null;
-        
-        // Force a complete reload of the game data
-        if (game.loadGameData && typeof game.loadGameData === 'function') {
-            console.log('Reloading game data...');
-            game.loadGameData();
-        }
-        
-        // Wait a moment to ensure data is loaded
-        setTimeout(() => {
-            // Verify performance score is still 0
-            console.log('Verifying reset - Performance score:', game.performanceScore);
-            
-            // Get the first narrative and display it
-            let firstNarrative = null;
-            
-            // Try multiple methods to get the first narrative
-            if (game.narratives && game.narratives.length > 0) {
-                const firstActualStop = game.journeyManager.getActualStop(1);
-                firstNarrative = game.narratives.find(n => n.stop === firstActualStop);
-                console.log('Found first narrative directly:', firstNarrative?.title);
-            }
-            
-            if (!firstNarrative && typeof game.getCurrentNarrative === 'function') {
-                firstNarrative = game.getCurrentNarrative();
-                console.log('Found first narrative via getCurrentNarrative:', firstNarrative?.title);
-            }
-            
-            if (firstNarrative) {
-                console.log('Displaying first narrative after reset:', firstNarrative.title);
-                displayNarrative(firstNarrative);
-            } else {
-                console.error('Failed to get initial narrative after reset');
-                // Last resort: Try to restart the game completely
-                console.log('Attempting to restart game completely...');
-                initGame();
-            }
-            
-            // Update the UI to reflect the reset state
-            updateUI();
-        }, 100);
-    }
-    
-    elements.restartButton.addEventListener('click', function() {
-        console.log('Restart button clicked, current stop before reset:', game.currentStop);
-        
-        // Reset the game state
-        resetGameState();
-        
-        // Double-check that we're at stop 1 after a short delay to ensure reset has completed
-        setTimeout(() => {
-            console.log('Current stop after reset:', game.currentStop);
-            if (game.currentStop !== 1) {
-                console.error('Failed to reset to stop 1, forcing complete restart...');
-                
-                // Force a complete game restart
-                game.currentStop = 1;
-                game.logicalStop = 0; // Changed from 1 to 0
-                game.currentRound = 1;
-                game.performanceScore = 0;
-                game.decisionHistory = [];
-                game.decisionTypes = [];
-                game.resources = { soul: 0, connections: 0, money: 0 };
-                game.gameOver = false;
-                game.gameOverReason = null;
-                
-                // Reload game data if possible
-                if (game.loadGameData && typeof game.loadGameData === 'function') {
-                    game.loadGameData();
-                }
-                
-                // Get the first narrative directly
-                if (game.narratives && game.narratives.length > 0) {
-                    const firstNarrative = game.narratives.find(n => n.stop === 1);
-                    if (firstNarrative) {
-                        console.log('Displaying first narrative directly:', firstNarrative.title);
-                        displayNarrative(firstNarrative);
-                        updateUI();
-                    } else {
-                        console.error('Could not find first narrative, restarting game...');
-                        initGame();
-                    }
-                } else {
-                    console.error('No narratives found, restarting game...');
-                    initGame();
-                }
-            }
-        }, 200);
-    });
-    
-    // Wait for game data to load
-    waitForGameData(game).then(() => {
-        // Ensure UI elements are visible
-        const header = document.querySelector('header');
-        if (header) {
-            header.style.display = 'flex';
-        }
-        
-        const journeyTrackContainer = document.querySelector('.journey-track');
-        if (journeyTrackContainer) {
-            journeyTrackContainer.style.display = 'flex';
-        }
-        
-        // Start the game
-        initGame();
-    }).catch(error => {
-        console.error('Failed to load game data:', error);
-    });
-    
-    // Function to wait for game data to load
-    async function waitForGameData(game) {
-        return new Promise((resolve, reject) => {
-            console.log('Waiting for game data to load...');
-            const maxAttempts = 50; // 5 seconds with 100ms interval
-            let attempts = 0;
-            
-            const checkInterval = setInterval(() => {
-                attempts++;
-                if (game.narratives && game.narratives.length > 0) {
-                    clearInterval(checkInterval);
-                    console.log('Game data loaded after', attempts, 'attempts');
-                    resolve();
-                } else if (attempts >= maxAttempts) {
-                    clearInterval(checkInterval);
-                    reject(new Error('Timeout waiting for game data'));
-                }
-            }, 100);
-        });
-    }
-    
-    // Display narrative with typewriter effect
-    function displayNarrative(narrative) {
-        console.log('Displaying narrative:', narrative);
-        if (!narrative) {
-            console.error('No narrative to display');
-            return;
-        }
-        
-        // Update title
-        elements.narrativeTitle.textContent = narrative.title;
-        
-        // Clear existing content
-        elements.narrativeText.textContent = '';
-        
-        // Clear the choice description
-        if (elements.choiceDescription) {
-            elements.choiceDescription.textContent = '';
-        }
-        
-        // Hide all interaction elements
-        hideAllInteractions();
-        
-        // Create a temporary div to store the full message
-        const tempDiv = document.createElement('div');
-        tempDiv.textContent = narrative.narrative;
-        const sanitizedMessage = tempDiv.innerHTML;
-        
-        // Start typewriter effect
-        let index = 0;
-        let displayText = '';
-        isTyping = true;
-        skipTyping = false;
-        
-        const typeNextCharacter = () => {
-            if (skipTyping) {
-                // If skipping, show the full text immediately
-                elements.narrativeText.innerHTML = sanitizedMessage;
-                isTyping = false;
-                skipTyping = false;
-                displayInteraction(narrative);
-                return;
-            }
-            
-            if (index < sanitizedMessage.length) {
-                displayText += sanitizedMessage.charAt(index);
-                elements.narrativeText.innerHTML = displayText;
-                index++;
-                setTimeout(typeNextCharacter, typingSpeed);
-            } else {
-                isTyping = false;
-                displayInteraction(narrative);
-            }
-        };
-        
-        typeNextCharacter();
-    }
-    
-    // Hide all interaction elements
-    function hideAllInteractions() {
-        console.log('Hiding all interactions');
-        
-        // Hide choice container
-        elements.choiceContainer.style.display = 'none';
-        
-        // Hide swing meter container
-        elements.swingMeterContainer.style.display = 'none';
-    }
-    
-    // Display the appropriate interaction based on narrative type
-    function displayInteraction(narrative) {
-        console.log('Displaying interaction for narrative:', narrative.title);
-        
-        // Hide the swing meter container and its elements initially
-        elements.swingMeterContainer.style.display = 'none';
-        
-        // Make sure the tap button and instructions are hidden
-        const meterInstructions = document.querySelector('.meter-instructions');
-        if (meterInstructions) {
-            meterInstructions.style.display = 'none';
-        }
-        
-        if (elements.tapButton) {
-            elements.tapButton.style.display = 'none';
-        }
-        
-        // Display choice cards for the player to choose from
-        displayChoiceCards(narrative.choices);
-    }
-    
-    // Display decision cards for the player to choose from
-    function displayChoiceCards(choices) {
-        console.log('Displaying choice cards:', choices);
-        
-        // Clear existing cards
-        elements.choiceContainer.innerHTML = '';
-        elements.choiceContainer.style.display = 'flex';
-        elements.choiceContainer.style.opacity = '1';
-        elements.choiceContainer.style.transform = 'translateY(0)';
-        
-        if (!choices || choices.length === 0) {
-            console.warn('No choices to display');
-            return;
-        }
-        
-        // Add a card for each choice
-        choices.forEach((choice, index) => {
-            const decisionType = choice.decisionType || (index === 0 ? 'soul' : index === 1 ? 'connections' : 'success');
-            
-            const card = document.createElement('div');
-            card.className = 'card ' + decisionType;
-            
-            const title = document.createElement('div');
-            title.className = 'card-title';
-            title.textContent = choice.title || 'Option ' + (index + 1);
-            
-            const content = document.createElement('div');
-            content.className = 'card-content';
-            content.textContent = choice.text;
-            
-            // Store choice data
-            card.dataset.index = index;
-            card.dataset.type = decisionType;
-            
-            // Add click handler
-            card.addEventListener('click', function() {
-                // Add active class to show selection
-                const allCards = elements.choiceContainer.querySelectorAll('.card');
-                allCards.forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                
-                // Handle the selection
-                handleCardSelection(card);
-            });
-            
-            // Add ripple effect for touch feedback
-            card.addEventListener('touchstart', function(e) {
-                const rect = card.getBoundingClientRect();
-                const x = e.touches[0].clientX - rect.left;
-                const y = e.touches[0].clientY - rect.top;
-                
-                const ripple = document.createElement('div');
-                ripple.className = 'ripple';
-                ripple.style.left = x + 'px';
-                ripple.style.top = y + 'px';
-                
-                card.appendChild(ripple);
-                
-                setTimeout(() => {
-                    ripple.remove();
-                }, 1000);
-            });
-            
-            card.appendChild(title);
-            card.appendChild(content);
-            elements.choiceContainer.appendChild(card);
-        });
-    }
-    
     // Handle card selection
     function handleCardSelection(card) {
         console.log('Card selected:', card);
@@ -669,7 +174,6 @@ document.addEventListener('DOMContentLoaded', function() {
             text: choiceText,
             type: decisionType,
             index: choiceIndex,
-            // Include the result texts if available from the original choice
             resultGood: choice && choice.resultGood ? choice.resultGood : "You executed this perfectly!",
             resultOkay: choice && choice.resultOkay ? choice.resultOkay : "You managed reasonably well.",
             resultFail: choice && choice.resultFail ? choice.resultFail : "You struggled with this task."
@@ -677,258 +181,24 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('Current selected choice with results:', currentSelectedChoice);
         
-        // Reset the swing meter to ensure all elements are properly created
-        resetSwingMeter();
-        
-        // Update meter zone colors based on decision type
-        updateMeterZoneColors(decisionType);
+        // Reset and start the swing meter
+        SwingMeter.reset();
+        SwingMeter.start();
         
         // Show the swing meter container
         elements.swingMeterContainer.style.display = 'block';
-        console.log('Setting swing meter container display to block');
-        
-        // Ensure the rhythm label and difficulty meters are visible
-        const rhythmLabel = document.querySelector('.rhythm-label');
-        if (rhythmLabel) {
-            rhythmLabel.style.display = 'flex';
-        }
-        
-        const difficultyMeters = document.querySelector('.difficulty-meters');
-        if (difficultyMeters) {
-            difficultyMeters.style.display = 'flex';
-        }
         
         // Set up the tap button
         if (elements.tapButton) {
-            elements.tapButton.style.display = 'none'; // Hide the button
-            elements.tapInstruction.style.display = 'block'; // Show the instruction text
-        } else {
-            console.error('Tap button element not found');
+            elements.tapButton.style.display = 'none';
+            elements.tapInstruction.style.display = 'block';
         }
         
         // Make the entire container tappable
-        elements.swingMeterContainer.onclick = stopSwingMeter;
-        
-        // Start the swing meter automatically
-        startSwingMeter();
-    }
-    
-    // Update meter zone colors based on decision type
-    function updateMeterZoneColors(decisionType) {
-        // Get all meter zones
-        const goodZone = document.querySelector('.meter-zone.good');
-        const poorStartZone = document.querySelector('.meter-zone.poor-start');
-        const poorEndZone = document.querySelector('.meter-zone.poor-end');
-        
-        if (!goodZone) {
-            console.error('Good meter zone not found');
-            return;
-        }
-        
-        // Reset classes
-        goodZone.className = 'meter-zone good';
-        
-        // Set colors based on decision type
-        switch(decisionType) {
-            case 'soul':
-                // Blue for soul
-                goodZone.style.backgroundColor = '#2A66C9'; // Blue for good
-                break;
-            case 'connections':
-                // Violet for connections
-                goodZone.style.backgroundColor = '#7D3CCF'; // Violet for good
-                break;
-            case 'success':
-                // Green for success
-                goodZone.style.backgroundColor = '#1F6F50'; // Green for good
-                break;
-            default:
-                // Default colors
-                goodZone.style.backgroundColor = '#2ecc71'; // Default green
-        }
-        
-        // Ensure poor zones are red
-        if (poorStartZone) poorStartZone.style.backgroundColor = '#e74c3c';
-        if (poorEndZone) poorEndZone.style.backgroundColor = '#e74c3c';
-    }
-    
-    // Start the swing meter
-    function startSwingMeter() {
-        console.log('Starting swing meter');
-        console.log(`Current modifiers - Speed: ${speedModifier.toFixed(2)}x, Width: ${widthModifier.toFixed(2)}x`);
-        
-        // Create the solid indicator bar if it doesn't exist
-        let indicatorBar = document.querySelector('.meter-indicator-bar');
-        if (!indicatorBar) {
-            indicatorBar = document.createElement('div');
-            indicatorBar.className = 'meter-indicator-bar';
-            const meterBackground = document.querySelector('.meter-background');
-            if (meterBackground) {
-                meterBackground.appendChild(indicatorBar);
-            } else {
-                console.error('Meter background not found');
-                return;
-            }
-        }
-        
-        // Reset the indicator position and ensure transition is set
-        indicatorBar.style.transition = 'left 0.1s linear';
-        indicatorBar.style.left = '0%';
-        
-        // Apply the speed modifier to the base speed
-        swingSpeed = 1 * speedModifier;
-        console.log(`Applied speed: ${swingSpeed.toFixed(2)}`);
-        
-        // Ensure the rhythm label and difficulty meters are visible
-        const rhythmLabel = document.querySelector('.rhythm-label');
-        if (rhythmLabel) {
-            rhythmLabel.style.display = 'flex';
-        }
-        
-        const difficultyMeters = document.querySelector('.difficulty-meters');
-        if (difficultyMeters) {
-            difficultyMeters.style.display = 'flex';
-        }
-        
-        // Make sure difficulty meters are updated
-        updateDifficultyMeters();
-        
-        // Start the animation
-        isSwingMeterMoving = true;
-        swingPosition = 0;
-        swingDirection = 1;
-        
-        // Start the animation
-        requestAnimationFrame(animateSwingMeter);
-    }
-    
-    // Animate the swing meter
-    function animateSwingMeter() {
-        if (!isSwingMeterMoving) return;
-        
-        // Update position
-        swingPosition += swingSpeed * swingDirection;
-        
-        // If at or past the end, reverse direction
-        if (swingPosition >= 100) {
-            swingDirection = -1;
-        } else if (swingPosition <= 0) {
-            swingDirection = 1;
-        }
-        
-        // Make sure position stays in bounds
-        swingPosition = Math.max(0, Math.min(100, swingPosition));
-        
-        // Update indicator position
-        const indicatorBar = document.querySelector('.meter-indicator-bar');
-        if (indicatorBar) {
-            indicatorBar.style.left = swingPosition + '%';
-        }
-        
-        // Continue animation
-        requestAnimationFrame(animateSwingMeter);
-    }
-    
-    // Stop the swing meter
-    function stopSwingMeter() {
-        console.log('Stopping swing meter at position:', swingPosition);
-        
-        // Prevent multiple clicks
-        elements.swingMeterContainer.onclick = null;
-        
-        // Stop the animation immediately
-        isSwingMeterMoving = false;
-        
-        // Compensate for reaction time delay by moving back slightly
-        // This makes it feel more accurate to when the player intended to tap
-        const reactionTimeCompensation = 5; // Adjust this value as needed
-        const compensatedPosition = Math.max(0, Math.min(100, swingPosition - (swingSpeed * swingDirection * reactionTimeCompensation)));
-        
-        console.log('Compensated position:', compensatedPosition);
-        
-        // Fix the indicator position at the compensated position
-        const indicatorBar = document.querySelector('.meter-indicator-bar');
-        if (indicatorBar) {
-            indicatorBar.style.transition = 'none'; // Remove transition to prevent any movement
-            indicatorBar.style.left = compensatedPosition + '%';
-        }
-        
-        // Calculate the current zone boundaries based on width modifier
-        const goodZoneWidth = baseGoodZoneWidth * widthModifier;
-        const poorZoneWidth = (100 - goodZoneWidth) / 2;
-        
-        // The good zone is in the middle, so it starts after the poor-start zone
-        const goodZoneStart = poorZoneWidth;
-        const goodZoneEnd = poorZoneWidth + goodZoneWidth;
-        
-        console.log(`Zone boundaries - Poor start: 0-${goodZoneStart.toFixed(2)}%, Good: ${goodZoneStart.toFixed(2)}-${goodZoneEnd.toFixed(2)}%, Poor end: ${goodZoneEnd.toFixed(2)}-100%`);
-        
-        // Determine the result based on compensated position and current zone boundaries
-        let result = 'fail';
-        if (compensatedPosition >= goodZoneStart && compensatedPosition < goodZoneEnd) {
-            result = 'good';
-        }
-        
-        console.log('Swing meter result:', result);
-        
-        // Show the tap marker at the compensated position
-        const tapMarker = document.querySelector('.tap-marker');
-        tapMarker.style.left = compensatedPosition + '%';
-        tapMarker.style.display = 'block';
-        
-        // Set tap marker color based on result and decision type
-        if (result === 'fail') {
-            tapMarker.style.backgroundColor = '#e74c3c'; // Red for fail
-        } else {
-            // Set color based on decision type and result
-            const decisionType = currentSelectedChoice.type;
-            if (result === 'good') {
-                switch(decisionType) {
-                    case 'soul':
-                        tapMarker.style.backgroundColor = '#2A66C9'; // Blue for soul good
-                        break;
-                    case 'connections':
-                        tapMarker.style.backgroundColor = '#7D3CCF'; // Violet for connections good
-                        break;
-                    case 'success':
-                        tapMarker.style.backgroundColor = '#1F6F50'; // Green for success good
-                        break;
-                    default:
-                        tapMarker.style.backgroundColor = '#2ecc71'; // Default green
-                }
-            }
-        }
-        
-        // Update the indicator bar color based on result and decision type
-        if (indicatorBar) {
-            // Remove any existing result classes
-            indicatorBar.classList.remove('good', 'okay', 'fail');
-            
-            if (result === 'fail') {
-                indicatorBar.style.backgroundColor = '#e74c3c'; // Red for fail
-            } else {
-                // Set color based on decision type and result
-                const decisionType = currentSelectedChoice.type;
-                if (result === 'good') {
-                    switch(decisionType) {
-                        case 'soul':
-                            indicatorBar.style.backgroundColor = '#2A66C9'; // Blue for soul good
-                            break;
-                        case 'connections':
-                            indicatorBar.style.backgroundColor = '#7D3CCF'; // Violet for connections good
-                            break;
-                        case 'success':
-                            indicatorBar.style.backgroundColor = '#1F6F50'; // Green for success good
-                            break;
-                        default:
-                            indicatorBar.style.backgroundColor = '#2ecc71'; // Default green
-                    }
-                }
-            }
-        }
-        
-        // Show the result of the swing meter
-        showSwingMeterResult(result);
+        elements.swingMeterContainer.onclick = () => {
+            const result = SwingMeter.stop();
+            showSwingMeterResult(result);
+        };
     }
     
     // Show the result of the swing meter
@@ -985,9 +255,6 @@ document.addEventListener('DOMContentLoaded', function() {
             rhythmLabel.style.display = 'none';
         }
         
-        // Keep the choice description visible
-        // Do NOT hide the choice description
-        
         // Create result container
         const resultContainer = document.createElement('div');
         resultContainer.className = `meter-result-container ${currentSelectedChoice.type}`;
@@ -1029,16 +296,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
         
-        // Add click event to skip typing - make sure it's properly attached
+        // Add click event to skip typing
         resultTextElement.style.cursor = 'pointer';
         resultTextElement.addEventListener('click', function(e) {
-            // Only complete typing if we're still typing
             if (isTyping) {
                 completeTyping();
-                // Stop propagation only when typing is in progress
                 e.stopPropagation();
             }
-            // If typing is complete, allow the click to propagate to the container
         });
         
         // Create a variable to store the next button for later reference
@@ -1046,15 +310,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Also make the entire result container tappable to skip typing
         resultContainer.addEventListener('click', function(e) {
-            // Get the current next button reference if it exists
             const currentNextButton = resultContainer.querySelector('.next-stop-button');
             
-            // Allow clicks on the result text element or the container itself
-            // Only prevent clicks on other interactive elements like buttons
             if (e.target === resultContainer || 
                 e.target.classList.contains('meter-result-text') || 
                 (currentNextButton && !currentNextButton.contains(e.target))) {
-                // If still typing, complete the typing first (should not happen at this point)
+                
                 if (typeof isTyping !== 'undefined' && isTyping) {
                     if (typeof completeTyping === 'function') {
                         completeTyping();
@@ -1089,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // If the swing meter was successful, adjust difficulty based on the choice type
                     if (success) {
                         console.log(`Successful ${narrativeType} choice - adjusting difficulty`);
-                        adjustDifficulty(narrativeType);
+                        SwingMeter.adjustDifficulty(narrativeType);
                     } else {
                         console.log('Failed choice - not adjusting difficulty');
                     }
@@ -1097,14 +358,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Update the journey track immediately to reflect the decision
                     updateJourneyTrack();
                     
-                    // Save the choice description text before hiding the container
-                    const choiceDescriptionText = elements.choiceDescription ? elements.choiceDescription.textContent : '';
-                    
                     // Hide the swing meter container
                     elements.swingMeterContainer.style.display = 'none';
                     
                     // Reset the swing meter for next time
-                    resetSwingMeter();
+                    SwingMeter.reset();
                     
                     // Check if the game is over
                     if (gameResult && gameResult.gameOver) {
@@ -1113,7 +371,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             showGameOver(gameResult.reason === 'success');
                         } catch (gameOverError) {
                             console.error('Error showing game over screen:', gameOverError);
-                            // Fallback to a simple game over message
                             alert('Game over: ' + (gameResult.reason === 'success' ? 'You completed your journey!' : 'Your journey has ended prematurely.'));
                         }
                         return;
@@ -1138,11 +395,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 displayText += sanitizedMessage.charAt(index);
                 resultTextElement.innerHTML = displayText;
                 index++;
-                setTimeout(typeNextCharacter, 30); // 30ms per character
+                setTimeout(typeNextCharacter, 30);
             } else if (isTyping) {
-                // Typing is complete naturally
                 isTyping = false;
-                // Add a "Next Stop" button after the text is fully displayed
                 nextButton = addNextStopButton(result, resultContainer);
             }
         };
@@ -1244,7 +499,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             showGameOver(gameResult.reason === 'success');
                         } catch (gameOverError) {
                             console.error('Error showing game over screen:', gameOverError);
-                            // Fallback to a simple game over message
                             alert('Game over: ' + (gameResult.reason === 'success' ? 'You completed your journey!' : 'Your journey has ended prematurely.'));
                         }
                         return;
@@ -2460,42 +1714,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Adjust swing meter difficulty based on player's choice
-    function adjustDifficulty(decisionType) {
-        console.log(`Adjusting difficulty based on ${decisionType} decision`);
-        
-        switch(decisionType) {
-            case 'soul':
-                // Soul choices make the meter faster
-                speedModifier *= 1.2; // Increase speed by 20%
-                console.log(`Speed increased to ${speedModifier.toFixed(2)}x`);
-                break;
-            case 'connections':
-                // Connections choices make the good zone smaller
-                widthModifier *= 0.8; // Decrease good zone width by 20%
-                console.log(`Width decreased to ${widthModifier.toFixed(2)}x`);
-                break;
-            case 'success':
-                // Success choices make the meter slightly slower and good zone slightly wider
-                speedModifier *= 0.9; // Decrease speed by 10%
-                widthModifier *= 1.1; // Increase good zone width by 10%
-                console.log(`Speed decreased to ${speedModifier.toFixed(2)}x, width increased to ${widthModifier.toFixed(2)}x`);
-                break;
-            default:
-                // No change for unknown types
-                break;
-        }
-        
-        // Apply limits to prevent extremes
-        speedModifier = Math.max(0.5, Math.min(speedModifier, 2.5)); // Limit between 0.5x and 2.5x
-        widthModifier = Math.max(0.4, Math.min(widthModifier, 1.5)); // Limit between 0.4x and 1.5x
-        
-        // Calculate the actual swing speed
-        swingSpeed = 1 * speedModifier;
-        
-        // Update UI meters
-        updateDifficultyMeters();
-        
-        console.log(`Final modifiers - Speed: ${speedModifier.toFixed(2)}x, Width: ${widthModifier.toFixed(2)}x`);
+    function adjustDifficulty(narrativeType) {
+        SwingMeter.adjustDifficulty(narrativeType);
     }
 
     // Update the difficulty meters in the UI
@@ -2515,5 +1735,223 @@ document.addEventListener('DOMContentLoaded', function() {
             const precisionPercentage = (widthModifier - 0.4) / 1.1 * 100;
             precisionValue.style.width = `${precisionPercentage}%`;
         }
+    }
+
+    // Reset game state
+    function resetGameState() {
+        console.log('Resetting game state...');
+        
+        // Reset difficulty modifiers
+        resetDifficultyModifiers();
+        
+        // Reset game state
+        game.restart();
+        
+        // Reset achievement system for new playthrough
+        if (game.achievementSystem) {
+            console.log('Resetting achievement system for new playthrough...');
+            game.achievementSystem.resetPlaythrough();
+        }
+        
+        // Explicitly ensure we're at stop 1 and performance score is 0
+        if (game.logicalStop !== 0 || game.performanceScore !== 0) {
+            console.warn('Game did not reset properly, forcing reset...');
+            console.warn('Current logical stop:', game.logicalStop, 'Performance score:', game.performanceScore);
+            
+            game.currentStop = 1;
+            game.logicalStop = 0; // Changed from 1 to 0 to match game.js constructor
+            game.currentRound = 1;
+            game.performanceScore = 0;
+            game.decisionHistory = [];
+            game.decisionTypes = [];
+            game.resources = { soul: 0, connections: 0, money: 0 };
+            game.gameOver = false;
+            game.gameOverReason = null;
+        }
+        
+        console.log('Game reset to logical stop:', game.logicalStop, 'Performance score:', game.performanceScore);
+        
+        // Reset UI elements
+        const journeyTrack = document.getElementById('journeyTrack');
+        if (journeyTrack) {
+            journeyTrack.innerHTML = '';
+        }
+        
+        // Clear any result containers or swing meter elements
+        const resultContainers = document.querySelectorAll('.meter-result-container');
+        resultContainers.forEach(container => {
+            if (container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+        });
+        
+        // Reset the swing meter if it exists
+        const swingMeter = document.querySelector('.swing-meter');
+        if (swingMeter) {
+            swingMeter.classList.remove('fade-out');
+        }
+        
+        // Reset the indicator bar
+        const indicatorBar = document.querySelector('.meter-indicator-bar');
+        if (indicatorBar) {
+            indicatorBar.style.transition = 'left 0.1s linear';
+            indicatorBar.style.left = '0%';
+            indicatorBar.classList.remove('good', 'okay', 'fail');
+            indicatorBar.style.backgroundColor = 'white';
+        }
+        
+        // Reset the tap marker
+        const tapMarker = document.querySelector('.tap-marker');
+        if (tapMarker) {
+            tapMarker.style.display = 'none';
+            tapMarker.classList.remove('good', 'okay', 'fail');
+            tapMarker.style.backgroundColor = 'white';
+        }
+        
+        // Reset any fade-in classes
+        elements.restartButton.classList.remove('fade-in');
+        elements.nextRoundButton.classList.remove('fade-in');
+        
+        // Hide all screens
+        elements.gameOver.style.display = 'none';
+        elements.roundComplete.style.display = 'none';
+        
+        // Hide all interaction elements
+        hideAllInteractions();
+        
+        // Reset any global variables
+        isTyping = false;
+        skipTyping = false;
+        isSwingMeterMoving = false;
+        swingPosition = 0;
+        swingDirection = 1;
+        currentSelectedChoice = null;
+        
+        // Force a complete reload of the game data
+        if (game.loadGameData && typeof game.loadGameData === 'function') {
+            console.log('Reloading game data...');
+            game.loadGameData();
+        }
+        
+        // Wait a moment to ensure data is loaded
+        setTimeout(() => {
+            // Verify performance score is still 0
+            console.log('Verifying reset - Performance score:', game.performanceScore);
+            
+            // Get the first narrative and display it
+            let firstNarrative = null;
+            
+            // Try multiple methods to get the first narrative
+            if (game.narratives && game.narratives.length > 0) {
+                const firstActualStop = game.journeyManager.getActualStop(1);
+                firstNarrative = game.narratives.find(n => n.stop === firstActualStop);
+                console.log('Found first narrative directly:', firstNarrative?.title);
+            }
+            
+            if (!firstNarrative && typeof game.getCurrentNarrative === 'function') {
+                firstNarrative = game.getCurrentNarrative();
+                console.log('Found first narrative via getCurrentNarrative:', firstNarrative?.title);
+            }
+            
+            if (firstNarrative) {
+                console.log('Displaying first narrative after reset:', firstNarrative.title);
+                displayNarrative(firstNarrative);
+            } else {
+                console.error('Failed to get initial narrative after reset');
+                // Last resort: Try to restart the game completely
+                console.log('Attempting to restart game completely...');
+                initGame();
+            }
+            
+            // Update the UI to reflect the reset state
+            updateUI();
+        }, 100);
+    }
+    
+    elements.restartButton.addEventListener('click', function() {
+        console.log('Restart button clicked, current stop before reset:', game.currentStop);
+        
+        // Reset the game state
+        resetGameState();
+        
+        // Double-check that we're at stop 1 after a short delay to ensure reset has completed
+        setTimeout(() => {
+            console.log('Current stop after reset:', game.currentStop);
+            if (game.currentStop !== 1) {
+                console.error('Failed to reset to stop 1, forcing complete restart...');
+                
+                // Force a complete game restart
+                game.currentStop = 1;
+                game.logicalStop = 0; // Changed from 1 to 0
+                game.currentRound = 1;
+                game.performanceScore = 0;
+                game.decisionHistory = [];
+                game.decisionTypes = [];
+                game.resources = { soul: 0, connections: 0, money: 0 };
+                game.gameOver = false;
+                game.gameOverReason = null;
+                
+                // Reload game data if possible
+                if (game.loadGameData && typeof game.loadGameData === 'function') {
+                    game.loadGameData();
+                }
+                
+                // Get the first narrative directly
+                if (game.narratives && game.narratives.length > 0) {
+                    const firstNarrative = game.narratives.find(n => n.stop === 1);
+                    if (firstNarrative) {
+                        console.log('Displaying first narrative directly:', firstNarrative.title);
+                        displayNarrative(firstNarrative);
+                        updateUI();
+                    } else {
+                        console.error('Could not find first narrative, restarting game...');
+                        initGame();
+                    }
+                } else {
+                    console.error('No narratives found, restarting game...');
+                    initGame();
+                }
+            }
+        }, 200);
+    });
+    
+    // Wait for game data to load
+    waitForGameData(game).then(() => {
+        // Ensure UI elements are visible
+        const header = document.querySelector('header');
+        if (header) {
+            header.style.display = 'flex';
+        }
+        
+        const journeyTrackContainer = document.querySelector('.journey-track');
+        if (journeyTrackContainer) {
+            journeyTrackContainer.style.display = 'flex';
+        }
+        
+        // Start the game
+        initGame();
+    }).catch(error => {
+        console.error('Failed to load game data:', error);
+    });
+    
+    // Function to wait for game data to load
+    async function waitForGameData(game) {
+        return new Promise((resolve, reject) => {
+            console.log('Waiting for game data to load...');
+            const maxAttempts = 50; // 5 seconds with 100ms interval
+            let attempts = 0;
+            
+            const checkInterval = setInterval(() => {
+                attempts++;
+                if (game.narratives && game.narratives.length > 0) {
+                    clearInterval(checkInterval);
+                    console.log('Game data loaded after', attempts, 'attempts');
+                    resolve();
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(checkInterval);
+                    reject(new Error('Timeout waiting for game data'));
+                }
+            }, 100);
+        });
     }
 });
