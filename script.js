@@ -2,18 +2,18 @@
 import SwingMeter from './swing-meter.js';
 import Typewriter from './typewriter.js';
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM fully loaded. Initializing game...');
-    
+
     // Create game instance
     const game = new DroneManGame();
     window.gameInstance = game; // Make it globally accessible for swing meter
-    
+
     // Current state variables
     let currentSelectedChoice = null;
     let currentCard = null;
     let currentNextButton = null;
-    
+
     // Menu functionality
     const menuButton = document.getElementById('menuButton');
     const menuPanel = document.getElementById('menuPanel');
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show help information
         alert('How to Play:\n\n1. Read each situation carefully\n2. Choose your response\n3. Time your action using the swing meter\n4. Watch your journey progress\n\nTip: Click/tap text to skip animations');
     });
-    
+
     // UI Elements
     const elements = {
         narrativeTitle: document.getElementById('narrativeTitle'),
@@ -129,34 +129,34 @@ document.addEventListener('DOMContentLoaded', function() {
         newAlbumsGrid: document.getElementById('newAlbumsGrid'),
         viewAlbumsButton: document.getElementById('viewAlbumsButton')
     };
-    
+
     // Typewriter effect instances
     let narrativeTypewriter;
     let resultTypewriter;
     let gameOverTypewriter;
     let roundSummaryTypewriter;
-    
+
     // Add event listener for the narrative card to skip typewriter effect
     const narrativeCard = document.querySelector('.narrative-card');
-    narrativeCard.addEventListener('click', function() {
+    narrativeCard.addEventListener('click', function () {
         if (narrativeTypewriter && narrativeTypewriter.isTyping) {
             narrativeTypewriter.skip();
         }
     });
-    
+
     // Add event listener for next round button
-    elements.nextRoundButton.addEventListener('click', function() {
+    elements.nextRoundButton.addEventListener('click', function () {
         console.log('Next round button clicked');
         hideRoundComplete();
         startNextRound();
     });
-    
+
     // Make the entire round complete screen tappable
-    elements.roundComplete.addEventListener('click', function(e) {
+    elements.roundComplete.addEventListener('click', function (e) {
         // Prevent clicks on child elements from triggering multiple times
         if (e.target === elements.roundComplete || !elements.nextRoundButton.contains(e.target)) {
             console.log('Round complete screen tapped');
-            
+
             if (roundSummaryTypewriter && roundSummaryTypewriter.isTyping) {
                 roundSummaryTypewriter.skip();
             } else {
@@ -165,48 +165,48 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    
+
     // Add event listener for the view albums button
     if (elements.viewAlbumsButton) {
-        elements.viewAlbumsButton.addEventListener('click', function() {
+        elements.viewAlbumsButton.addEventListener('click', function () {
             console.log('View albums button clicked');
             showRecordCollection();
         });
     }
-    
+
     // Add event listener for restart button
-    elements.restartButton.addEventListener('click', function() {
+    elements.restartButton.addEventListener('click', function () {
         console.log('Restart button clicked, current stop before reset:', game.currentStop);
         resetGameState();
     });
-    
+
     // Function to display a narrative with typewriter effect
     function displayNarrative(narrative) {
         if (!narrative) {
             console.error('No narrative provided to display');
             return;
         }
-        
+
         console.log('Displaying narrative:', narrative.title);
-        
+
         // Update the narrative title
         if (elements.narrativeTitle) {
             elements.narrativeTitle.textContent = narrative.title || '';
         }
-        
+
         // Hide all interaction elements
         hideAllInteractions();
-        
+
         // Clear existing content
         if (elements.narrativeText) {
             elements.narrativeText.textContent = '';
         }
-        
+
         // Use typewriter effect to display the narrative text
         if (narrativeTypewriter) {
             narrativeTypewriter.stop();
         }
-        
+
         narrativeTypewriter = new Typewriter(elements.narrativeText, {
             speed: 30,
             delay: 500,
@@ -217,119 +217,119 @@ document.addEventListener('DOMContentLoaded', function() {
                 displayChoices(narrative.choices);
             }
         });
-        
+
         narrativeTypewriter.type(narrative.narrative);
     }
-    
+
     // Function to hide all interactive elements
     function hideAllInteractions() {
         elements.choiceContainer.style.display = 'none';
         elements.swingMeterContainer.style.display = 'none';
     }
-    
+
     // Function to display choices
     function displayChoices(choices) {
         if (!choices || !elements.choiceContainer) {
             console.error('No choices or container found');
             return;
         }
-        
+
         // Clear existing choices
         elements.choiceContainer.innerHTML = '';
-        
+
         // Create a card for each choice
         choices.forEach((choice, index) => {
             const card = document.createElement('div');
             card.className = `card ${choice.decisionType || 'neutral'}`;
-            
+
             const title = document.createElement('div');
             title.className = 'card-title';
             title.textContent = choice.title || `Option ${index + 1}`;
-            
+
             const content = document.createElement('div');
             content.className = 'card-content';
             content.textContent = choice.text;
-            
+
             // Add choice data to the card
             choice.index = index;
             choice.type = choice.decisionType;
-            
+
             // Add event listener for clicking the card
             card.addEventListener('click', () => handleCardSelection(choice));
-            
+
             // Add ripple effect
-            card.addEventListener('touchstart', function(e) {
+            card.addEventListener('touchstart', function (e) {
                 const rect = card.getBoundingClientRect();
                 const x = e.touches[0].clientX - rect.left;
                 const y = e.touches[0].clientY - rect.top;
-                
+
                 const ripple = document.createElement('div');
                 ripple.className = 'ripple';
                 ripple.style.left = x + 'px';
                 ripple.style.top = y + 'px';
-                
+
                 card.appendChild(ripple);
-                
+
                 setTimeout(() => ripple.remove(), 1000);
             });
-            
+
             card.appendChild(title);
             card.appendChild(content);
             elements.choiceContainer.appendChild(card);
         });
-        
+
         // Show the choices container
         elements.choiceContainer.style.display = 'flex';
     }
-    
+
     // Handle card selection
     function handleCardSelection(choice) {
         if (!choice) {
             console.error('No choice provided to handle selection');
             return;
         }
-        
+
         console.log('Choice selected:', choice);
-        
+
         // Hide the choice container
         elements.choiceContainer.style.display = 'none';
-        
+
         // Show the swing meter container
         elements.swingMeterContainer.style.display = 'block';
-        
+
         // Update the choice description
         if (elements.choiceDescription) {
             elements.choiceDescription.textContent = choice.meterContext || choice.text;
         }
-        
+
         // Set the border color based on decision type
         if (elements.swingMeterContainer) {
             const type = choice.decisionType || choice.type || 'neutral';
-            
+
             // Reset classes
             elements.swingMeterContainer.classList.remove('soul', 'connections', 'success', 'fail');
-            
+
             // Add appropriate class
             elements.swingMeterContainer.classList.add(type);
         }
-        
+
         // Store the selected choice
         currentSelectedChoice = choice;
         currentCard = choice;
-        
+
         // Refresh the swing meter
         SwingMeter.reset();
-        
+
         // Update meter zone colors
         updateMeterZoneColors(choice.decisionType || choice.type || 'neutral');
-        
+
         // Make sure the swing meter container is clickable
         elements.swingMeterContainer.onclick = stopSwingMeter;
-        
+
         // Start the swing meter
         startSwingMeter();
     }
-    
+
     // Update meter zone colors based on decision type
     function updateMeterZoneColors(decisionType) {
         // Get the good zone
@@ -338,9 +338,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Good meter zone not found');
             return;
         }
-        
+
         // Set colors based on decision type
-        switch(decisionType) {
+        switch (decisionType) {
             case 'soul':
                 goodZone.style.backgroundColor = '#2A66C9'; // Blue for soul
                 break;
@@ -354,49 +354,49 @@ document.addEventListener('DOMContentLoaded', function() {
                 goodZone.style.backgroundColor = '#2ecc71'; // Default green
         }
     }
-    
+
     // Start the swing meter
     function startSwingMeter() {
         console.log('Starting swing meter');
-        
+
         // Make sure the meter is reset and ready
         SwingMeter.reset();
-        
+
         // Start the animation
         SwingMeter.start();
     }
-    
+
     // Stop the swing meter
     function stopSwingMeter() {
         console.log('Stopping swing meter');
-        
+
         // Remove click handler to prevent multiple clicks
         elements.swingMeterContainer.onclick = null;
-        
+
         // Stop the animation and get the result
         const result = SwingMeter.stop();
-        
+
         // Update the indicator bar color based on result
         const indicatorBar = document.querySelector('.meter-indicator-bar');
         if (indicatorBar) {
             indicatorBar.style.backgroundColor = result === 'good' ? '#2ecc71' : '#e74c3c';
         }
-        
+
         // Show the result
         showSwingMeterResult(result);
     }
-    
+
     // Show the result of the swing meter
     function showSwingMeterResult(result) {
         // Hide the tap button and instruction
         if (elements.tapButton) elements.tapButton.style.display = 'none';
         if (elements.tapInstruction) elements.tapInstruction.style.display = 'none';
-        
+
         // Hide the difficulty meters and rhythm label
         if (elements.difficultyMeters) elements.difficultyMeters.style.display = 'none';
         if (elements.rhythmLabel) elements.rhythmLabel.style.display = 'none';
         if (elements.swingMeter) elements.swingMeter.style.display = 'none';
-        
+
         // Get the result text
         let resultText = '';
         if (currentSelectedChoice) {
@@ -408,28 +408,28 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             resultText = result === 'good' ? "You executed this perfectly!" : "You struggled with this task.";
         }
-        
+
         console.log('Result text:', resultText);
-        
+
         // Create result container
         const resultContainer = document.createElement('div');
         resultContainer.className = `meter-result-container ${currentSelectedChoice.type || 'neutral'}`;
-        
+
         if (result === 'fail') {
             resultContainer.classList.add('fail');
         }
-        
+
         // Create result text element
         const resultTextElement = document.createElement('div');
         resultTextElement.className = 'meter-result-text';
         resultContainer.appendChild(resultTextElement);
-        
+
         // Add the result container to the swing meter container
         elements.swingMeterContainer.appendChild(resultContainer);
-        
+
         // Show the result container
         resultContainer.classList.add('visible');
-        
+
         // Use typewriter effect for the result text
         resultTypewriter = new Typewriter(resultTextElement, {
             text: resultText,
@@ -443,18 +443,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentNextButton = nextButton;
             }
         });
-        
+
         // Start typing the result
         resultTypewriter.type();
-        
+
         // Add click event to skip typing
-        resultTextElement.addEventListener('click', function() {
+        resultTextElement.addEventListener('click', function () {
             if (resultTypewriter && resultTypewriter.isTyping) {
                 resultTypewriter.skip();
             }
         });
     }
-    
+
     // Add the Next Stop button
     function addNextStopButton(result, resultContainer) {
         // Create the button (hidden but keep for compatibility)
@@ -463,67 +463,67 @@ document.addEventListener('DOMContentLoaded', function() {
         nextButton.textContent = 'Next Stop';
         nextButton.style.display = 'none';
         resultContainer.appendChild(nextButton);
-        
+
         // Add instruction text
         const nextInstruction = document.createElement('div');
         nextInstruction.className = 'next-instruction';
         nextInstruction.textContent = 'Tap to continue';
         resultContainer.appendChild(nextInstruction);
-        
+
         // Make the entire result container clickable
         resultContainer.style.cursor = 'pointer';
-        
+
         // Add click handler to container
-        resultContainer.addEventListener('click', function(e) {
+        resultContainer.addEventListener('click', function (e) {
             // Skip typing if still in progress
             if (resultTypewriter && resultTypewriter.isTyping) {
                 resultTypewriter.skip();
                 return;
             }
-            
+
             // Process the result
             processSwingMeterResult(result);
         });
-        
+
         return nextButton;
     }
-    
+
     // Process the swing meter result
     function processSwingMeterResult(result) {
         console.log('Processing swing meter result:', result);
-        
+
         try {
             // Determine if the swing meter was successful
             const success = result === 'good';
-            
+
             // Get the narrative type from the selected choice
             const narrativeType = currentSelectedChoice.type || 'neutral';
-            
+
             // Track the decision in the achievement system
             if (game.achievementSystem) {
                 game.achievementSystem.trackDecision(game.logicalStop, narrativeType, success);
             }
-            
+
             // Call the game's handleSwingMeter method
             const gameResult = game.handleSwingMeter(success, narrativeType);
-            
+
             // If successful, adjust difficulty
             if (success) {
                 SwingMeter.adjustDifficulty(narrativeType);
             }
-            
+
             // Update the journey track
             updateJourneyTrack();
-            
+
             // Hide the swing meter container
             elements.swingMeterContainer.style.display = 'none';
-            
+
             // Check if game is over
             if (gameResult && gameResult.gameOver) {
                 showGameOver(gameResult.reason === 'success');
                 return;
             }
-            
+
             // Get and display next narrative
             const nextNarrative = game.getCurrentNarrative();
             if (nextNarrative) {
@@ -535,46 +535,46 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error processing swing meter result:', error);
         }
     }
-    
+
     // Update the journey track
     function updateJourneyTrack(isGameOver = false) {
         console.log(`Updating ${isGameOver ? 'game over' : 'normal'} journey track`);
-        
+
         const trackElement = isGameOver ? elements.gameOverJourneyTrack : elements.journeyTrack;
         if (!trackElement) {
             console.error('Journey track element not found');
             return;
         }
-        
+
         // Clear the track
         trackElement.innerHTML = '';
-        
+
         // Get the total number of stops
         const totalStops = game.journeyManager.getTotalStops();
         if (!totalStops || totalStops <= 0) {
             console.warn('Invalid total stops:', totalStops);
             return;
         }
-        
+
         // Create track line elements between stations
         for (let i = 1; i <= totalStops; i++) {
             // Add station
             const station = document.createElement('div');
             station.className = 'station';
-            
+
             // Add track line before station (except for first station)
             if (i > 1 && isGameOver) {
                 const trackLine = document.createElement('div');
                 trackLine.className = 'track-line';
                 trackElement.appendChild(trackLine);
             }
-            
+
             // Add appropriate classes based on game state
             if (i === game.logicalStop) {
                 station.classList.add('current');
             } else if (i < game.logicalStop) {
                 station.classList.add('completed');
-                
+
                 // Find the decision for this station
                 const decision = game.decisionHistory.find(d => Number(d.stop) === i);
                 if (decision) {
@@ -585,46 +585,46 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             }
-            
+
             trackElement.appendChild(station);
         }
     }
-    
+
     // Show game over screen
     function showGameOver(success) {
         console.log('Showing game over screen, success:', success);
-        
+
         // Force success to true if gameOverReason is "success"
         if (game.gameOverReason === "success") {
             success = true;
         }
-        
+
         // Complete the playthrough in the achievement system
         let newlyUnlockedAchievements = [];
         if (game.achievementSystem) {
             newlyUnlockedAchievements = game.achievementSystem.completePlaythrough();
         }
-        
+
         // Display the game over screen
         elements.gameOver.style.display = 'flex';
-        
+
         // Set the title based on success
         if (elements.gameOverTitle) {
             elements.gameOverTitle.textContent = success ? "Journey's End" : "Journey Derailed";
         }
-        
+
         // Set the ending type
         if (elements.endingType) {
             // Determine the dominant decision type
             let endingTypeClass = "mixed";
-            
+
             if (success) {
                 const counts = {
                     soul: game.decisionTypes.filter(type => type === "soul").length,
                     connections: game.decisionTypes.filter(type => type === "connections").length,
                     success: game.decisionTypes.filter(type => type === "success").length
                 };
-                
+
                 if (counts.soul > counts.connections && counts.soul > counts.success) {
                     endingTypeClass = "soul";
                 } else if (counts.connections > counts.soul && counts.connections > counts.success) {
@@ -639,10 +639,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     endingTypeClass = lastDecision.narrativeType;
                 }
             }
-            
+
             // Set the ending type class
             elements.endingType.className = 'ending-type ' + endingTypeClass;
-            
+
             // Get the ending type text from the game
             if (typeof game.getEndingType === 'function') {
                 const endingTypeText = game.getEndingType(success);
@@ -666,32 +666,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
-        
+
         // Update the journey track
         updateJourneyTrack(true);
-        
+
         // Get the game over message
         let gameOverMessage;
         try {
             gameOverMessage = game.getGameOverMessage(success);
         } catch (error) {
             console.error('Error getting game over message:', error);
-            gameOverMessage = success ? 
+            gameOverMessage = success ?
                 "Your journey has changed you in subtle but significant ways. The corporate drone is gone, replaced by someone more aware, more alive." :
                 "Your journey has come to an abrupt end. A moment's hesitation, a wrong choice, and everything changed.";
         }
-        
+
         // Clear existing content
         elements.gameOverMessage.textContent = '';
-        
+
         // Hide the restart button initially
         elements.restartButton.style.display = 'none';
-        
+
         // Hide the view albums button initially
         if (elements.viewAlbumsButton) {
             elements.viewAlbumsButton.style.display = 'none';
         }
-        
+
         // Use typewriter effect for the game over message
         gameOverTypewriter = new Typewriter(elements.gameOverMessage, {
             text: gameOverMessage,
@@ -703,24 +703,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Show the restart button after completion
                 elements.restartButton.style.display = 'block';
                 elements.restartButton.classList.add('fade-in');
-                
+
                 // Show newly unlocked achievements
                 displayNewAchievements(newlyUnlockedAchievements);
             }
         });
-        
+
         // Start typing the game over message
         gameOverTypewriter.type();
-        
+
         // Add click event to skip typing
-        elements.gameOverMessage.addEventListener('click', function() {
+        elements.gameOverMessage.addEventListener('click', function () {
             if (gameOverTypewriter && gameOverTypewriter.isTyping) {
                 gameOverTypewriter.skip();
             }
         });
-        
+
         // Make entire game over screen clickable
-        elements.gameOver.addEventListener('click', function(e) {
+        elements.gameOver.addEventListener('click', function (e) {
             if (e.target === elements.gameOver) {
                 if (gameOverTypewriter && gameOverTypewriter.isTyping) {
                     gameOverTypewriter.skip();
@@ -730,149 +730,149 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     // Display newly unlocked achievements
     function displayNewAchievements(achievementIds) {
         if (!game.achievementSystem || !achievementIds || achievementIds.length === 0) {
             return;
         }
-        
+
         // Get the achievement elements
         const newAlbumsSection = elements.newAlbumsSection;
         const newAlbumsGrid = elements.newAlbumsGrid;
         const viewAlbumsButton = elements.viewAlbumsButton;
-        
+
         if (!newAlbumsSection || !newAlbumsGrid || !viewAlbumsButton) {
             console.error('Achievement display elements not found');
             return;
         }
-        
+
         // Clear any existing albums
         newAlbumsGrid.innerHTML = '';
-        
+
         // Get the newly unlocked achievements
         const newlyUnlocked = game.achievementSystem.getNewlyUnlocked();
-        
+
         // Create album elements for each achievement
         newlyUnlocked.forEach(achievement => {
             const album = document.createElement('div');
             album.className = 'album newly-unlocked';
-            
+
             const albumCover = document.createElement('div');
             albumCover.className = `album-cover ${achievement.albumArt}`;
             albumCover.style.backgroundColor = achievement.albumColor;
-            
+
             // Add shine effect
             const albumShine = document.createElement('div');
             albumShine.className = 'album-shine';
             albumCover.appendChild(albumShine);
-            
+
             // Add unlocked badge
             const unlockedBadge = document.createElement('div');
             unlockedBadge.className = 'unlocked-badge';
             unlockedBadge.textContent = 'UNLOCKED';
             album.appendChild(unlockedBadge);
-            
+
             // Add tooltip
             const tooltip = document.createElement('div');
             tooltip.className = 'album-tooltip';
             tooltip.textContent = `${achievement.title}: ${achievement.description}`;
-            
+
             album.appendChild(albumCover);
             album.appendChild(tooltip);
             newAlbumsGrid.appendChild(album);
         });
-        
+
         // Show the achievements section and view button
         newAlbumsSection.style.display = 'block';
         viewAlbumsButton.style.display = 'block';
     }
-    
+
     // Show the record collection screen
     function showRecordCollection() {
         console.log('Showing record collection');
-        
+
         if (!game.achievementSystem) {
             console.error('Achievement system not initialized');
             return;
         }
-        
+
         const recordCollection = document.getElementById('recordCollection');
         const albumCollectionGrid = document.getElementById('albumCollectionGrid');
-        
+
         if (!recordCollection || !albumCollectionGrid) {
             console.error('Record collection elements not found');
             return;
         }
-        
+
         // Display the record collection
         recordCollection.style.display = 'flex';
-        
+
         // Add animation class
         setTimeout(() => {
             recordCollection.classList.add('open');
         }, 10);
-        
+
         // Get all achievements
         const allAchievements = game.achievementSystem.getAllAchievements();
-        
+
         // Display all achievements
         displayAchievementsInCollection(allAchievements, 'all');
-        
+
         // Set up tab functionality
         const tabs = document.querySelectorAll('.collection-tab');
         tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
+            tab.addEventListener('click', function () {
                 // Remove active class from all tabs
                 tabs.forEach(t => t.classList.remove('active'));
-                
+
                 // Add active class to clicked tab
                 this.classList.add('active');
-                
+
                 // Get the category
                 const category = this.getAttribute('data-category');
-                
+
                 // Filter and display achievements
                 let filteredAchievements = allAchievements;
                 if (category !== 'all') {
                     filteredAchievements = allAchievements.filter(a => a.category === category);
                 }
-                
+
                 displayAchievementsInCollection(filteredAchievements, category);
             });
         });
-        
+
         // Set up close button
         const closeButton = document.getElementById('closeCollection');
         if (closeButton) {
             closeButton.onclick = hideRecordCollection;
         }
-        
+
         // Set up return to game button
         const returnButton = document.getElementById('returnToGameButton');
         if (returnButton) {
             returnButton.onclick = hideRecordCollection;
         }
-        }
+    }
 
-        // Hide the record collection screen
-        function hideRecordCollection() {
+    // Hide the record collection screen
+    function hideRecordCollection() {
         console.log('Hiding record collection');
 
         const recordCollection = document.getElementById('recordCollection');
         if (recordCollection) {
             // Remove the open class to trigger the closing animation
             recordCollection.classList.remove('open');
-            
+
             // Hide the collection after animation completes
             setTimeout(() => {
                 recordCollection.style.display = 'none';
             }, 300);
         }
-        }
+    }
 
-        // Display achievements in the collection grid
-        function displayAchievementsInCollection(achievements, category) {
+    // Display achievements in the collection grid
+    function displayAchievementsInCollection(achievements, category) {
         console.log('Displaying achievements in collection for category:', category);
 
         const albumCollectionGrid = document.getElementById('albumCollectionGrid');
@@ -901,21 +901,21 @@ document.addEventListener('DOMContentLoaded', function() {
         filteredAchievements.forEach(achievement => {
             const album = document.createElement('div');
             album.className = 'collection-album';
-            
+
             // Add locked class if not unlocked
             if (!achievement.unlocked) {
                 album.classList.add('locked-album');
             }
-            
+
             const albumCover = document.createElement('div');
             albumCover.className = `collection-album-cover ${achievement.albumArt || 'circle'}`;
             albumCover.style.backgroundColor = achievement.albumColor || '#333';
-            
+
             // Add shine effect
             const shine = document.createElement('div');
             shine.className = 'album-shine';
             albumCover.appendChild(shine);
-            
+
             // Add unlocked badge if unlocked
             if (achievement.unlocked) {
                 const badge = document.createElement('div');
@@ -923,32 +923,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 badge.textContent = 'UNLOCKED';
                 album.appendChild(badge);
             }
-            
+
             album.appendChild(albumCover);
-            
+
             // Album info
             const albumInfo = document.createElement('div');
             albumInfo.className = 'collection-album-info';
-            
+
             const albumTitle = document.createElement('div');
             albumTitle.className = 'collection-album-title';
             albumTitle.textContent = achievement.unlocked ? achievement.title : '???';
             albumInfo.appendChild(albumTitle);
-            
+
             const albumDescription = document.createElement('div');
             albumDescription.className = 'collection-album-description';
-            albumDescription.textContent = achievement.unlocked ? 
-                achievement.description : 
+            albumDescription.textContent = achievement.unlocked ?
+                achievement.description :
                 'This album is locked. Keep playing to discover it.';
             albumInfo.appendChild(albumDescription);
-            
+
             album.appendChild(albumInfo);
             albumCollectionGrid.appendChild(album);
         });
-        }
+    }
 
-        // Show round complete screen
-        function showRoundComplete() {
+    // Show round complete screen
+    function showRoundComplete() {
         console.log('Showing round complete screen');
 
         elements.roundComplete.style.display = 'flex';
@@ -988,24 +988,24 @@ document.addEventListener('DOMContentLoaded', function() {
         roundSummaryTypewriter.type();
 
         // Add click event to skip typing
-        elements.roundSummaryText.addEventListener('click', function() {
+        elements.roundSummaryText.addEventListener('click', function () {
             if (roundSummaryTypewriter && roundSummaryTypewriter.isTyping) {
                 roundSummaryTypewriter.skip();
             }
         });
-        }
+    }
 
-        // Hide round complete screen
-        function hideRoundComplete() {
+    // Hide round complete screen
+    function hideRoundComplete() {
         console.log('Hiding round complete screen');
 
         elements.roundComplete.style.display = 'none';
         elements.nextRoundButton.classList.remove('fade-in');
         elements.nextInstruction.style.display = 'none';
-        }
+    }
 
-        // Start the next round
-        function startNextRound() {
+    // Start the next round
+    function startNextRound() {
         console.log('Starting next round');
 
         // Start the next round in the game
@@ -1037,10 +1037,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Update UI
         updateJourneyTrack();
-        }
+    }
 
-        // Reset game state
-        function resetGameState() {
+    // Reset game state
+    function resetGameState() {
         console.log('Resetting game state');
 
         // Hide all screens
@@ -1078,10 +1078,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Try to reload the game
             initGame();
         }
-        }
+    }
 
-        // Function to initialize the game
-        function initGame() {
+    // Function to initialize the game
+    function initGame() {
         console.log('Initializing game');
 
         // Reset game state if needed
@@ -1097,30 +1097,45 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (firstNarrative) {
                     displayNarrative(firstNarrative);
                     updateJourneyTrack();
-                }
-                // In startGame method, add this as a fallback
-                if (!firstNarrative) {
-                    console.log('Trying direct approach to load first narrative');
-                    this.currentNarrative = this.narratives[0];
-                    return { success: true, narrative: this.currentNarrative };
+                } else {
+                    // Use a proper fallback that waits for narratives to be available
+                    console.log('Trying fallback approach for first narrative');
+                    if (game.narratives && game.narratives.length > 0) {
+                        const actualStop = game.journeyManager.getActualStop(1);
+                        const fallbackNarrative = game.narratives.find(n => n.stop === actualStop);
+                        if (fallbackNarrative) {
+                            game.currentNarrative = fallbackNarrative;
+                            displayNarrative(fallbackNarrative);
+                            updateJourneyTrack();
+                        } else {
+                            console.error('No suitable fallback narrative found');
+                        }
+                    } else {
+                        console.error('Narratives are not loaded');
+                    }
                 }
             }).catch(error => {
                 console.error('Error initializing game:', error);
             });
         } else {
-            // Fallback to simple initialization
-            const firstNarrative = game.getCurrentNarrative();
-            if (firstNarrative) {
-                displayNarrative(firstNarrative);
-                updateJourneyTrack();
+            // Fallback to simple initialization - this needs to check if narratives exist
+            if (game.narratives && game.narratives.length > 0) {
+                const firstNarrative = game.getCurrentNarrative() || game.narratives[0];
+                if (firstNarrative) {
+                    game.currentNarrative = firstNarrative;
+                    displayNarrative(firstNarrative);
+                    updateJourneyTrack();
+                } else {
+                    console.error('No initial narrative found');
+                }
             } else {
-                console.error('No initial narrative found');
+                console.error('Narratives not loaded');
             }
         }
-        }
+    }
 
-        // Wait for game data to load before starting
-        waitForGameData(game).then(() => {
+    // Wait for game data to load before starting
+    waitForGameData(game).then(() => {
         console.log('Game data loaded, initializing game');
 
         // Ensure UI elements are visible
@@ -1136,21 +1151,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Initialize the game
         initGame();
-        }).catch(error => {
+    }).catch(error => {
         console.error('Error loading game data:', error);
-        });
+    });
 
-        // Function to wait for game data to load
-        async function waitForGameData(game) {
+    // Function to wait for game data to load
+    async function waitForGameData(game) {
         return new Promise((resolve, reject) => {
             console.log('Waiting for game data to load');
-            
+
             const maxAttempts = 50; // 5 seconds with 100ms interval
             let attempts = 0;
-            
+
             const checkInterval = setInterval(() => {
                 attempts++;
-                
+
                 // Check if narratives are loaded
                 if (game.narratives && game.narratives.length > 0) {
                     clearInterval(checkInterval);
