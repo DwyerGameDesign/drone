@@ -142,7 +142,7 @@ class DroneManGame {
         // Reset game state
         this.currentRound = 1;
         this.currentStop = 1;
-        this.logicalStop = 0;
+        this.logicalStop = 1;
         this.performanceScore = 100;
         this.resources = { soul: 0, connections: 0, money: 0 };
         this.decisionHistory = [];
