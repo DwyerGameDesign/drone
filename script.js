@@ -154,79 +154,33 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Handle card selection
     function handleCardSelection(card) {
+        if (!card) {
+            console.error('No card provided to handle selection');
+            return;
+        }
+        
         console.log('Card selected:', card);
         
         // Hide the choice container
-        elements.choiceContainer.style.display = 'none';
-        
-        // Get choice data from the card
-        const cardContent = card.querySelector('.card-content');
-        const choiceText = cardContent ? cardContent.textContent : 'Unknown choice';
-        const decisionType = card.dataset.type || 'standard';
-        const choiceIndex = parseInt(card.dataset.index || '0');
-        
-        // Get the current narrative and its choices
-        const narrative = game.getCurrentNarrative();
-        const choice = narrative && narrative.choices ? narrative.choices[choiceIndex] : null;
-        
-        console.log('Selected choice:', choice);
-        
-        // Update the choice description with meterContext if available, otherwise use choice text
-        if (elements.choiceDescription) {
-            if (choice && choice.meterContext) {
-                elements.choiceDescription.textContent = choice.meterContext;
-            } else {
-                elements.choiceDescription.textContent = choiceText;
-            }
+        if (elements.choiceContainer) {
+            elements.choiceContainer.style.display = 'none';
         }
         
-        // Set the border color based on decision type
+        // Show the swing meter
         if (elements.swingMeterContainer) {
-            switch(decisionType) {
-                case 'soul':
-                    elements.swingMeterContainer.style.borderTopColor = '#2A66C9';
-                    break;
-                case 'connections':
-                    elements.swingMeterContainer.style.borderTopColor = '#7D3CCF';
-                    break;
-                case 'success':
-                    elements.swingMeterContainer.style.borderTopColor = '#1F6F50';
-                    break;
-                default:
-                    elements.swingMeterContainer.style.borderTopColor = '#999';
-            }
+            elements.swingMeterContainer.style.display = 'block';
         }
         
-        // Store the selected choice with all necessary properties
-        currentSelectedChoice = {
-            text: choiceText,
-            type: decisionType,
-            index: choiceIndex,
-            resultGood: choice && choice.resultGood ? choice.resultGood : "You executed this perfectly!",
-            resultOkay: choice && choice.resultOkay ? choice.resultOkay : "You managed reasonably well.",
-            resultFail: choice && choice.resultFail ? choice.resultFail : "You struggled with this task."
-        };
-        
-        console.log('Current selected choice with results:', currentSelectedChoice);
-        
-        // Reset and start the swing meter
-        SwingMeter.reset();
-        SwingMeter.start();
-        
-        // Show the swing meter container
-        elements.swingMeterContainer.style.display = 'block';
-        
-        // Set up the tap button
-        if (elements.tapButton) {
-            elements.tapButton.style.display = 'none';
-            elements.tapInstruction.style.display = 'block';
+        // Update the meter context if provided
+        if (card.meterContext && elements.meterContext) {
+            elements.meterContext.textContent = card.meterContext;
         }
         
-        // Make the entire container tappable
-        elements.swingMeterContainer.onclick = () => {
-            const result = SwingMeter.stop();
-            showSwingMeterResult(result);
-        };
+        // Store the selected card for use in result handling
+        currentCard = card;
+        
+        // Start the swing meter
+        startSwingMeter();
     }
     
     // Show the result of the swing meter
@@ -1615,8 +1569,11 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Clear any existing content
+        // Clear any existing content and hide choices
         elements.narrativeText.textContent = '';
+        if (elements.choiceContainer) {
+            elements.choiceContainer.style.display = 'none';
+        }
         
         // Stop any existing typewriter
         if (narrativeTypewriter) {
@@ -1625,55 +1582,40 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Create a new typewriter instance with the narrative text
         narrativeTypewriter = new Typewriter(elements.narrativeText, {
-            text: narrative.text,
             speed: 30,
             delay: 500,
             cursor: '|',
             cursorSpeed: 400,
             onComplete: () => {
                 // Show choices after narrative is complete
-                if (elements.choiceContainer) {
-                    elements.choiceContainer.style.display = 'flex';
-                }
+                displayChoices(narrative.choices);
             }
         });
         
-        // Start typing
-        narrativeTypewriter.type();
-        
-        // Get or create the choices container
-        let choicesContainer = elements.choiceContainer;
-        if (!choicesContainer) {
+        // Start typing the narrative text
+        narrativeTypewriter.type(narrative.text);
+    }
+
+    function displayChoices(choices) {
+        if (!elements.choiceContainer) {
             console.error('Choice container not found');
             return;
         }
         
         // Clear existing choices
-        choicesContainer.innerHTML = '';
+        elements.choiceContainer.innerHTML = '';
         
-        // Create and display choices
-        if (narrative.choices && narrative.choices.length > 0) {
-            narrative.choices.forEach((choice, index) => {
-                const choiceButton = document.createElement('button');
-                choiceButton.className = 'choice-button';
-                choiceButton.textContent = choice.text;
-                
-                // Add choice type as a data attribute and class
-                if (choice.type) {
-                    choiceButton.dataset.type = choice.type;
-                    choiceButton.classList.add(choice.type + '-choice');
-                }
-                
-                choiceButton.addEventListener('click', () => handleCardSelection(choice));
-                choicesContainer.appendChild(choiceButton);
-            });
-        }
+        // Create and append choice buttons
+        choices.forEach(choice => {
+            const button = document.createElement('button');
+            button.className = 'choice-button';
+            button.textContent = choice.text;
+            button.addEventListener('click', () => handleCardSelection(choice));
+            elements.choiceContainer.appendChild(button);
+        });
         
-        // Initially hide the choice container until typing is complete
-        choicesContainer.style.display = 'none';
-        
-        // Update journey track
-        updateJourneyTrack();
+        // Show the choice container
+        elements.choiceContainer.style.display = 'flex';
     }
 
     // Function to initialize the game
