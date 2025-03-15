@@ -18,6 +18,15 @@ document.addEventListener('DOMContentLoaded', function() {
     let gameOverTypewriter;
     let roundSummaryTypewriter;
     
+    // Game state variables
+    let currentSelectedChoice = null;
+    let currentNextButton = null;
+    
+    // Swing meter configuration
+    let baseGoodZoneWidth = 30; // Default good zone width (percentage)
+    let widthModifier = 1.0;    // Default width modifier
+    let speedModifier = 1.0;    // Default speed modifier
+    
     // Menu functionality
     const menuButton = document.getElementById('menuButton');
     const menuPanel = document.getElementById('menuPanel');
@@ -133,7 +142,9 @@ document.addEventListener('DOMContentLoaded', function() {
         newAlbumsGrid: document.getElementById('newAlbumsGrid'),
         viewAlbumsButton: document.getElementById('viewAlbumsButton'),
         recordCollection: document.getElementById('recordCollection'),
-        albumCollectionGrid: document.getElementById('albumCollectionGrid')
+        albumCollectionGrid: document.getElementById('albumCollectionGrid'),
+        decisionTrack: document.getElementById('decisionTrack'),
+        resultTextElement: document.getElementById('resultText')
     };
     
     // Typewriter effect variables
@@ -251,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Display the result text with typewriter effect
-        displayResultText(resultText, resultTextElement);
+        displayResultText(resultText, elements.resultTextElement);
     }
     
     // Add the Next Stop button
@@ -1495,18 +1506,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to display result text with typewriter effect
     function displayResultText(text, element) {
+        // Create result container if it doesn't exist
+        const resultContainer = document.createElement('div');
+        resultContainer.className = 'meter-result-container';
+        
+        // Create result text element
+        const resultTextElement = document.createElement('div');
+        resultTextElement.className = 'meter-result-text';
+        resultContainer.appendChild(resultTextElement);
+        
+        // Add the container to the swing meter container
+        elements.swingMeterContainer.appendChild(resultContainer);
+        
+        // Initialize resultTypewriter if needed
         if (!resultTypewriter) {
-            resultTypewriter = new Typewriter(element, {
+            resultTypewriter = new Typewriter(resultTextElement, {
                 speed: 30,
                 delay: 500,
                 cursor: '|',
                 cursorSpeed: 400,
                 onComplete: () => {
                     // Add the Next Stop button after result is complete
-                    addNextStopButton(result, resultContainer);
+                    const nextButton = addNextStopButton(result, resultContainer);
+                    currentNextButton = nextButton;
                 }
             });
         }
+        
+        // Type the text
         resultTypewriter.type(text);
     }
 
@@ -1665,40 +1692,37 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.swingMeterContainer.style.display = 'none';
         
         // Update the narrative title
-        const titleElement = document.querySelector('.narrative-title');
-        if (titleElement) {
-            titleElement.textContent = narrative.title || '';
+        if (elements.narrativeTitle) {
+            elements.narrativeTitle.textContent = narrative.title || '';
         }
         
-        // Get the narrative container
-        const narrativeContainer = document.querySelector('.narrative-container');
-        if (!narrativeContainer) {
-            console.error('Narrative container not found');
+        // Get the narrative text element
+        if (!elements.narrativeText) {
+            console.error('Narrative text element not found');
             return;
         }
         
         // Clear any existing content
-        while (narrativeContainer.firstChild) {
-            narrativeContainer.removeChild(narrativeContainer.firstChild);
-        }
-        
-        // Create and append the narrative text element
-        const narrativeText = document.createElement('div');
-        narrativeText.className = 'narrative-text';
-        narrativeContainer.appendChild(narrativeText);
+        elements.narrativeText.textContent = '';
         
         // Display the narrative text with typewriter effect
         if (narrativeTypewriter) {
             narrativeTypewriter.stop();
         }
-        narrativeTypewriter = new Typewriter(narrativeText, narrative.text);
+        narrativeTypewriter = new Typewriter(elements.narrativeText, narrative.text);
         narrativeTypewriter.start();
         
-        // Create and display choices
-        const choicesContainer = document.createElement('div');
-        choicesContainer.className = 'choices-container';
-        narrativeContainer.appendChild(choicesContainer);
+        // Get or create the choices container
+        let choicesContainer = elements.choiceContainer;
+        if (!choicesContainer) {
+            console.error('Choice container not found');
+            return;
+        }
         
+        // Clear existing choices
+        choicesContainer.innerHTML = '';
+        
+        // Create and display choices
         if (narrative.choices && narrative.choices.length > 0) {
             narrative.choices.forEach((choice, index) => {
                 const choiceButton = document.createElement('button');
@@ -1716,8 +1740,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Show the narrative container
-        narrativeContainer.style.display = 'block';
+        // Show the choice container
+        choicesContainer.style.display = 'flex';
         
         // Update journey track
         updateJourneyTrack();
