@@ -28,10 +28,12 @@ export default class Typewriter {
         this.cursorElement = document.createElement('span');
         this.cursorElement.className = 'typewriter-cursor';
         this.cursorElement.textContent = this.options.cursor;
-        this.element.appendChild(this.cursorElement);
+        this.cursorElement.style.display = 'inline-block';
+        this.cursorElement.style.marginLeft = '2px';
+        this.cursorElement.style.animation = `cursorBlink ${this.options.cursorSpeed}ms infinite`;
         
-        // Start cursor animation
-        this.startCursorAnimation();
+        // Add cursor to element
+        this.element.appendChild(this.cursorElement);
     }
     
     type(text) {
@@ -42,63 +44,61 @@ export default class Typewriter {
             this.text = text;
         }
         
+        // Reset element and state
         this.isTyping = true;
         this.currentIndex = 0;
         this.element.textContent = '';
         this.element.appendChild(this.cursorElement);
         
-        // Clear any existing interval
-        if (this.typingInterval) {
-            clearInterval(this.typingInterval);
+        // Add CSS for cursor blinking if it doesn't exist
+        if (!document.getElementById('typewriter-styles')) {
+            const styleEl = document.createElement('style');
+            styleEl.id = 'typewriter-styles';
+            styleEl.textContent = `
+                @keyframes cursorBlink {
+                    0%, 49% { opacity: 1; }
+                    50%, 100% { opacity: 0; }
+                }
+            `;
+            document.head.appendChild(styleEl);
         }
         
-        // Start typing
-        this.typeNextCharacter();
+        // Start typing with a slight delay
+        setTimeout(() => this.typeNextCharacter(), this.options.delay);
+        
+        return this; // For chaining
     }
     
     typeNextCharacter() {
+        if (!this.isTyping) return;
+        
         if (this.currentIndex < this.text.length) {
+            // Create a text node for the current character
             const textNode = document.createTextNode(this.text[this.currentIndex]);
+            
+            // Insert before the cursor
             this.element.insertBefore(textNode, this.cursorElement);
+            
+            // Increment index
             this.currentIndex++;
             
+            // Schedule next character
             setTimeout(() => this.typeNextCharacter(), this.options.speed);
         } else {
+            // Typing complete
             this.isTyping = false;
+            
+            // Call the onComplete callback
             if (typeof this.options.onComplete === 'function') {
                 this.options.onComplete();
             }
         }
     }
     
-    startCursorAnimation() {
-        this.cursorInterval = setInterval(() => {
-            this.updateCursor();
-        }, this.options.cursorSpeed);
-    }
-    
-    stopCursorAnimation() {
-        if (this.cursorInterval) {
-            clearInterval(this.cursorInterval);
-            this.cursorInterval = null;
-        }
-    }
-    
-    updateCursor() {
-        if (!this.cursorElement) return;
-        
-        const visibleText = this.text.substring(0, this.currentIndex);
-        const cursorVisible = this.cursorElement.style.visibility !== 'hidden';
-        this.cursorElement.style.visibility = cursorVisible ? 'hidden' : 'visible';
-    }
-    
     stop() {
         this.isTyping = false;
-        if (this.typingInterval) {
-            clearInterval(this.typingInterval);
-            this.typingInterval = null;
-        }
-        this.stopCursorAnimation();
+        
+        // Remove the cursor element if it exists
         if (this.cursorElement && this.cursorElement.parentNode) {
             this.cursorElement.parentNode.removeChild(this.cursorElement);
         }
@@ -107,20 +107,19 @@ export default class Typewriter {
     skip() {
         if (!this.isTyping) return;
         
-        // Stop the typing animation
-        if (this.typingInterval) {
-            clearInterval(this.typingInterval);
-        }
-        
         // Display all text immediately
         this.element.textContent = this.text;
+        
+        // Append the cursor
         this.element.appendChild(this.cursorElement);
+        
+        // Update state
         this.currentIndex = this.text.length;
         this.isTyping = false;
         
-        // Call onComplete callback
+        // Call the onComplete callback
         if (typeof this.options.onComplete === 'function') {
             this.options.onComplete();
         }
     }
-} 
+}
