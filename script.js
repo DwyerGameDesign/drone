@@ -1658,6 +1658,41 @@ document.addEventListener('DOMContentLoaded', function() {
             game.resetGame();
         }
         
+        // Ensure we're starting from stop 1
+        game.currentStop = 1;
+        game.logicalStop = 0; // Changed from 1 to 0 to match game.js constructor
+        game.currentRound = 1;
+        game.performanceScore = 0;
+        game.decisionHistory = [];
+        game.decisionTypes = [];
+        game.resources = { soul: 0, connections: 0, money: 0 };
+        game.gameOver = false;
+        game.gameOverReason = null;
+        
+        // Initialize the game
+        if (game.initialize && typeof game.initialize === 'function') {
+            console.log('Initializing game...');
+            game.initialize();
+        } else {
+            // Fallback to old initialization method
+            console.log('Using legacy initialization...');
+            
+            // Reload game data if possible
+            if (game.loadGameData && typeof game.loadGameData === 'function') {
+                console.log('Loading fresh game data...');
+                game.loadGameData();
+            }
+        }
+        
+        // Initialize the achievement system if needed
+        if (!game.achievementSystem) {
+            console.log('Achievement system not initialized by game, creating manually...');
+            game.achievementSystem = new AchievementSystem(game);
+        } else {
+            console.log('Resetting achievement system for new playthrough...');
+            game.achievementSystem.resetPlaythrough();
+        }
+        
         // Hide all screens except the main game screen
         elements.gameOver.style.display = 'none';
         elements.roundComplete.style.display = 'none';
@@ -1673,15 +1708,45 @@ document.addEventListener('DOMContentLoaded', function() {
         SwingMeter.reset();
         SwingMeter.resetDifficultyModifiers();
         
+        // Initialize journey track
+        updateJourneyTrack();
+        
+        // Start the game
+        const result = game.startGame();
+        
+        // Display the first narrative
+        if (result && result.success && result.narrative) {
+            console.log('Starting game with narrative:', result.narrative.title, 'Stop:', result.narrative.stop);
+            // Ensure the current narrative is set
+            game.currentNarrative = result.narrative;
+            displayNarrative(result.narrative);
+        } else {
+            console.log('No result from startGame, trying fallback methods...');
+            
+            // Try getting the first narrative directly
+            const firstNarrative = game.getCurrentNarrative();
+            if (firstNarrative) {
+                displayNarrative(firstNarrative);
+            } else {
+                console.error('No initial narrative found, trying deeper fallback...');
+                
+                // Deep fallback: Try to get the first narrative directly from narratives array
+                if (game.narratives && game.narratives.length > 0) {
+                    const firstActualStop = game.journeyManager.getActualStop(1);
+                    const firstNarrative = game.narratives.find(n => n.stop === firstActualStop);
+                    if (firstNarrative) {
+                        console.log('Using fallback first narrative:', firstNarrative.title);
+                        // Ensure the current narrative is set
+                        game.currentNarrative = firstNarrative;
+                        displayNarrative(firstNarrative);
+                    } else {
+                        console.error('Could not find any valid first narrative');
+                    }
+                }
+            }
+        }
+        
         // Update the UI
         updateUI();
-        
-        // Get and display the first narrative
-        const firstNarrative = game.getCurrentNarrative();
-        if (firstNarrative) {
-            displayNarrative(firstNarrative);
-        } else {
-            console.error('No initial narrative found');
-        }
     }
 });
