@@ -1518,60 +1518,78 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add the container to the swing meter container
         elements.swingMeterContainer.appendChild(resultContainer);
         
-        // Initialize resultTypewriter if needed
-        if (!resultTypewriter) {
-            resultTypewriter = new Typewriter(resultTextElement, {
-                speed: 30,
-                delay: 500,
-                cursor: '|',
-                cursorSpeed: 400,
-                onComplete: () => {
-                    // Add the Next Stop button after result is complete
-                    const nextButton = addNextStopButton(result, resultContainer);
-                    currentNextButton = nextButton;
-                }
-            });
+        // Stop any existing typewriter
+        if (resultTypewriter) {
+            resultTypewriter.stop();
         }
         
-        // Type the text
-        resultTypewriter.type(text);
+        // Create a new typewriter instance with the result text
+        resultTypewriter = new Typewriter(resultTextElement, {
+            text: text,
+            speed: 30,
+            delay: 500,
+            cursor: '|',
+            cursorSpeed: 400,
+            onComplete: () => {
+                // Add the Next Stop button after result is complete
+                const nextButton = addNextStopButton(result, resultContainer);
+                currentNextButton = nextButton;
+            }
+        });
+        
+        // Start typing
+        resultTypewriter.type();
     }
 
     // Function to display game over text with typewriter effect
     function displayGameOverText(text, element) {
-        if (!gameOverTypewriter) {
-            gameOverTypewriter = new Typewriter(element, {
-                speed: 30,
-                delay: 500,
-                cursor: '|',
-                cursorSpeed: 400,
-                onComplete: () => {
-                    // Show the restart button and achievements after message is complete
-                    elements.restartButton.style.display = 'block';
-                    elements.restartButton.classList.add('fade-in');
-                    displayNewAchievements(newlyUnlockedAchievements);
-                }
-            });
+        // Stop any existing typewriter
+        if (gameOverTypewriter) {
+            gameOverTypewriter.stop();
         }
-        gameOverTypewriter.type(text);
+        
+        // Create a new typewriter instance with the game over text
+        gameOverTypewriter = new Typewriter(element, {
+            text: text,
+            speed: 30,
+            delay: 500,
+            cursor: '|',
+            cursorSpeed: 400,
+            onComplete: () => {
+                // Show the restart button and achievements after message is complete
+                elements.restartButton.style.display = 'block';
+                elements.restartButton.classList.add('fade-in');
+                displayNewAchievements(newlyUnlockedAchievements);
+            }
+        });
+        
+        // Start typing
+        gameOverTypewriter.type();
     }
 
     // Function to display round summary text with typewriter effect
     function displayRoundSummaryText(text, element) {
-        if (!roundSummaryTypewriter) {
-            roundSummaryTypewriter = new Typewriter(element, {
-                speed: 30,
-                delay: 500,
-                cursor: '|',
-                cursorSpeed: 400,
-                onComplete: () => {
-                    // Show the next round button after summary is complete
-                    elements.nextRoundButton.style.display = 'block';
-                    elements.nextRoundButton.classList.add('fade-in');
-                }
-            });
+        // Stop any existing typewriter
+        if (roundSummaryTypewriter) {
+            roundSummaryTypewriter.stop();
         }
-        roundSummaryTypewriter.type(text);
+        
+        // Create a new typewriter instance with the round summary text
+        roundSummaryTypewriter = new Typewriter(element, {
+            text: text,
+            speed: 30,
+            delay: 500,
+            cursor: '|',
+            cursorSpeed: 400,
+            onComplete: () => {
+                // Show the next round button after summary is complete
+                elements.nextRoundButton.style.display = 'block';
+                elements.nextRoundButton.classList.add('fade-in');
+            }
+        });
+        
+        // Start typing
+        roundSummaryTypewriter.type();
     }
 
     // Function to display a narrative
@@ -1600,29 +1618,28 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear any existing content
         elements.narrativeText.textContent = '';
         
-        // Display the narrative text with typewriter effect
+        // Stop any existing typewriter
         if (narrativeTypewriter) {
             narrativeTypewriter.stop();
         }
         
-        // Initialize narrativeTypewriter if needed
-        if (!narrativeTypewriter) {
-            narrativeTypewriter = new Typewriter(elements.narrativeText, {
-                speed: 30,
-                delay: 500,
-                cursor: '|',
-                cursorSpeed: 400,
-                onComplete: () => {
-                    // Show choices after narrative is complete
-                    if (elements.choiceContainer) {
-                        elements.choiceContainer.style.display = 'flex';
-                    }
+        // Create a new typewriter instance with the narrative text
+        narrativeTypewriter = new Typewriter(elements.narrativeText, {
+            text: narrative.text,
+            speed: 30,
+            delay: 500,
+            cursor: '|',
+            cursorSpeed: 400,
+            onComplete: () => {
+                // Show choices after narrative is complete
+                if (elements.choiceContainer) {
+                    elements.choiceContainer.style.display = 'flex';
                 }
-            });
-        }
+            }
+        });
         
-        // Type the narrative text
-        narrativeTypewriter.type(narrative.text);
+        // Start typing
+        narrativeTypewriter.type();
         
         // Get or create the choices container
         let choicesContainer = elements.choiceContainer;
