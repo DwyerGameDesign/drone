@@ -1709,8 +1709,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if (narrativeTypewriter) {
             narrativeTypewriter.stop();
         }
-        narrativeTypewriter = new Typewriter(elements.narrativeText, narrative.text);
-        narrativeTypewriter.start();
+        narrativeTypewriter = new Typewriter(elements.narrativeText, {
+            speed: 30,
+            delay: 500,
+            cursor: '|',
+            cursorSpeed: 400,
+            onComplete: () => {
+                // Show choices after narrative is complete
+                if (elements.choiceContainer) {
+                    elements.choiceContainer.style.display = 'flex';
+                }
+            }
+        });
+        narrativeTypewriter.type(narrative.text);
         
         // Get or create the choices container
         let choicesContainer = elements.choiceContainer;
@@ -1740,8 +1751,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Show the choice container
-        choicesContainer.style.display = 'flex';
+        // Initially hide the choice container until typing is complete
+        choicesContainer.style.display = 'none';
         
         // Update journey track
         updateJourneyTrack();
