@@ -1574,111 +1574,6 @@ document.addEventListener('DOMContentLoaded', function() {
         roundSummaryTypewriter.type(text);
     }
 
-    // Update click handlers to use Typewriter methods
-    function handleTextClick(element, typewriter) {
-        if (typewriter && typewriter.isTyping) {
-            typewriter.skip();
-        }
-    }
-
-    // Update the game over screen click handler
-    elements.gameOver.addEventListener('click', function(e) {
-        if (e.target === elements.gameOver) {
-            if (gameOverTypewriter && gameOverTypewriter.isTyping) {
-                gameOverTypewriter.skip();
-            } else if (elements.restartButton.style.display === 'block') {
-                resetGameState();
-            }
-        }
-    });
-
-    // Update the result container click handler
-    function addNextStopButton(result, resultContainer) {
-        // Create the Next Stop button (hidden)
-        const nextButton = document.createElement('button');
-        nextButton.className = 'next-stop-button';
-        nextButton.textContent = 'Next Stop';
-        nextButton.style.display = 'none';
-        resultContainer.appendChild(nextButton);
-        
-        // Add instruction text
-        const nextInstruction = document.createElement('div');
-        nextInstruction.className = 'next-instruction';
-        nextInstruction.textContent = 'Tap to continue';
-        resultContainer.appendChild(nextInstruction);
-        
-        // Make the entire result container tappable
-        resultContainer.style.cursor = 'pointer';
-        
-        // Remove any existing click handlers
-        const oldClickHandler = resultContainer.onclick;
-        if (oldClickHandler) {
-            resultContainer.removeEventListener('click', oldClickHandler);
-        }
-
-        // Add click handler to skip typing
-        resultContainer.addEventListener('click', function(e) {
-            if (e.target === resultContainer || 
-                e.target.classList.contains('meter-result-text') || 
-                (currentNextButton && !currentNextButton.contains(e.target))) {
-                
-                if (resultTypewriter && resultTypewriter.isTyping) {
-                    resultTypewriter.skip();
-                    return;
-                }
-                
-                try {
-                    // Process the result
-                    console.log('Processing swing meter result:', result);
-                    
-                    // Determine if the swing meter was successful
-                    const success = result === 'good';
-                    
-                    // Get the narrative type from the selected choice
-                    const narrativeType = currentSelectedChoice.type || 'neutral';
-                    
-                    // Track the decision in the achievement system
-                    if (game.achievementSystem) {
-                        game.achievementSystem.trackDecision(game.logicalStop, narrativeType, success);
-                    }
-                    
-                    // Call the game's handleSwingMeter method
-                    const gameResult = game.handleSwingMeter(success, narrativeType);
-                    
-                    // If successful, adjust difficulty
-                    if (success) {
-                        SwingMeter.adjustDifficulty(narrativeType);
-                    }
-                    
-                    // Update the journey track
-                    updateJourneyTrack();
-                    
-                    // Hide the swing meter container
-                    elements.swingMeterContainer.style.display = 'none';
-                    
-                    // Reset the swing meter
-                    SwingMeter.reset();
-                    
-                    // Check if game is over
-                    if (gameResult && gameResult.gameOver) {
-                        showGameOver(gameResult.reason === 'success');
-                        return;
-                    }
-                    
-                    // Get and display next narrative
-                    const nextNarrative = game.getCurrentNarrative();
-                    if (nextNarrative) {
-                        displayNarrative(nextNarrative);
-                    }
-                } catch (error) {
-                    console.error('Error processing swing meter result:', error);
-                }
-            }
-        });
-        
-        return nextButton;
-    }
-
     // Function to display a narrative
     function displayNarrative(narrative) {
         if (!narrative) {
@@ -1709,18 +1604,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (narrativeTypewriter) {
             narrativeTypewriter.stop();
         }
-        narrativeTypewriter = new Typewriter(elements.narrativeText, {
-            speed: 30,
-            delay: 500,
-            cursor: '|',
-            cursorSpeed: 400,
-            onComplete: () => {
-                // Show choices after narrative is complete
-                if (elements.choiceContainer) {
-                    elements.choiceContainer.style.display = 'flex';
+        
+        // Initialize narrativeTypewriter if needed
+        if (!narrativeTypewriter) {
+            narrativeTypewriter = new Typewriter(elements.narrativeText, {
+                speed: 30,
+                delay: 500,
+                cursor: '|',
+                cursorSpeed: 400,
+                onComplete: () => {
+                    // Show choices after narrative is complete
+                    if (elements.choiceContainer) {
+                        elements.choiceContainer.style.display = 'flex';
+                    }
                 }
-            }
-        });
+            });
+        }
+        
+        // Type the narrative text
         narrativeTypewriter.type(narrative.text);
         
         // Get or create the choices container
