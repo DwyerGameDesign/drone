@@ -604,6 +604,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            // Remove any existing result containers
+            const resultContainers = document.querySelectorAll('.meter-result-container');
+            resultContainers.forEach(container => {
+                if (container.parentNode) {
+                    container.parentNode.removeChild(container);
+                }
+            });
+
+            // Fully reset the swing meter
+            SwingMeter.reset();            
+
             // Get and display next narrative
             const nextNarrative = game.getCurrentNarrative();
             if (nextNarrative) {
