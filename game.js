@@ -161,10 +161,20 @@ class DroneManGame {
         const firstNarrative = this.journeyManager.getNarrativeForLogicalStop(this.logicalStop);
         if (firstNarrative) {
             this.currentNarrative = firstNarrative;
-            console.log(`Starting game with narrative: ${firstNarrative.title} (Logical Stop: ${this.logicalStop}, Actual Stop: ${firstNarrative.stop})`);
+            console.log(`Starting game with narrative: ${firstNarrative.title} (Logical Stop: ${this.logicalStop})`);
             return { success: true, narrative: firstNarrative };
         } else {
             console.error('Failed to get first narrative');
+            
+            // Try a fallback approach to find the first narrative
+            const actualStop = this.journeyManager.getActualStop(1);
+            const fallbackNarrative = this.narratives.find(n => n.stop === actualStop);
+            if (fallbackNarrative) {
+                this.currentNarrative = fallbackNarrative;
+                console.log('Using fallback method to set first narrative:', fallbackNarrative.title);
+                return { success: true, narrative: fallbackNarrative };
+            }
+            
             return { success: false, reason: 'Failed to get first narrative' };
         }
     }
