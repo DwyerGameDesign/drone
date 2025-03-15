@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function () {
         narrativeTypewriter = new Typewriter(elements.narrativeText, {
             speed: 30,
             delay: 500,
-            cursor: '|',
+            cursor: '',
             cursorSpeed: 400,
             onComplete: () => {
                 // Show choices after narrative is complete
@@ -282,7 +282,8 @@ document.addEventListener('DOMContentLoaded', function () {
         elements.choiceContainer.style.display = 'flex';
     }
 
-    // Handle card selection
+
+    // This ensures the rhythm label and difficulty meters are properly created and displayed
     function handleCardSelection(choice) {
         if (!choice) {
             console.error('No choice provided to handle selection');
@@ -319,6 +320,82 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Refresh the swing meter
         SwingMeter.reset();
+
+        // Create the rhythm label if it doesn't exist
+        if (!elements.rhythmLabel || !document.contains(elements.rhythmLabel)) {
+            const rhythmLabel = document.createElement('div');
+            rhythmLabel.className = 'rhythm-label';
+            rhythmLabel.textContent = 'INNER RHYTHM';
+            elements.swingMeterContainer.insertBefore(rhythmLabel, elements.swingMeterContainer.firstChild);
+            elements.rhythmLabel = rhythmLabel;
+        }
+
+        // Ensure the rhythm label is visible
+        if (elements.rhythmLabel) {
+            elements.rhythmLabel.style.display = 'flex';
+        }
+
+        // Create the difficulty meters if they don't exist
+        if (!elements.difficultyMeters || !document.contains(elements.difficultyMeters)) {
+            const difficultyMeters = document.createElement('div');
+            difficultyMeters.className = 'difficulty-meters';
+
+            // Tempo meter
+            const tempoContainer = document.createElement('div');
+            tempoContainer.className = 'meter-container';
+
+            const tempoLabel = document.createElement('div');
+            tempoLabel.className = 'meter-label';
+            tempoLabel.textContent = 'TEMPO';
+
+            const tempoMeter = document.createElement('div');
+            tempoMeter.className = 'difficulty-meter tempo-meter';
+
+            const tempoValue = document.createElement('div');
+            tempoValue.className = 'meter-value';
+            tempoValue.style.width = `${(SwingMeter.speedModifier - 0.5) / 2 * 100}%`;
+
+            tempoMeter.appendChild(tempoValue);
+            tempoContainer.appendChild(tempoLabel);
+            tempoContainer.appendChild(tempoMeter);
+
+            // Precision meter
+            const precisionContainer = document.createElement('div');
+            precisionContainer.className = 'meter-container';
+
+            const precisionLabel = document.createElement('div');
+            precisionLabel.className = 'meter-label';
+            precisionLabel.textContent = 'PRECISION';
+
+            const precisionMeter = document.createElement('div');
+            precisionMeter.className = 'difficulty-meter precision-meter';
+
+            const precisionValue = document.createElement('div');
+            precisionValue.className = 'meter-value';
+            precisionValue.style.width = `${(SwingMeter.widthModifier - 0.4) / 1.1 * 100}%`;
+
+            precisionMeter.appendChild(precisionValue);
+            precisionContainer.appendChild(precisionLabel);
+            precisionContainer.appendChild(precisionMeter);
+
+            difficultyMeters.appendChild(tempoContainer);
+            difficultyMeters.appendChild(precisionContainer);
+
+            // Add the difficulty meters after the swing meter
+            const swingMeter = elements.swingMeterContainer.querySelector('.swing-meter');
+            if (swingMeter && swingMeter.nextElementSibling) {
+                elements.swingMeterContainer.insertBefore(difficultyMeters, swingMeter.nextElementSibling);
+            } else {
+                elements.swingMeterContainer.appendChild(difficultyMeters);
+            }
+
+            elements.difficultyMeters = difficultyMeters;
+        }
+
+        // Ensure the difficulty meters are visible
+        if (elements.difficultyMeters) {
+            elements.difficultyMeters.style.display = 'flex';
+        }
 
         // Update meter zone colors
         updateMeterZoneColors(choice.decisionType || choice.type || 'neutral');
@@ -386,15 +463,14 @@ document.addEventListener('DOMContentLoaded', function () {
         showSwingMeterResult(result);
     }
 
-    // Show the result of the swing meter
+    // Modified showSwingMeterResult function in script.js
     function showSwingMeterResult(result) {
-        // Hide the tap button and instruction
+        // Hide the tap button and instruction only
         if (elements.tapButton) elements.tapButton.style.display = 'none';
         if (elements.tapInstruction) elements.tapInstruction.style.display = 'none';
 
-        // Hide the difficulty meters and rhythm label
-        if (elements.difficultyMeters) elements.difficultyMeters.style.display = 'none';
-        if (elements.rhythmLabel) elements.rhythmLabel.style.display = 'none';
+        // Hide the swing meter but keep the rhythm label and difficulty meters visible
+        // until after the result text has been displayed
         if (elements.swingMeter) elements.swingMeter.style.display = 'none';
 
         // Get the result text
@@ -429,6 +505,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Show the result container
         resultContainer.classList.add('visible');
+
+        // Now hide the rhythm label and difficulty meters since we're showing the result
+        if (elements.difficultyMeters) elements.difficultyMeters.style.display = 'none';
+        if (elements.rhythmLabel) elements.rhythmLabel.style.display = 'none';
 
         // Use typewriter effect for the result text
         resultTypewriter = new Typewriter(resultTextElement, {
@@ -697,7 +777,7 @@ document.addEventListener('DOMContentLoaded', function () {
             text: gameOverMessage,
             speed: 30,
             delay: 500,
-            cursor: '|',
+            cursor: '',
             cursorSpeed: 400,
             onComplete: () => {
                 // Show the restart button after completion
@@ -975,7 +1055,7 @@ document.addEventListener('DOMContentLoaded', function () {
             text: roundSummaryText,
             speed: 30,
             delay: 500,
-            cursor: '|',
+            cursor: '',
             cursorSpeed: 400,
             onComplete: () => {
                 // Show the next round button after completion
