@@ -1433,7 +1433,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 200);
     });
     
-    // Wait for game data to load
+    // Wait for game data to load before starting
     waitForGameData(game).then(() => {
         // Ensure UI elements are visible
         const header = document.querySelector('header');
@@ -1446,8 +1446,11 @@ document.addEventListener('DOMContentLoaded', function() {
             journeyTrackContainer.style.display = 'flex';
         }
         
-        // Start the game
-        initGame();
+        // Initialize game only once
+        if (!game.isInitialized) {
+            initGame();
+            game.isInitialized = true;
+        }
     }).catch(error => {
         console.error('Failed to load game data:', error);
     });
@@ -1647,6 +1650,77 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         return nextButton;
+    }
+
+    // Function to display a narrative
+    function displayNarrative(narrative) {
+        if (!narrative) {
+            console.error('No narrative provided to display');
+            return;
+        }
+        
+        console.log('Displaying narrative:', narrative.title);
+        
+        // Hide the swing meter if it's visible
+        elements.swingMeterContainer.style.display = 'none';
+        
+        // Update the narrative title
+        const titleElement = document.querySelector('.narrative-title');
+        if (titleElement) {
+            titleElement.textContent = narrative.title || '';
+        }
+        
+        // Get the narrative container
+        const narrativeContainer = document.querySelector('.narrative-container');
+        if (!narrativeContainer) {
+            console.error('Narrative container not found');
+            return;
+        }
+        
+        // Clear any existing content
+        while (narrativeContainer.firstChild) {
+            narrativeContainer.removeChild(narrativeContainer.firstChild);
+        }
+        
+        // Create and append the narrative text element
+        const narrativeText = document.createElement('div');
+        narrativeText.className = 'narrative-text';
+        narrativeContainer.appendChild(narrativeText);
+        
+        // Display the narrative text with typewriter effect
+        if (narrativeTypewriter) {
+            narrativeTypewriter.stop();
+        }
+        narrativeTypewriter = new Typewriter(narrativeText, narrative.text);
+        narrativeTypewriter.start();
+        
+        // Create and display choices
+        const choicesContainer = document.createElement('div');
+        choicesContainer.className = 'choices-container';
+        narrativeContainer.appendChild(choicesContainer);
+        
+        if (narrative.choices && narrative.choices.length > 0) {
+            narrative.choices.forEach((choice, index) => {
+                const choiceButton = document.createElement('button');
+                choiceButton.className = 'choice-button';
+                choiceButton.textContent = choice.text;
+                
+                // Add choice type as a data attribute and class
+                if (choice.type) {
+                    choiceButton.dataset.type = choice.type;
+                    choiceButton.classList.add(choice.type + '-choice');
+                }
+                
+                choiceButton.addEventListener('click', () => handleCardSelection(choice));
+                choicesContainer.appendChild(choiceButton);
+            });
+        }
+        
+        // Show the narrative container
+        narrativeContainer.style.display = 'block';
+        
+        // Update journey track
+        updateJourneyTrack();
     }
 
     // Function to initialize the game
