@@ -613,7 +613,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             // Fully reset the swing meter
-            SwingMeter.reset();            
+            SwingMeter.reset();
 
             // Get and display next narrative
             const nextNarrative = game.getCurrentNarrative();
@@ -1133,7 +1133,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // Reset game state
     function resetGameState() {
         console.log('Resetting game state');
-
+    
+        // Reset initialization flag to allow proper re-initialization
+        window.gameInitialized = false;
+        
         // Hide all screens
         elements.gameOver.style.display = 'none';
         elements.roundComplete.style.display = 'none';
@@ -1171,9 +1174,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Function to initialize the game
+    // initGame()
     function initGame() {
         console.log('Initializing game');
+
+        // Flag to track if we've already initialized
+        if (window.gameInitialized) {
+            console.log('Game already initialized, skipping duplicate initialization');
+            return;
+        }
 
         // Reset game state if needed
         if (game.gameOver || game.currentStop > 1) {
@@ -1183,13 +1192,16 @@ document.addEventListener('DOMContentLoaded', function () {
         // Initialize the game
         if (typeof game.initialize === 'function') {
             game.initialize().then(() => {
+                // Set initialization flag
+                window.gameInitialized = true;
+
                 // Once initialized, display the first narrative
                 const firstNarrative = game.getCurrentNarrative();
                 if (firstNarrative) {
                     displayNarrative(firstNarrative);
                     updateJourneyTrack();
                 } else {
-                    // Use a proper fallback that waits for narratives to be available
+                    // Use fallback approach for first narrative
                     console.log('Trying fallback approach for first narrative');
                     if (game.narratives && game.narratives.length > 0) {
                         const actualStop = game.journeyManager.getActualStop(1);
@@ -1209,7 +1221,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error initializing game:', error);
             });
         } else {
-            // Fallback to simple initialization - this needs to check if narratives exist
+            // Set initialization flag
+            window.gameInitialized = true;
+
+            // Fallback to simple initialization
             if (game.narratives && game.narratives.length > 0) {
                 const firstNarrative = game.getCurrentNarrative() || game.narratives[0];
                 if (firstNarrative) {
