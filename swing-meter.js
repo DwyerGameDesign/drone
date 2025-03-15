@@ -1,79 +1,4 @@
 // Drone Man: The Journey - Swing Meter Module
-class SwingMeter {
-    constructor(container, config, context) {
-        this.container = container;
-        this.config = config;
-        this.context = context || "Test your skill and timing...";
-        this.isMoving = false;
-        this.position = 0;
-        this.speed = config.speed || 5;
-        this.animationId = null;
-        this.result = null;
-        this.totalWidth = 0; // Will be calculated based on actual meter width
-        this.meterElement = null;
-        this.indicator = null;
-        this.bottomIndicator = null;
-        this.tapMarker = null;
-        this.tapPosition = null;
-        this.hasPlayerTapped = false;
-        this.animationComplete = false;
-        this.completed = false; // Track if the meter has been completed
-        
-        this.render();
-    }
-    
-    // Simplified render method
-    render() {
-        // We're using the pre-rendered HTML in index.html now
-        this.meterElement = document.querySelector('.swing-meter');
-        this.indicator = document.querySelector('.meter-indicator-top');
-        this.bottomIndicator = document.querySelector('.meter-indicator-bottom');
-        this.tapMarker = document.querySelector('.tap-marker');
-        
-        // We'll handle clicks in script.js now
-    }
-    
-    // Get the result of the swing meter
-    getResult() {
-        return this.result;
-    }
-}
-
-// Function to show the swing meter
-function showSwingMeter(containerId, meterType, context, callback) {
-    // Get the container
-    const container = document.getElementById(containerId);
-    if (!container) {
-        console.error('Container not found:', containerId);
-        callback(null);
-        return;
-    }
-    
-    // Get meter config from game
-    const game = window.gameInstance;
-    if (!game) {
-        console.error('Game instance not found!');
-        callback(null);
-        return;
-    }
-    
-    const meterConfig = game.getSwingMeterConfig(meterType);
-    
-    if (!meterConfig) {
-        console.error(`Meter type "${meterType}" not found!`);
-        callback(null);
-        return;
-    }
-    
-    // We're using our own implementation in script.js now
-    // We'll just return a hook for backward compatibility
-    callback('good');
-}
-
-// Replace the old functions with improved ones
-window.showSwingMeter = showSwingMeter;
-
-// Swing Meter Module
 const SwingMeter = {
     // State variables
     isAnimating: false,
@@ -252,104 +177,143 @@ const SwingMeter = {
         swingMeter.appendChild(this.poorZone);
         swingMeter.appendChild(this.indicatorBar);
         swingMeter.appendChild(this.tapMarker);
-        swingMeter.appendChild(this.tapInstruction);
-        
         container.appendChild(swingMeter);
+        container.appendChild(this.tapInstruction);
 
         // Create difficulty meters
         this.difficultyMeters = document.createElement('div');
         this.difficultyMeters.className = 'difficulty-meters';
         
-        // Create tempo meter
+        // Tempo meter
+        const tempoContainer = document.createElement('div');
+        tempoContainer.className = 'meter-container';
+        
+        const tempoLabel = document.createElement('div');
+        tempoLabel.className = 'meter-label';
+        tempoLabel.textContent = 'TEMPO';
+        
         const tempoMeter = document.createElement('div');
-        tempoMeter.className = 'difficulty-meter';
-        tempoMeter.innerHTML = `
-            <div class="meter-label">Tempo</div>
-            <div class="meter-bar">
-                <div class="meter-fill" style="width: 50%"></div>
-            </div>
-        `;
+        tempoMeter.className = 'difficulty-meter tempo-meter';
         
-        // Create precision meter
+        const tempoValue = document.createElement('div');
+        tempoValue.className = 'meter-value';
+        tempoValue.style.width = `${(this.speedModifier - 0.5) / 2 * 100}%`;
+        
+        tempoMeter.appendChild(tempoValue);
+        tempoContainer.appendChild(tempoLabel);
+        tempoContainer.appendChild(tempoMeter);
+        
+        // Precision meter
+        const precisionContainer = document.createElement('div');
+        precisionContainer.className = 'meter-container';
+        
+        const precisionLabel = document.createElement('div');
+        precisionLabel.className = 'meter-label';
+        precisionLabel.textContent = 'PRECISION';
+        
         const precisionMeter = document.createElement('div');
-        precisionMeter.className = 'difficulty-meter';
-        precisionMeter.innerHTML = `
-            <div class="meter-label">Precision</div>
-            <div class="meter-bar">
-                <div class="meter-fill" style="width: 50%"></div>
-            </div>
-        `;
+        precisionMeter.className = 'difficulty-meter precision-meter';
         
-        this.difficultyMeters.appendChild(tempoMeter);
-        this.difficultyMeters.appendChild(precisionMeter);
+        const precisionValue = document.createElement('div');
+        precisionValue.className = 'meter-value';
+        precisionValue.style.width = `${(this.widthModifier - 0.4) / 1.1 * 100}%`;
+        
+        precisionMeter.appendChild(precisionValue);
+        precisionContainer.appendChild(precisionLabel);
+        precisionContainer.appendChild(precisionMeter);
+        
+        this.difficultyMeters.appendChild(tempoContainer);
+        this.difficultyMeters.appendChild(precisionContainer);
         container.appendChild(this.difficultyMeters);
-
-        // Reset state
-        this.isAnimating = false;
-        this.indicatorPosition = 0;
-        this.direction = 1;
-        if (this.animationFrame) {
-            cancelAnimationFrame(this.animationFrame);
-        }
-
-        // Update meters
-        this.updateDifficultyMeters();
     },
 
-    // Update the difficulty meters display
+    // Update the difficulty meters in the UI
     updateDifficultyMeters() {
-        if (!this.difficultyMeters) return;
-
-        const tempoFill = this.difficultyMeters.querySelector('.difficulty-meter:first-child .meter-fill');
-        const precisionFill = this.difficultyMeters.querySelector('.difficulty-meter:last-child .meter-fill');
-
-        if (tempoFill) {
-            const tempoWidth = Math.min(100, 50 + (this.speedModifier - 1) * 50);
-            tempoFill.style.width = `${tempoWidth}%`;
+        // Update tempo meter
+        const tempoValue = document.querySelector('.tempo-meter .meter-value');
+        if (tempoValue) {
+            const tempoPercentage = (this.speedModifier - 0.5) / 2 * 100;
+            tempoValue.style.width = `${tempoPercentage}%`;
         }
-
-        if (precisionFill) {
-            const precisionWidth = Math.min(100, 50 + (this.widthModifier - 1) * 50);
-            precisionFill.style.width = `${precisionWidth}%`;
+        
+        // Update precision meter
+        const precisionValue = document.querySelector('.precision-meter .meter-value');
+        if (precisionValue) {
+            const precisionPercentage = (this.widthModifier - 0.4) / 1.1 * 100;
+            precisionValue.style.width = `${precisionPercentage}%`;
         }
     },
 
     // Adjust difficulty based on narrative type
     adjustDifficulty(narrativeType) {
-        console.log('Adjusting difficulty for narrative type:', narrativeType);
+        console.log('Adjusting difficulty for:', narrativeType);
         
         switch(narrativeType) {
-            case 'tempo':
-                this.speedModifier = Math.min(2.0, this.speedModifier + 0.2);
-                console.log('Increased speed modifier to:', this.speedModifier);
+            case 'soul':
+                this.speedModifier = Math.min(2.5, this.speedModifier + 0.2);
+                this.widthModifier = Math.min(1.5, this.widthModifier + 0.1);
                 break;
-            case 'precision':
-                this.widthModifier = Math.min(2.0, this.widthModifier + 0.2);
-                console.log('Increased width modifier to:', this.widthModifier);
+            case 'connections':
+                this.speedModifier = Math.min(2.5, this.speedModifier + 0.15);
+                this.widthModifier = Math.min(1.5, this.widthModifier + 0.15);
                 break;
-            case 'balance':
-                this.speedModifier = Math.min(2.0, this.speedModifier + 0.1);
-                this.widthModifier = Math.min(2.0, this.widthModifier + 0.1);
-                console.log('Increased both modifiers:', {
-                    speed: this.speedModifier,
-                    width: this.widthModifier
-                });
+            case 'success':
+                this.speedModifier = Math.min(2.5, this.speedModifier + 0.1);
+                this.widthModifier = Math.min(1.5, this.widthModifier + 0.2);
                 break;
             default:
-                console.log('No difficulty adjustment for narrative type:', narrativeType);
+                this.speedModifier = Math.min(2.5, this.speedModifier + 0.1);
+                this.widthModifier = Math.min(1.5, this.widthModifier + 0.1);
         }
-
+        
+        console.log('New modifiers:', {
+            speed: this.speedModifier,
+            width: this.widthModifier
+        });
+        
         this.updateDifficultyMeters();
     },
 
-    // Reset difficulty modifiers
+    // Reset difficulty modifiers to initial values
     resetDifficultyModifiers() {
         this.speedModifier = 1.0;
         this.widthModifier = 1.0;
-        console.log('Reset difficulty modifiers to default values');
         this.updateDifficultyMeters();
     }
 };
 
-// Export the SwingMeter module
 export default SwingMeter;
+
+// Function to show the swing meter
+function showSwingMeter(containerId, meterType, context, callback) {
+    // Get the container
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error('Container not found:', containerId);
+        callback(null);
+        return;
+    }
+    
+    // Get meter config from game
+    const game = window.gameInstance;
+    if (!game) {
+        console.error('Game instance not found!');
+        callback(null);
+        return;
+    }
+    
+    const meterConfig = game.getSwingMeterConfig(meterType);
+    
+    if (!meterConfig) {
+        console.error(`Meter type "${meterType}" not found!`);
+        callback(null);
+        return;
+    }
+    
+    // We're using our own implementation in script.js now
+    // We'll just return a hook for backward compatibility
+    callback('good');
+}
+
+// Replace the old functions with improved ones
+window.showSwingMeter = showSwingMeter;
