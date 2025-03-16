@@ -180,6 +180,29 @@ document.addEventListener('DOMContentLoaded', function () {
         resetGameState();
     });
 
+    // Hide all interaction elements - fixed the missing function
+    function hideAllInteractions() {
+        console.log('Hiding all interactions');
+
+        // Hide choice container
+        if (elements.choiceContainer) {
+            elements.choiceContainer.style.display = 'none';
+        }
+
+        // Hide swing meter container
+        if (elements.swingMeterContainer) {
+            elements.swingMeterContainer.style.display = 'none';
+        }
+
+        // Remove any result containers
+        const resultContainers = document.querySelectorAll('.meter-result-container');
+        resultContainers.forEach(container => {
+            if (container && container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+        });
+    }
+
     function displayNarrative(narrative) {
         if (!narrative) {
             console.error('No narrative provided to display');
@@ -564,7 +587,7 @@ document.addEventListener('DOMContentLoaded', function () {
             text: resultText,
             speed: 30,
             delay: 500,
-            cursor: '|',
+            cursor: '',
             cursorSpeed: 400,
             onComplete: () => {
                 // Add the next stop button after completion
