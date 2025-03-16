@@ -528,9 +528,11 @@ document.addEventListener('DOMContentLoaded', function () {
         resultTypewriter.type();
 
         // Add click event to skip typing
-        resultTextElement.addEventListener('click', function () {
+        resultTextElement.addEventListener('click', function(e) {
             if (resultTypewriter && resultTypewriter.isTyping) {
+                // Skip typewriter effect and prevent event propagation to parent
                 resultTypewriter.skip();
+                e.stopPropagation();  // This is the key addition
             }
         });
     }
@@ -554,13 +556,15 @@ document.addEventListener('DOMContentLoaded', function () {
         resultContainer.style.cursor = 'pointer';
 
         // Add click handler to container
-        resultContainer.addEventListener('click', function (e) {
+        resultContainer.addEventListener('click', function(e) {
             // Skip typing if still in progress
             if (resultTypewriter && resultTypewriter.isTyping) {
                 resultTypewriter.skip();
+                e.stopPropagation(); // Prevent further propagation
                 return;
             }
-
+        
+            // Only process click if typing is complete
             // Process the result
             processSwingMeterResult(result);
         });
