@@ -180,7 +180,6 @@ document.addEventListener('DOMContentLoaded', function () {
         resetGameState();
     });
 
-    // Function to display a narrative with typewriter effect
     function displayNarrative(narrative) {
         if (!narrative) {
             console.error('No narrative provided to display');
@@ -188,6 +187,28 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         console.log('Displaying narrative:', narrative.title);
+
+        // IMPORTANT FIX: Make sure we clean up any existing result containers
+        const resultContainers = document.querySelectorAll('.meter-result-container');
+        resultContainers.forEach(container => {
+            if (container && container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+        });
+
+        // IMPORTANT FIX: Reset the swing meter container
+        // This helps ensure we're starting fresh
+        if (elements.swingMeterContainer) {
+            elements.swingMeterContainer.style.display = 'none';
+
+            // Make sure existing result containers are removed
+            const oldResults = elements.swingMeterContainer.querySelectorAll('.meter-result-container');
+            oldResults.forEach(el => {
+                if (el && el.parentNode) {
+                    el.parentNode.removeChild(el);
+                }
+            });
+        }
 
         // Update the narrative title
         if (elements.narrativeTitle) {
@@ -221,13 +242,6 @@ document.addEventListener('DOMContentLoaded', function () {
         narrativeTypewriter.type(narrative.narrative);
     }
 
-    // Function to hide all interactive elements
-    function hideAllInteractions() {
-        elements.choiceContainer.style.display = 'none';
-        elements.swingMeterContainer.style.display = 'none';
-    }
-
-    // Function to display choices
     function displayChoices(choices) {
         if (!choices || !elements.choiceContainer) {
             console.error('No choices or container found');
@@ -251,11 +265,15 @@ document.addEventListener('DOMContentLoaded', function () {
             content.textContent = choice.text;
 
             // Add choice data to the card
-            choice.index = index;
-            choice.type = choice.decisionType;
+            const choiceData = { ...choice };  // Make a copy to avoid modifying the original
+            choiceData.index = index;
+            choiceData.type = choice.decisionType || 'neutral';
 
             // Add event listener for clicking the card
-            card.addEventListener('click', () => handleCardSelection(choice));
+            card.addEventListener('click', () => {
+                console.log('Card clicked, choice:', choiceData);
+                handleCardSelection(choiceData);
+            });
 
             // Add ripple effect
             card.addEventListener('touchstart', function (e) {
@@ -292,6 +310,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         console.log('Choice selected:', choice);
 
+        // IMPORTANT FIX: Reset swing meter container
+        // Clear out any previous result containers first
+        const resultContainers = elements.swingMeterContainer.querySelectorAll('.meter-result-container');
+        resultContainers.forEach(container => {
+            if (container && container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+        });
+
         // Hide the choice container
         elements.choiceContainer.style.display = 'none';
 
@@ -317,6 +344,11 @@ document.addEventListener('DOMContentLoaded', function () {
         // Store the selected choice
         currentSelectedChoice = choice;
         currentCard = choice;
+
+        // IMPORTANT FIX: Make sure the swing meter is visible
+        if (elements.swingMeter) {
+            elements.swingMeter.style.display = 'block';
+        }
 
         // Refresh the swing meter
         SwingMeter.reset();
@@ -400,6 +432,11 @@ document.addEventListener('DOMContentLoaded', function () {
         // Update meter zone colors
         updateMeterZoneColors(choice.decisionType || choice.type || 'neutral');
 
+        // IMPORTANT FIX: Make sure the tap instructions are visible
+        if (elements.tapInstruction) {
+            elements.tapInstruction.style.display = 'block';
+        }
+
         // Make sure the swing meter container is clickable
         elements.swingMeterContainer.onclick = stopSwingMeter;
 
@@ -463,7 +500,6 @@ document.addEventListener('DOMContentLoaded', function () {
         showSwingMeterResult(result);
     }
 
-    // Modified showSwingMeterResult function in script.js
     function showSwingMeterResult(result) {
         // Hide the tap button and instruction only
         if (elements.tapButton) elements.tapButton.style.display = 'none';
@@ -486,6 +522,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         console.log('Result text:', resultText);
+
+        // IMPORTANT FIX: Remove any existing result containers first
+        const existingResultContainers = elements.swingMeterContainer.querySelectorAll('.meter-result-container');
+        existingResultContainers.forEach(container => {
+            if (container && container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+        });
 
         // Create result container
         const resultContainer = document.createElement('div');
@@ -510,6 +554,11 @@ document.addEventListener('DOMContentLoaded', function () {
         if (elements.difficultyMeters) elements.difficultyMeters.style.display = 'none';
         if (elements.rhythmLabel) elements.rhythmLabel.style.display = 'none';
 
+        // IMPORTANT FIX: Make sure previous typewriter is stopped
+        if (resultTypewriter) {
+            resultTypewriter.stop();
+        }
+
         // Use typewriter effect for the result text
         resultTypewriter = new Typewriter(resultTextElement, {
             text: resultText,
@@ -528,7 +577,7 @@ document.addEventListener('DOMContentLoaded', function () {
         resultTypewriter.type();
 
         // Add click event to skip typing
-        resultTextElement.addEventListener('click', function(e) {
+        resultTextElement.addEventListener('click', function (e) {
             if (resultTypewriter && resultTypewriter.isTyping) {
                 // Skip typewriter effect and prevent event propagation to parent
                 resultTypewriter.skip();
@@ -556,14 +605,14 @@ document.addEventListener('DOMContentLoaded', function () {
         resultContainer.style.cursor = 'pointer';
 
         // Add click handler to container
-        resultContainer.addEventListener('click', function(e) {
+        resultContainer.addEventListener('click', function (e) {
             // Skip typing if still in progress
             if (resultTypewriter && resultTypewriter.isTyping) {
                 resultTypewriter.skip();
                 e.stopPropagation(); // Prevent further propagation
                 return;
             }
-        
+
             // Only process click if typing is complete
             // Process the result
             processSwingMeterResult(result);
@@ -572,7 +621,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return nextButton;
     }
 
-    // Process the swing meter result
+    // processSwingMeterResult function in script.js
     function processSwingMeterResult(result) {
         console.log('Processing swing meter result:', result);
 
@@ -608,13 +657,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // Remove any existing result containers
+            // IMPORTANT FIX: Remove any existing result containers BEFORE displaying next narrative
             const resultContainers = document.querySelectorAll('.meter-result-container');
             resultContainers.forEach(container => {
-                if (container.parentNode) {
+                if (container && container.parentNode) {
                     container.parentNode.removeChild(container);
                 }
             });
+
+            // Clean up swing meter container
+            // This ensures we remove any previous result elements
+            const oldResultTexts = elements.swingMeterContainer.querySelectorAll('.meter-result-text');
+            oldResultTexts.forEach(el => {
+                if (el && el.parentNode) {
+                    el.parentNode.removeChild(el);
+                }
+            });
+
+            // IMPORTANT FIX: Reset result typewriter instance
+            if (resultTypewriter) {
+                resultTypewriter.stop();
+                resultTypewriter = null;
+            }
 
             // Fully reset the swing meter
             SwingMeter.reset();
@@ -1134,13 +1198,12 @@ document.addEventListener('DOMContentLoaded', function () {
         updateJourneyTrack();
     }
 
-    // Reset game state
     function resetGameState() {
         console.log('Resetting game state');
-    
+
         // Reset initialization flag to allow proper re-initialization
         window.gameInitialized = false;
-        
+
         // Hide all screens
         elements.gameOver.style.display = 'none';
         elements.roundComplete.style.display = 'none';
@@ -1151,6 +1214,37 @@ document.addEventListener('DOMContentLoaded', function () {
         if (resultTypewriter) resultTypewriter.stop();
         if (gameOverTypewriter) gameOverTypewriter.stop();
         if (roundSummaryTypewriter) roundSummaryTypewriter.stop();
+
+        // IMPORTANT FIX: Clear any result containers that might be lingering
+        const resultContainers = document.querySelectorAll('.meter-result-container');
+        resultContainers.forEach(container => {
+            if (container && container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+        });
+
+        // IMPORTANT FIX: Reset swing meter container to clean state
+        // Clear out any children except for choice-description and rhythm label
+        const choiceDescription = elements.choiceDescription;
+        const swingMeterEl = elements.swingMeter;
+
+        if (elements.swingMeterContainer) {
+            // Preserve these elements
+            const choiceDescriptionText = choiceDescription ? choiceDescription.textContent : '';
+
+            // Clear the container
+            elements.swingMeterContainer.innerHTML = '';
+
+            // Recreate the structure
+            if (choiceDescription) {
+                elements.swingMeterContainer.appendChild(choiceDescription);
+                choiceDescription.textContent = choiceDescriptionText;
+            }
+
+            if (swingMeterEl) {
+                elements.swingMeterContainer.appendChild(swingMeterEl);
+            }
+        }
 
         // Reset swing meter
         SwingMeter.reset();
@@ -1167,6 +1261,11 @@ document.addEventListener('DOMContentLoaded', function () {
         // Update the journey track
         updateJourneyTrack();
 
+        // IMPORTANT FIX: Clear current selected choice
+        currentSelectedChoice = null;
+        currentCard = null;
+        currentNextButton = null;
+
         // Get the first narrative
         const firstNarrative = game.getCurrentNarrative();
         if (firstNarrative) {
@@ -1178,9 +1277,200 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Helper function to clean up swing meter state
+    function cleanupSwingMeter() {
+        console.log('Cleaning up swing meter state');
+
+        // Stop any active swing meter animation
+        SwingMeter.isAnimating = false;
+        if (SwingMeter.animationFrame) {
+            cancelAnimationFrame(SwingMeter.animationFrame);
+            SwingMeter.animationFrame = null;
+        }
+
+        // Remove any result containers
+        const resultContainers = document.querySelectorAll('.meter-result-container');
+        resultContainers.forEach(container => {
+            if (container && container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+        });
+
+        // Reset swing meter elements
+        if (elements.swingMeterContainer) {
+            // Preserve the choice description
+            const choiceDescription = elements.choiceDescription;
+            const choiceDescriptionText = choiceDescription ? choiceDescription.textContent : '';
+
+            // Find the swing meter element
+            const swingMeter = elements.swingMeterContainer.querySelector('.swing-meter');
+
+            // Clear container but keep structure
+            elements.swingMeterContainer.innerHTML = '';
+
+            // Add back the choice description
+            if (choiceDescription) {
+                elements.swingMeterContainer.appendChild(choiceDescription);
+                choiceDescription.textContent = '';  // Clear the text
+            }
+
+            // Add back the swing meter if it was present
+            if (swingMeter) {
+                elements.swingMeterContainer.appendChild(swingMeter);
+            }
+        }
+
+        // Reset typewriter for results if it exists
+        if (resultTypewriter) {
+            resultTypewriter.stop();
+            resultTypewriter = null;
+        }
+
+        // Hide the swing meter container
+        if (elements.swingMeterContainer) {
+            elements.swingMeterContainer.style.display = 'none';
+        }
+    }
+
+    // Helper function to rebuild the swing meter when needed
+    function rebuildSwingMeter() {
+        console.log('Rebuilding swing meter');
+
+        // Check if the container exists
+        if (!elements.swingMeterContainer) {
+            console.error('Swing meter container not found');
+            return;
+        }
+
+        // Check if the swing meter element exists
+        if (!elements.swingMeter || !document.contains(elements.swingMeter)) {
+            // Need to rebuild the swing meter
+
+            // Preserve the choice description if it exists
+            const choiceDescription = elements.choiceDescription;
+            const choiceDescriptionText = choiceDescription ? choiceDescription.textContent : '';
+
+            // Clear the container
+            elements.swingMeterContainer.innerHTML = '';
+
+            // Add back the choice description
+            if (choiceDescription) {
+                elements.swingMeterContainer.appendChild(choiceDescription);
+                elements.choiceDescription = choiceDescription;
+                choiceDescription.textContent = choiceDescriptionText;
+            } else {
+                // Create a new choice description
+                const newChoiceDescription = document.createElement('div');
+                newChoiceDescription.className = 'choice-description';
+                newChoiceDescription.id = 'choiceDescription';
+                elements.swingMeterContainer.appendChild(newChoiceDescription);
+                elements.choiceDescription = newChoiceDescription;
+            }
+
+            // Create the swing meter
+            const swingMeter = document.createElement('div');
+            swingMeter.className = 'swing-meter';
+
+            // Create the meter background
+            const meterBackground = document.createElement('div');
+            meterBackground.id = 'meterBackground';
+            meterBackground.className = 'meter-background';
+
+            // Create the zones
+            const poorStartZone = document.createElement('div');
+            poorStartZone.className = 'meter-zone poor-start';
+
+            const goodZone = document.createElement('div');
+            goodZone.className = 'meter-zone good';
+
+            const poorEndZone = document.createElement('div');
+            poorEndZone.className = 'meter-zone poor-end';
+
+            // Create the indicator bar
+            const indicatorBar = document.createElement('div');
+            indicatorBar.className = 'meter-indicator-bar';
+
+            // Create the tap marker
+            const tapMarker = document.createElement('div');
+            tapMarker.className = 'tap-marker';
+
+            // Assemble the swing meter
+            meterBackground.appendChild(poorStartZone);
+            meterBackground.appendChild(goodZone);
+            meterBackground.appendChild(poorEndZone);
+            meterBackground.appendChild(indicatorBar);
+            meterBackground.appendChild(tapMarker);
+            swingMeter.appendChild(meterBackground);
+
+            // Add the swing meter to the container
+            elements.swingMeterContainer.appendChild(swingMeter);
+
+            // Save references
+            elements.swingMeter = swingMeter;
+            elements.meterBackground = meterBackground;
+            elements.indicatorBar = indicatorBar;
+            elements.tapMarker = tapMarker;
+
+            // Create and add tap button
+            const tapButton = document.createElement('button');
+            tapButton.className = 'tap-button';
+            tapButton.id = 'tapButton';
+            tapButton.textContent = 'TAP TO STOP';
+            tapButton.style.display = 'none'; // Hidden by default
+            elements.swingMeterContainer.appendChild(tapButton);
+            elements.tapButton = tapButton;
+
+            // Create and add tap instruction
+            const tapInstruction = document.createElement('div');
+            tapInstruction.className = 'tap-instruction';
+            tapInstruction.textContent = 'Tap anywhere to stop';
+            elements.swingMeterContainer.appendChild(tapInstruction);
+            elements.tapInstruction = tapInstruction;
+        }
+
+        // Reset the swing meter state
+        SwingMeter.reset();
+
+        // Make sure the swing meter is ready to be used
+        if (elements.swingMeter) {
+            elements.swingMeter.style.display = 'block';
+        }
+
+        // Create or update rhythm label
+        SwingMeter.createOrUpdateRhythmAndDifficultyElements();
+
+        console.log('Swing meter rebuilt successfully');
+    }
+
     // initGame()
     function initGame() {
         console.log('Initializing game');
+
+        // IMPORTANT FIX: Reset all UI elements to a clean state first
+        // This ensures we don't have any lingering elements from previous runs
+
+        // Reset all typewriter instances
+        if (narrativeTypewriter) narrativeTypewriter.stop();
+        if (resultTypewriter) resultTypewriter.stop();
+        if (gameOverTypewriter) gameOverTypewriter.stop();
+        if (roundSummaryTypewriter) roundSummaryTypewriter.stop();
+
+        // Clear any result containers
+        const resultContainers = document.querySelectorAll('.meter-result-container');
+        resultContainers.forEach(container => {
+            if (container && container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+        });
+
+        // Reset swing meter
+        SwingMeter.reset();
+        SwingMeter.resetDifficultyModifiers();
+
+        // Reset state variables
+        currentSelectedChoice = null;
+        currentCard = null;
+        currentNextButton = null;
 
         // Flag to track if we've already initialized
         if (window.gameInitialized) {

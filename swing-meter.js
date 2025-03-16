@@ -238,10 +238,6 @@ const SwingMeter = {
         this.indicatorPosition = 0;
         this.direction = 1;
 
-        // Don't remove the rhythm label and difficulty meters
-        // Simply update their values instead of recreating them
-        this.updateDifficultyMeters();
-
         // Find existing elements if they're not set
         if (!this.indicatorBar) {
             this.indicatorBar = document.querySelector('.meter-indicator-bar');
@@ -255,11 +251,30 @@ const SwingMeter = {
         if (this.indicatorBar) {
             this.indicatorBar.style.transition = 'left 0.1s linear';
             this.indicatorBar.style.left = '0%';
+            this.indicatorBar.style.backgroundColor = 'white'; // Reset color
         }
 
         // Hide the tap marker if it exists
         if (this.tapMarker) {
             this.tapMarker.style.display = 'none';
+            this.tapMarker.style.backgroundColor = 'white'; // Reset color
+        }
+
+        // IMPORTANT FIX: Make sure zones are properly configured
+        // Calculate zones based on current widthModifier
+        const goodZone = document.querySelector('.meter-zone.good');
+        const poorStartZone = document.querySelector('.meter-zone.poor-start');
+        const poorEndZone = document.querySelector('.meter-zone.poor-end');
+
+        if (goodZone && poorStartZone && poorEndZone) {
+            // Calculate widths based on modifiers
+            const goodZoneWidth = this.baseGoodZoneWidth * this.widthModifier;
+            const poorZoneWidth = (100 - goodZoneWidth) / 2;
+
+            // Apply widths
+            poorStartZone.style.width = `${poorZoneWidth}%`;
+            goodZone.style.width = `${goodZoneWidth}%`;
+            poorEndZone.style.width = `${poorZoneWidth}%`;
         }
     },
 
