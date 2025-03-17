@@ -731,53 +731,53 @@ document.addEventListener('DOMContentLoaded', function () {
     // Update the journey track
     function updateJourneyTrack(isGameOver = false) {
         console.log(`Updating ${isGameOver ? 'game over' : 'normal'} journey track`);
-
+    
         const trackElement = isGameOver ? elements.gameOverJourneyTrack : elements.journeyTrack;
         if (!trackElement) {
             console.error('Journey track element not found');
             return;
         }
-
+    
         // Clear the track
         trackElement.innerHTML = '';
-
+    
         // Get the total number of stops
         const totalStops = game.journeyManager.getTotalStops();
         if (!totalStops || totalStops <= 0) {
             console.warn('Invalid total stops:', totalStops);
             return;
         }
-
+    
         // Create track line elements between stations
         for (let i = 1; i <= totalStops; i++) {
             // Add station
             const station = document.createElement('div');
             station.className = 'station';
-
+    
             // Add track line before station (except for first station)
-            if (i > 1 && isGameOver) {
+            if (i > 1) {
                 const trackLine = document.createElement('div');
                 trackLine.className = 'track-line';
                 trackElement.appendChild(trackLine);
             }
-
+    
             // Add appropriate classes based on game state
-            if (i === game.logicalStop) {
+            if (i === game.logicalStop && !game.gameOver) {
                 station.classList.add('current');
-            } else if (i < game.logicalStop) {
+            } else if (i < game.logicalStop || (isGameOver && i <= game.logicalStop)) {
                 station.classList.add('completed');
-
+    
                 // Find the decision for this station
                 const decision = game.decisionHistory.find(d => Number(d.stop) === i);
                 if (decision) {
-                    if (!decision.success) {
+                    if (decision.success === false) {
                         station.classList.add('fail');
                     } else if (decision.narrativeType) {
                         station.classList.add(decision.narrativeType);
                     }
                 }
             }
-
+    
             trackElement.appendChild(station);
         }
     }
@@ -1478,53 +1478,57 @@ document.addEventListener('DOMContentLoaded', function () {
     // initGame()
     function initGame() {
         console.log('Initializing game');
-
-        // IMPORTANT FIX: Reset all UI elements to a clean state first
-        // This ensures we don't have any lingering elements from previous runs
-
-        // Reset all typewriter instances
+    
+        // Reset all UI elements and state
         if (narrativeTypewriter) narrativeTypewriter.stop();
         if (resultTypewriter) resultTypewriter.stop();
         if (gameOverTypewriter) gameOverTypewriter.stop();
         if (roundSummaryTypewriter) roundSummaryTypewriter.stop();
-
-        // Clear any result containers
+    
+        // Clear result containers
         const resultContainers = document.querySelectorAll('.meter-result-container');
         resultContainers.forEach(container => {
             if (container && container.parentNode) {
                 container.parentNode.removeChild(container);
             }
         });
-
+    
         // Reset swing meter
         SwingMeter.reset();
         SwingMeter.resetDifficultyModifiers();
-
+    
         // Reset state variables
         currentSelectedChoice = null;
         currentCard = null;
         currentNextButton = null;
-
+    
         // Flag to track if we've already initialized
         if (window.gameInitialized) {
             console.log('Game already initialized, skipping duplicate initialization');
             return;
         }
-
+    
         // Reset game state if needed
         if (game.gameOver || game.currentStop > 1) {
             game.restart();
         }
-
+    
+        // Ensure logical stop is properly reset to 0 before starting
+        game.logicalStop = 0;
+        
         // Initialize the game
         if (typeof game.initialize === 'function') {
             game.initialize().then(() => {
                 // Set initialization flag
                 window.gameInitialized = true;
-
+                
+                // Make sure game is fully restarted
+                game.startGame();
+                
                 // Once initialized, display the first narrative
                 const firstNarrative = game.getCurrentNarrative();
                 if (firstNarrative) {
+                    console.log('Displaying first narrative from initialize:', firstNarrative.title);
                     displayNarrative(firstNarrative);
                     updateJourneyTrack();
                 } else {
@@ -1550,7 +1554,10 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             // Set initialization flag
             window.gameInitialized = true;
-
+            
+            // Explicitly call startGame to ensure proper initialization
+            game.startGame();
+    
             // Fallback to simple initialization
             if (game.narratives && game.narratives.length > 0) {
                 const firstNarrative = game.getCurrentNarrative() || game.narratives[0];
