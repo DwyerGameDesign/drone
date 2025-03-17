@@ -1,4 +1,4 @@
-// Drone Man: The Journey - Swing Meter Module
+// Updated swing-meter.js with tap marker visualization
 const SwingMeter = {
     // State variables
     isAnimating: false,
@@ -16,10 +16,13 @@ const SwingMeter = {
     poorStartZone: null,
     poorEndZone: null,
     tapInstruction: null,
+    
+    // New state variables for enhanced marker behavior
+    tapPosition: null,     // Stores where the player tapped
+    isTapped: false,       // Whether the player has tapped
+    resultCallback: null,  // Callback to fire once animation completes
+    tapResult: null,       // Store the tap result for the callback
 
-    // Modified SwingMeter.init and startSwingMeter functions
-
-    // In swing-meter.js:
     init() {
         console.log('Initializing swing meter');
 
@@ -34,16 +37,20 @@ const SwingMeter = {
         // Find or create the rhythm label and difficulty meters
         this.createOrUpdateRhythmAndDifficultyElements();
 
-        // Reset other values
+        // Reset values
         this.indicatorPosition = 0;
         this.direction = 1;
         this.isAnimating = false;
+        this.isTapped = false;
+        this.tapPosition = null;
+        this.resultCallback = null;
+        this.tapResult = null;
 
         // Update UI meters
         this.updateDifficultyMeters();
     },
 
-    // New method to ensure rhythm label and difficulty meters exist
+    // Create or update rhythm and difficulty elements
     createOrUpdateRhythmAndDifficultyElements() {
         const swingMeterContainer = document.getElementById('swingMeterContainer');
         if (!swingMeterContainer) return;
@@ -112,12 +119,20 @@ const SwingMeter = {
         }
     },
 
-    // Modified start function to ensure rhythm label and difficulty meters are visible
-    start() {
+    // Start the swing meter animation
+    start(callback) {
         console.log('Starting swing meter with modifiers:', {
             speed: this.speedModifier,
             width: this.widthModifier
         });
+
+        // Store the callback if provided
+        this.resultCallback = callback || null;
+
+        // Reset tap-related states
+        this.isTapped = false;
+        this.tapPosition = null;
+        this.tapResult = null;
 
         // Ensure rhythm label and difficulty meters exist and are visible
         this.createOrUpdateRhythmAndDifficultyElements();
@@ -130,6 +145,11 @@ const SwingMeter = {
         if (!this.meterBackground || !this.indicatorBar) {
             console.error('Swing meter elements not found');
             return;
+        }
+
+        // Hide the tap marker initially
+        if (this.tapMarker) {
+            this.tapMarker.style.display = 'none';
         }
 
         // Reset indicator position
@@ -150,49 +170,47 @@ const SwingMeter = {
         this.animate();
     },
 
-    // Stop the swing meter and determine result
-    stop() {
-        if (!this.isAnimating) return null;
+    // Record the tap position but continue moving the indicator to the end
+    tap() {
+        if (!this.isAnimating || this.isTapped) return null;
 
-        this.isAnimating = false;
-        if (this.animationFrame) {
-            cancelAnimationFrame(this.animationFrame);
-            this.animationFrame = null;
-        }
-
-        // Calculate the current zone boundaries based on width modifier
+        // Record that the player has tapped
+        this.isTapped = true;
+        
+        // Record the current position as the tap position
+        this.tapPosition = this.indicatorPosition;
+        
+        // Calculate the result based on the tap position
         const goodZoneWidth = this.baseGoodZoneWidth * this.widthModifier;
         const poorZoneWidth = (100 - goodZoneWidth) / 2;
-
-        // The good zone is in the middle, so it starts after the poor-start zone
         const goodZoneStart = poorZoneWidth;
         const goodZoneEnd = poorZoneWidth + goodZoneWidth;
 
-        console.log(`Zone boundaries - Poor start: 0-${goodZoneStart.toFixed(2)}%, Good: ${goodZoneStart.toFixed(2)}-${goodZoneEnd.toFixed(2)}%, Poor end: ${goodZoneEnd.toFixed(2)}-100%`);
-
-        // Determine the result based on position
-        let result = 'fail';
-        if (this.indicatorPosition >= goodZoneStart && this.indicatorPosition < goodZoneEnd) {
-            result = 'good';
+        // Determine result based on the tap position
+        this.tapResult = 'fail';
+        if (this.tapPosition >= goodZoneStart && this.tapPosition < goodZoneEnd) {
+            this.tapResult = 'good';
         }
 
-        console.log('Swing meter result:', result);
+        console.log(`Tap recorded at position ${this.tapPosition}%, result: ${this.tapResult}`);
 
-        // Display tap marker at current position
+        // Display the tap marker at the tap position
         if (this.tapMarker) {
-            this.tapMarker.style.left = `${this.indicatorPosition}%`;
+            this.tapMarker.style.left = `${this.tapPosition}%`;
             this.tapMarker.style.display = 'block';
-
-            // Set tap marker color based on result
-            if (result === 'fail') {
+            
+            // Set the marker color based on the result
+            if (this.tapResult === 'fail') {
                 this.tapMarker.style.backgroundColor = '#e74c3c'; // Red for fail
             } else {
-                // This will be updated based on decision type in the script.js
+                // This will be updated in the main script based on decision type
                 this.tapMarker.style.backgroundColor = '#2ecc71'; // Default green
             }
         }
-
-        return result;
+        
+        // Continue animation to the end
+        // The animation will complete when it reaches the end of the meter
+        return this.tapResult;
     },
 
     // Animate the swing meter
@@ -202,11 +220,36 @@ const SwingMeter = {
         // Update position
         this.indicatorPosition += this.swingSpeed * this.direction;
 
-        // Check boundaries
-        if (this.indicatorPosition >= 100) {
-            this.direction = -1;
-        } else if (this.indicatorPosition <= 0) {
-            this.direction = 1;
+        // Check boundaries and handle completion
+        if (this.isTapped) {
+            // If tapped, we move in one direction until reaching the end
+            if (this.indicatorPosition >= 100 || this.indicatorPosition <= 0) {
+                // Complete the animation
+                this.isAnimating = false;
+                
+                // Ensure the indicator is exactly at the boundary
+                this.indicatorPosition = this.direction > 0 ? 100 : 0;
+                
+                // Update the indicator position one last time
+                if (this.indicatorBar) {
+                    this.indicatorBar.style.left = `${this.indicatorPosition}%`;
+                }
+
+                // Call the result callback if provided
+                if (this.resultCallback) {
+                    // Short delay to let the user see the final position
+                    setTimeout(() => this.resultCallback(this.tapResult), 300);
+                }
+                
+                return;
+            }
+        } else {
+            // Normal back-and-forth movement if not tapped
+            if (this.indicatorPosition >= 100) {
+                this.direction = -1;
+            } else if (this.indicatorPosition <= 0) {
+                this.direction = 1;
+            }
         }
 
         // Make sure position stays in bounds
@@ -221,14 +264,16 @@ const SwingMeter = {
         this.animationFrame = requestAnimationFrame(() => this.animate());
     },
 
-    // Modified reset function for the SwingMeter module
-
-    // Swing meter.js - reset function
+    // Reset the swing meter
     reset() {
         console.log('Resetting swing meter');
 
         // Reset animation state
         this.isAnimating = false;
+        this.isTapped = false;
+        this.tapPosition = null;
+        this.tapResult = null;
+        
         if (this.animationFrame) {
             cancelAnimationFrame(this.animationFrame);
             this.animationFrame = null;
@@ -260,8 +305,7 @@ const SwingMeter = {
             this.tapMarker.style.backgroundColor = 'white'; // Reset color
         }
 
-        // IMPORTANT FIX: Make sure zones are properly configured
-        // Calculate zones based on current widthModifier
+        // Configure zones based on current widthModifier
         const goodZone = document.querySelector('.meter-zone.good');
         const poorStartZone = document.querySelector('.meter-zone.poor-start');
         const poorEndZone = document.querySelector('.meter-zone.poor-end');

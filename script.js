@@ -492,38 +492,48 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Start the swing meter
+    // These are the updated swing meter functions for script.js
+
+    // Start the swing meter with the new behavior
     function startSwingMeter() {
         console.log('Starting swing meter');
 
         // Make sure the meter is reset and ready
         SwingMeter.reset();
 
-        // Start the animation
-        SwingMeter.start();
+        // Start the animation with a callback that will be called when animation completes
+        SwingMeter.start(function (result) {
+            // This function is called when the animation reaches the end after tapping
+            showSwingMeterResult(result);
+        });
     }
 
-    // Stop the swing meter
+    // Stop the swing meter - now just records the tap position and continues animation
     function stopSwingMeter() {
-        console.log('Stopping swing meter');
+        console.log('Recording tap position');
 
-        // Remove click handler to prevent multiple clicks
+        // Remove click handler to prevent multiple taps
         elements.swingMeterContainer.onclick = null;
 
-        // Stop the animation and get the result
-        const result = SwingMeter.stop();
+        // Record the tap position and continue the animation
+        // This will show the marker but keep the indicator moving
+        const result = SwingMeter.tap();
 
-        // Update the indicator bar color based on result
+        // Update the indicator color but don't stop the animation
         const indicatorBar = document.querySelector('.meter-indicator-bar');
         if (indicatorBar) {
+            // Change color based on result
             indicatorBar.style.backgroundColor = result === 'good' ? '#2ecc71' : '#e74c3c';
         }
 
-        // Show the result
-        showSwingMeterResult(result);
+        // The animation will continue until it reaches the end
+        // Then the callback passed to SwingMeter.start() will be called
     }
 
+    // Replace the existing showSwingMeterResult function with this one
     function showSwingMeterResult(result) {
+        console.log('Showing swing meter result:', result);
+
         // Hide the tap button and instruction only
         if (elements.tapButton) elements.tapButton.style.display = 'none';
         if (elements.tapInstruction) elements.tapInstruction.style.display = 'none';
