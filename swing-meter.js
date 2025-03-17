@@ -16,7 +16,7 @@ const SwingMeter = {
     poorStartZone: null,
     poorEndZone: null,
     tapInstruction: null,
-    
+
     // New state variables for enhanced marker behavior
     tapPosition: null,     // Stores where the player tapped
     isTapped: false,       // Whether the player has tapped
@@ -176,17 +176,26 @@ const SwingMeter = {
 
         // Record that the player has tapped
         this.isTapped = true;
-        
-        // Record the current position as the tap position
-        this.tapPosition = this.indicatorPosition;
-        
-        // Calculate the result based on the tap position
+
+        // Compensate for reaction time delay by moving back slightly
+        // This makes it feel more accurate to when the player intended to tap
+        const reactionTimeCompensation = 5; // Adjust this value as needed for different devices
+        const compensatedPosition = Math.max(0, Math.min(100,
+            this.indicatorPosition - (this.swingSpeed * this.direction * reactionTimeCompensation)
+        ));
+
+        // Record the compensated position as the tap position
+        this.tapPosition = compensatedPosition;
+
+        console.log(`Original position: ${this.indicatorPosition}%, Compensated position: ${compensatedPosition}%`);
+
+        // Calculate the result based on the compensated tap position
         const goodZoneWidth = this.baseGoodZoneWidth * this.widthModifier;
         const poorZoneWidth = (100 - goodZoneWidth) / 2;
         const goodZoneStart = poorZoneWidth;
         const goodZoneEnd = poorZoneWidth + goodZoneWidth;
 
-        // Determine result based on the tap position
+        // Determine result based on the compensated tap position
         this.tapResult = 'fail';
         if (this.tapPosition >= goodZoneStart && this.tapPosition < goodZoneEnd) {
             this.tapResult = 'good';
@@ -194,11 +203,12 @@ const SwingMeter = {
 
         console.log(`Tap recorded at position ${this.tapPosition}%, result: ${this.tapResult}`);
 
-        // Display the tap marker at the tap position
+        // Display the tap marker at the compensated tap position
         if (this.tapMarker) {
             this.tapMarker.style.left = `${this.tapPosition}%`;
             this.tapMarker.style.display = 'block';
-            
+            this.tapMarker.classList.add('visible'); // Add animation class
+
             // Set the marker color based on the result
             if (this.tapResult === 'fail') {
                 this.tapMarker.style.backgroundColor = '#e74c3c'; // Red for fail
@@ -207,7 +217,7 @@ const SwingMeter = {
                 this.tapMarker.style.backgroundColor = '#2ecc71'; // Default green
             }
         }
-        
+
         // Continue animation to the end
         // The animation will complete when it reaches the end of the meter
         return this.tapResult;
@@ -226,10 +236,10 @@ const SwingMeter = {
             if (this.indicatorPosition >= 100 || this.indicatorPosition <= 0) {
                 // Complete the animation
                 this.isAnimating = false;
-                
+
                 // Ensure the indicator is exactly at the boundary
                 this.indicatorPosition = this.direction > 0 ? 100 : 0;
-                
+
                 // Update the indicator position one last time
                 if (this.indicatorBar) {
                     this.indicatorBar.style.left = `${this.indicatorPosition}%`;
@@ -240,7 +250,7 @@ const SwingMeter = {
                     // Short delay to let the user see the final position
                     setTimeout(() => this.resultCallback(this.tapResult), 300);
                 }
-                
+
                 return;
             }
         } else {
@@ -273,7 +283,7 @@ const SwingMeter = {
         this.isTapped = false;
         this.tapPosition = null;
         this.tapResult = null;
-        
+
         if (this.animationFrame) {
             cancelAnimationFrame(this.animationFrame);
             this.animationFrame = null;
