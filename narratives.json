@@ -37,6 +37,14 @@
         "narrative": "The train lurches forward as you settle in your usual seat. Through the window, suburbs blur in sameness. Halfway through your commute, your phone buzzes—your boss: 'I need that report by noon.' You'd planned lunch with an old friend you've been meaning to reconnect with for months.",
         "choices": [
           {
+            "text": "Cancel lunch and take a personal day instead",
+            "decisionType": "soul",
+            "title": "Self-Reflection",
+            "meterContext": "As your boss's request weighs on you, you consider your own needs...",
+            "resultGood": "A day to yourself brings clarity. The report can wait—your wellbeing cannot.",
+            "resultFail": "Guilt about shirking responsibility eclipses any benefit the day might have brought."
+          },
+          {
             "text": "Prioritize the report",
             "decisionType": "success",
             "title": "Work First",
@@ -235,7 +243,7 @@
             "decisionType": "success",
             "title": "Duty First",
             "meterContext": "As your professional responsibility tugs at you...",
-            "resultGood": "Catching up on communications gives you a sense of control and accomplishment.",
+            "resultGood": "Catching up on communications gives you control. The fleeting peace sacrificed for inbox zero.",
             "resultFail": "The flood of emails and messages overwhelms you, anxiety immediately returning."
           }
         ]
@@ -266,7 +274,7 @@
             "decisionType": "success",
             "title": "Double Down",
             "meterContext": "As you consider what kind of legacy you want to leave...",
-            "resultGood": "A renewed sense of professional purpose takes hold as you recommit to achievement.",
+            "resultGood": "Professional purpose silences the voice questioning what your achievements are all for.",
             "resultFail": "The pursuit of career success feels increasingly hollow yet you see no alternative."
           }
         ]
@@ -297,7 +305,7 @@
             "decisionType": "success",
             "title": "Career Opportunity",
             "meterContext": "As you see an opportunity in this crisis...",
-            "resultGood": "Management seems to notice your extra effort as you exceed expectations remotely.",
+            "resultGood": "Management notices your dedication. Your living space has become just another workplace.",
             "resultFail": "Burnout begins consuming you entirely as the line between work and life disappears."
           }
         ]
@@ -328,7 +336,7 @@
             "decisionType": "success",
             "title": "Productive Insomnia",
             "meterContext": "Realizing sleep won't come easily tonight, you think about using these wakeful hours...",
-            "resultGood": "Getting ahead on work gives you a momentary sense of control amid the sleeplessness.",
+            "resultGood": "The inbox empties, but rest remains elusive. Productivity masks the midnight anxiety.",
             "resultFail": "Work emails only intensify your anxiety, guaranteeing another sleepless night."
           }
         ]
@@ -359,7 +367,7 @@
             "decisionType": "success",
             "title": "Future Investment",
             "meterContext": "You consider a practical approach to improvement...",
-            "resultGood": "A strategic approach to improving your living situation emerges with clear steps.",
+            "resultGood": "A clear plan emerges, requiring more hours at the very job you're trying to escape.",
             "resultFail": "Work becomes just another escape, not a solution to your fundamental discontent."
           }
         ]
@@ -390,7 +398,7 @@
             "decisionType": "success",
             "title": "Practical Choice",
             "meterContext": "Standing before the departures board, you weigh the comfort of the familiar...",
-            "resultGood": "You find unexpected comfort in returning to your routine with fresh perspective.",
+            "resultGood": "Comfort in routine. The trains to somewhere new will still be running tomorrow, you tell yourself.",
             "resultFail": "The routine feels like a prison of your own making, yet you cannot break free."
           }
         ]
@@ -421,7 +429,7 @@
             "decisionType": "success",
             "title": "Security First",
             "meterContext": "With the letter before you, you deliberate on timing...",
-            "resultGood": "A strategic pause allows for careful consideration of your next professional move.",
+            "resultGood": "The letter remains safely in drafts, where it's lived for years. Maybe next quarter.",
             "resultFail": "Indecision becomes its own form of imprisonment as another opportunity passes."
           }
         ]
@@ -452,7 +460,7 @@
             "decisionType": "success",
             "title": "Steadfast Reliability",
             "meterContext": "As you consider your commitments...",
-            "resultGood": "Duty provides momentary comfort. You find value in consistency and commitment.",
+            "resultGood": "You find value in commitment, even as you wonder what lies beyond the familiar platform.",
             "resultFail": "The routine feels suffocating, your decision weighing on you like a heavy burden."
           }
         ]
