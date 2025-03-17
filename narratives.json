@@ -3,7 +3,7 @@
       {
         "stop": 1,
         "title": "Inbound",
-        "narrative": "6:40 AM. The platform is cold and quiet as you wait for the train—the same one you've taken every weekday for years. You pull your beige trenchcoat tighter, scanning the empty platform. A distant rumble signals the approaching train, just like yesterday and countless days before.",
+        "narrative": "6:40 AM. The platform is cold and quiet as you wait for the train, the same one you've taken every weekday for years. You pull your beige trenchcoat tighter, scanning the empty platform. A distant rumble signals the approaching train, just like yesterday and countless days before.",
         "choices": [
           {
             "text": "Think about the life you once dreamed of",
@@ -34,31 +34,31 @@
       {
         "stop": 2,
         "title": "Drone",
-        "narrative": "The train lurches forward as you settle in your usual seat. Through the window, suburbs blur in sameness. Halfway through your commute, your phone buzzes—your boss: 'I need that report by noon.' You'd planned lunch with an old friend you've been meaning to reconnect with for months.",
+        "narrative": "The morning unfolds with its usual precision. Fluorescent lights hum, keyboards click, and the office breathes in sync. But today, something is different. A routine task lands on your desk, but following standard procedure would mean compromising something you secretly value.",
         "choices": [
           {
-            "text": "Cancel lunch and take a personal day instead",
+            "text": "Follow your inner sense of integrity",
             "decisionType": "soul",
-            "title": "Self-Reflection",
-            "meterContext": "As your boss's request weighs on you, you consider your own needs...",
-            "resultGood": "A day to yourself brings clarity. The report can wait—your wellbeing cannot.",
-            "resultFail": "Guilt about shirking responsibility eclipses any benefit the day might have brought."
+            "title": "Inner Compass",
+            "meterContext": "A quiet voice inside you urges a different path...",
+            "resultGood": "You make the difficult choice to stay true to yourself. A sense of clarity cuts through the corporate fog.",
+            "resultFail": "The moment passes. The system is bigger than you, and resistance feels futile."
           },
           {
-            "text": "Prioritize the report",
+            "text": "Stay the professional course",
             "decisionType": "success",
-            "title": "Work First",
-            "meterContext": "You consider how to handle the urgent work request...",
-            "resultGood": "Another friendship postponed. The report will impress, your personal life recedes.",
-            "resultFail": "You stare at your phone, trapped. Another personal sacrifice for a job that takes and takes."
+            "title": "Career Alignment",
+            "meterContext": "You weigh the risks of standing out in a system built on conformity...",
+            "resultGood": "You execute the task efficiently, another well-oiled cog in the machine. Stability is its own reward, right?",
+            "resultFail": "The choice lingers in your mind long after the task is done. Did you just trade conviction for comfort?"
           },
           {
-            "text": "Try to do both",
+            "text": "Seek input from colleagues to understand different perspectives",
             "decisionType": "connections",
-            "title": "Balance",
-            "meterContext": "You think about how to manage both commitments...",
-            "resultGood": "You arrange a shorter lunch near your office, working intensely before and after. A thoughtful compromise.",
-            "resultFail": "You attempt to plan for both, but it's impossible. Someone will be disappointed—probably yourself."
+            "title": "Shared Dilemma",
+            "meterContext": "You glance around, wondering if others feel the same unease...",
+            "resultGood": "A quiet conversation sparks unexpected solidarity. Maybe you're not alone in this after all.",
+            "resultFail": "Your concerns are met with indifference. Everyone is just trying to get through the day."
           }
         ]
       },
