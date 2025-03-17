@@ -3,7 +3,7 @@ const SwingMeter = {
     // State variables
     isAnimating: false,
     animationFrame: null,
-    swingSpeed: 2,
+    swingSpeed: 1,
     speedModifier: 1.0,
     widthModifier: 1.0,
     baseGoodZoneWidth: 20, // Default good zone width percentage
@@ -356,18 +356,18 @@ const SwingMeter = {
         switch (narrativeType) {
             case 'soul':
                 // Soul choices make the meter faster
-                this.speedModifier *= 1.2; // Increase speed by 20%
+                this.speedModifier *= 1.1; // Increase speed by 20%
                 console.log(`Speed increased to ${this.speedModifier.toFixed(2)}x`);
                 break;
             case 'connections':
                 // Connections choices make the good zone smaller
-                this.widthModifier *= 0.8; // Decrease good zone width by 20%
+                this.widthModifier *= 0.9; // Decrease good zone width by 20%
                 console.log(`Width decreased to ${this.widthModifier.toFixed(2)}x`);
                 break;
             case 'success':
                 // Success choices make the meter slightly slower and good zone slightly wider
-                this.speedModifier *= 0.9; // Decrease speed by 10%
-                this.widthModifier *= 1.1; // Increase good zone width by 10%
+                this.speedModifier *= 1.0; // Decrease speed by 10%
+                this.widthModifier *= 1.0; // Increase good zone width by 10%
                 console.log(`Speed decreased to ${this.speedModifier.toFixed(2)}x, width increased to ${this.widthModifier.toFixed(2)}x`);
                 break;
             default:
