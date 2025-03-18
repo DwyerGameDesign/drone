@@ -158,7 +158,7 @@ const SwingMeter = {
         this.indicatorBar.style.left = '0%';
 
         // Apply speed modifier
-        const baseSpeed = 1;
+        const baseSpeed = 0.5;
         this.swingSpeed = baseSpeed * this.speedModifier;
         console.log('Applied swing speed:', this.swingSpeed);
 
